@@ -6,6 +6,8 @@ import time
 
 import httpx
 
+from .trace import record
+
 log = logging.getLogger("crowdshield.tavily")
 
 
@@ -21,6 +23,7 @@ class TavilyClient:
         r = await self.client.post(path, json=body, headers=self.headers)
         r.raise_for_status()
         data = r.json()
+        record({"kind": "tavily", "op": path.strip("/"), "ms": round((time.perf_counter() - started) * 1000)})
         log.info(
             "tavily %s ms=%d credits=%s",
             path,

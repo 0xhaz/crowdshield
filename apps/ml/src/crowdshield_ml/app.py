@@ -11,6 +11,7 @@ from .config import Settings
 from .llm import NebiusClient
 from .services import Gateway
 from .tavily import TavilyClient
+from .trace import collect
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
 settings = Settings.from_env()
@@ -18,8 +19,7 @@ gateway = Gateway(
     NebiusClient(settings.nebius_base_url, settings.nebius_api_key),
     TavilyClient(settings.tavily_api_key),
     Cache(settings.redis_url),
-    settings.model_text,
-    settings.model_vision,
+    settings.models,
 )
 app = FastAPI(title="CrowdShield ML gateway", version="0.1.0")
 
@@ -73,42 +73,90 @@ async def health():
     return {
         "ok": True,
         "redis": await gateway.cache.ping(),
-        "models": {"text": settings.model_text, "vision": settings.model_vision},
+        "models": settings.models.tiers,
+        "routes": settings.models.routes,
     }
+
+
+async def traced(work) -> dict:
+    """Runs one gateway call and attaches its AI trace (models, Tavily calls, timings)."""
+    with collect() as trace:
+        result = await work
+    body = result.model_dump() if isinstance(result, BaseModel) else dict(result)
+    body["trace"] = {"calls": trace["calls"], "total_ms": trace["total_ms"], "cached": not trace["calls"]}
+    return body
+
+
+class TextsIn(BaseModel):
+    texts: list[str] = Field(min_length=1, max_length=64)
+
+
+class CaseIn(BaseModel):
+    case: dict
+
+
+class SnippetsIn(BaseModel):
+    snippets: list[str] = Field(min_length=2, max_length=50)
 
 
 @app.post("/v1/classify", dependencies=[Depends(internal)])
 async def classify(body: TextIn):
-    return await gateway.classify(body.text)
+    return await traced(gateway.classify(body.text))
 
 
 @app.post("/v1/screenshot", dependencies=[Depends(internal)])
 async def screenshot(file: UploadFile = File(...)):
     data, mime = await read_upload(file, IMAGE_TYPES)
-    return await gateway.read_screenshot(data, mime)
+    return await traced(gateway.read_screenshot(data, mime))
 
 
 @app.post("/v1/invoice", dependencies=[Depends(internal)])
 async def invoice(file: UploadFile = File(...)):
     data, mime = await read_upload(file, IMAGE_TYPES | {"application/pdf"})
-    return await gateway.read_invoice(data, mime)
+    return await traced(gateway.read_invoice(data, mime))
 
 
 @app.post("/v1/web/identifier", dependencies=[Depends(internal)])
 async def web_identifier(body: IdentifierIn):
-    return await gateway.identifier_leads(body.type, body.value)
+    return await traced(gateway.identifier_leads(body.type, body.value))
 
 
 @app.post("/v1/web/url", dependencies=[Depends(internal)])
 async def web_url(body: UrlIn):
-    return await gateway.check_url(body.url)
+    return await traced(gateway.check_url(body.url))
 
 
 @app.post("/v1/web/investment", dependencies=[Depends(internal)])
 async def web_investment(body: NameIn):
-    return await gateway.investment_check(body.name)
+    return await traced(gateway.investment_check(body.name))
 
 
 @app.post("/v1/web/supplier", dependencies=[Depends(internal)])
 async def web_supplier(body: SupplierIn):
-    return await gateway.supplier_web(body.company, body.domain)
+    return await traced(gateway.supplier_web(body.company, body.domain))
+
+
+@app.post("/v1/embed", dependencies=[Depends(internal)])
+async def embed_texts(body: TextsIn):
+    """Redact, then embed (Qwen3-Embedding, 1024 dims) for campaign matching."""
+
+    async def work():
+        return {"items": await gateway.redact_and_embed(body.texts)}
+
+    return await traced(work())
+
+
+@app.post("/v1/brief", dependencies=[Depends(internal)])
+async def brief(body: CaseIn):
+    """Nemotron Ultra with reasoning: case brief for the fraud team + NSRC/PDRM referral note."""
+    return await traced(gateway.case_brief(body.case))
+
+
+@app.post("/v1/campaigns/label", dependencies=[Depends(internal)])
+async def label(body: SnippetsIn):
+    return await traced(gateway.label_campaign(body.snippets))
+
+
+@app.get("/v1/news", dependencies=[Depends(internal)])
+async def news(days: int = 7):
+    return await traced(gateway.news(days))

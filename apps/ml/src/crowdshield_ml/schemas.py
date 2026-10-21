@@ -167,3 +167,49 @@ class SupplierWeb(BaseModel):
     reputation: list[Lead]
     cached: bool
     fetched_at: str
+
+
+# ---------- Phase 7: case brief (Ultra), campaign labels, news ----------
+class BriefPoint(Strict):
+    text: str
+    evidence: list[str] = Field(
+        description="Ids from the case data that support this point, e.g. ['event:3', 'hop:1']"
+    )
+
+
+class CaseBrief(Strict):
+    headline: Bilingual = Field(description="One sentence: what happened, to whom (no names), how much")
+    modus_operandi: list[BriefPoint] = Field(description="How the scam worked, step by step")
+    money_trail: list[BriefPoint] = Field(description="Where the money went and what was frozen")
+    red_flags: list[BriefPoint]
+    recommended_actions: list[BriefPoint] = Field(description="Concrete next steps for the bank's fraud team")
+    referral: Bilingual = Field(
+        description="A short referral note to NSRC / PDRM CCID, factual, from the case data only"
+    )
+    gaps: list[str] = Field(description="Information missing from the case that investigators will need")
+
+
+class CampaignLabel(Strict):
+    label: str = Field(
+        description="Short campaign name, max 60 characters, e.g. 'Fake EPF withdrawal call, Oct 2026'"
+    )
+    scam_type: ScamType
+    summary: Bilingual
+    key_phrases: list[str] = Field(description="3-6 phrases the scammers repeat, in the original language")
+    warning: Bilingual = Field(
+        description="A draft public warning, one or two plain sentences, for human review"
+    )
+
+
+class NewsItem(Strict):
+    index: int
+    relevant: bool = Field(description="A real scam or fraud case or warning in Malaysia")
+    scam_type: ScamType | None
+    headline: str = Field(description="Short neutral headline in English")
+    summary: Bilingual
+    loss_myr: float | None = Field(description="Total loss in RM if the article states it")
+    state: str | None = Field(description="Malaysian state if stated")
+
+
+class NewsItems(Strict):
+    items: list[NewsItem]

@@ -10,14 +10,18 @@ import pymupdf
 
 from . import prompts
 from .cache import Cache
-from .llm import LlmError, NebiusClient, image_part
+from .config import Models
+from .llm import LlmError, NebiusClient, embed, image_part
 from .redact import redact
 from .schemas import (
     Bilingual,
+    CampaignLabel,
+    CaseBrief,
     ClassifyResult,
     InvoiceReading,
     Lead,
     LeadJudgements,
+    NewsItems,
     OfficialContact,
     PageCheck,
     ScreenshotReading,
@@ -117,18 +121,18 @@ def mentions(text: str, terms: list[str]) -> bool:
 
 
 class Gateway:
-    def __init__(
-        self, llm: NebiusClient, tavily: TavilyClient, cache: Cache, model_text: str, model_vision: str
-    ):
-        self.llm, self.tavily, self.cache = llm, tavily, cache
-        self.text_model, self.vision_model = model_text, model_vision
+    def __init__(self, llm: NebiusClient, tavily: TavilyClient, cache: Cache, models: Models):
+        self.llm, self.tavily, self.cache, self.models = llm, tavily, cache, models
+
+    def model(self, task: str) -> str:
+        return self.models.for_task(task)
 
     # ---------- reading ----------
     async def classify(self, text: str) -> ClassifyResult:
         red = redact(text)
         try:
             out = await self.llm.json(
-                self.text_model,
+                self.model("classify"),
                 prompts.CLASSIFY,
                 red.text,
                 TextClassification,
@@ -167,7 +171,7 @@ class Gateway:
         content = [{"type": "text", "text": "Read this screenshot."}, image_part(data, mime)]
         try:
             out = await self.llm.json(
-                self.vision_model,
+                self.model("screenshot"),
                 prompts.SCREENSHOT,
                 content,
                 ScreenshotReading,
@@ -211,7 +215,7 @@ class Gateway:
         content += [image_part(b, m) for b, m in images]
         try:
             out = await self.llm.json(
-                self.vision_model,
+                self.model("invoice"),
                 prompts.INVOICE,
                 content,
                 InvoiceReading,
@@ -230,13 +234,15 @@ class Gateway:
     ) -> list[Lead]:
         if not results:
             return []
-        listing = "\n\n".join(
-            f"[{i}] {r.get('title', '')}\nURL: {r.get('url', '')}\n{(r.get('content') or '')[:600]}"
-            for i, r in enumerate(results)
-        )
+
+        def entry(i: int, r: dict) -> str:
+            head = f"[{i}] {r.get('title', '')}\nURL: {r.get('url', '')}\nDate: {r.get('published_date', '')}"
+            return f"{head}\n{(r.get('content') or '')[:500]}"
+
+        listing = "\n\n".join(entry(i, r) for i, r in enumerate(results[:20]))
         try:
             judged = await self.llm.json(
-                self.text_model,
+                self.model("leads"),
                 prompts.LEADS,
                 f"Identifier: {subject}\n\nResults:\n{listing}",
                 LeadJudgements,
@@ -307,7 +313,7 @@ class Gateway:
             host = urlparse(target).hostname or ""
             try:
                 check = await self.llm.json(
-                    self.text_model,
+                    self.model("page"),
                     prompts.PAGE,
                     f"URL: {target}\nDomain: {host}\n\nPage text:\n{text}",
                     PageCheck,
@@ -355,7 +361,7 @@ class Gateway:
                 continue
             try:
                 c = await self.llm.json(
-                    self.text_model,
+                    self.model("contact"),
                     prompts.CONTACT,
                     f"Company: {company}\nURL: {r['url']}\n\n{page['raw_content'][:PAGE_CHARS]}",
                     OfficialContact,
@@ -374,4 +380,118 @@ class Gateway:
             official_contact=official, reputation=reputation, cached=False, fetched_at=now_iso()
         )
         await self.cache.set(key, out.model_dump())
+        return out
+
+    # ---------- embeddings (campaign matching and detection) ----------
+    async def redact_and_embed(self, texts: list[str]) -> list[dict]:
+        """Redacts each text, then embeds the redacted text. Only redacted text ever leaves this service."""
+        out: list[dict | None] = [None] * len(texts)
+        todo: list[tuple[int, str, str]] = []
+        for i, t in enumerate(texts):
+            red = redact(t).text
+            key = self.cache.key("embed", self.model("embed"), red)
+            if hit := await self.cache.get(key):
+                out[i] = hit
+            else:
+                todo.append((i, red, key))
+        if todo:
+            vectors = await embed(self.llm, self.model("embed"), [r for _, r, _ in todo])
+            for (i, red, key), vec in zip(todo, vectors, strict=True):
+                out[i] = {"redacted": red, "embedding": vec}
+                await self.cache.set(key, out[i], ttl=7 * 24 * 3600)
+        return [o for o in out if o is not None]
+
+    # ---------- Ultra: case brief for the fraud team and the NSRC/PDRM referral ----------
+    async def case_brief(self, case: dict) -> dict:
+        import json as _json
+
+        payload = _json.dumps(case, ensure_ascii=False)
+        payload = redact(payload).text if "narrative" in case else payload  # belt and braces
+        key = self.cache.key("brief", prompts.BRIEF_V, self.model("brief"), payload)
+        if hit := await self.cache.get(key):
+            return hit
+        out = await self.llm.json(
+            self.model("brief"),
+            prompts.BRIEF,
+            payload,
+            CaseBrief,
+            prompt_version=prompts.BRIEF_V,
+            max_tokens=6000,
+            thinking=True,
+        )
+        result = {**out.model_dump(), "model": self.model("brief"), "prompt_version": prompts.BRIEF_V}
+        await self.cache.set(key, result)
+        return result
+
+    # ---------- campaign labelling (new clusters from the novelty pool) ----------
+    async def label_campaign(self, snippets: list[str]) -> dict:
+        texts = [redact(t).text for t in snippets[:12]]
+        listing = "\n\n".join(f"[{i + 1}] {t[:700]}" for i, t in enumerate(texts))
+        out = await self.llm.json(
+            self.model("label"),
+            prompts.LABEL,
+            f"Reports in this cluster:\n\n{listing}",
+            CampaignLabel,
+            prompt_version=prompts.LABEL_V,
+            max_tokens=3000,
+            thinking=True,
+        )
+        return {**out.model_dump(), "model": self.model("label"), "prompt_version": prompts.LABEL_V}
+
+    # ---------- news: what's happening this week (Tavily + Nemotron) ----------
+    NEWS_QUERIES = (
+        "scam Malaysia police losses this week",
+        "penipuan Malaysia polis kerugian",
+        "Macau scam Malaysia victim",
+        "investment scam Malaysia arrested",
+        "NSRC 997 scam warning Malaysia",
+    )
+
+    async def news(self, days: int = 7) -> dict:
+        key = self.cache.key("news", prompts.NEWS_V, str(days))
+        if hit := await self.cache.get(key):
+            return {**hit, "cached": True}
+        time_range = "week" if days <= 7 else "month"
+        seen: set[str] = set()
+        results: list[dict] = []
+        for q in self.NEWS_QUERIES:
+            for r in await self.tavily.search(q, max_results=5, topic="news", time_range=time_range):
+                if r.get("url") and r["url"] not in seen:
+                    seen.add(r["url"])
+                    results.append(r)
+
+        def entry(i: int, r: dict) -> str:
+            head = f"[{i}] {r.get('title', '')}\nURL: {r.get('url', '')}\nDate: {r.get('published_date', '')}"
+            return f"{head}\n{(r.get('content') or '')[:500]}"
+
+        listing = "\n\n".join(entry(i, r) for i, r in enumerate(results[:20]))
+        try:
+            judged = await self.llm.json(
+                self.model("news"),
+                prompts.NEWS,
+                listing,
+                NewsItems,
+                prompt_version=prompts.NEWS_V,
+                max_tokens=4000,
+            )
+        except LlmError:
+            judged = NewsItems(items=[])
+        items = []
+        for j in judged.items:
+            if j.relevant and 0 <= j.index < len(results):
+                r = results[j.index]
+                items.append(
+                    {
+                        "headline": j.headline,
+                        "summary": j.summary.model_dump(),
+                        "scam_type": j.scam_type,
+                        "loss_myr": j.loss_myr,
+                        "state": j.state,
+                        "url": r["url"],
+                        "source": urlparse(r["url"]).netloc,
+                        "published_at": r.get("published_date"),
+                    }
+                )
+        out = {"items": items[:10], "fetched_at": now_iso(), "cached": False}
+        await self.cache.set(key, out, ttl=6 * 3600)
         return out

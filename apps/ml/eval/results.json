@@ -1,0 +1,3124 @@
+[
+ {
+  "name": "Super, previous prompt (5 of 12 types defined)",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "reasoning": false,
+  "options": {},
+  "accuracy": 0.6829268292682927,
+  "scam_vs_normal": 0.926829268292683,
+  "false_alarms": 0,
+  "missed_scams": 3,
+  "errors": 0,
+  "p50_ms": 1538.1032922305167,
+  "p95_ms": 5387.136582750827,
+  "by_lang": {
+   "ms": 0.6666666666666666,
+   "en": 0.7333333333333333,
+   "mixed": 0.625,
+   "zh": 0.6666666666666666
+  },
+  "rows": [
+   {
+    "id": 1,
+    "lang": "ms",
+    "expected": "macau_impersonation",
+    "text": "Selamat petang puan, saya Inspektor Rahman dari IPD Dang Wangi. Nombor IC puan digunakan untuk buka akaun pengubahan wang haram. Saya akan sambungkan puan kepada pegawai BNM untuk siasatan. Jangan beritahu sesiapa.",
+    "got": "macau_impersonation",
+    "ok": true,
+    "ms": 4524.891417007893
+   },
+   {
+    "id": 2,
+    "lang": "en",
+    "expected": "macau_impersonation",
+    "text": "This is Pos Malaysia. A parcel under your name containing 5 fake passports was seized by customs. Press 1 to speak to the police officer handling your case.",
+    "got": "parcel",
+    "ok": true,
+    "ms": 4424.428957980126
+   },
+   {
+    "id": 3,
+    "lang": "mixed",
+    "expected": "macau_impersonation",
+    "text": "Bro my mother got call from 'Bank Negara officer' say her account involved in money laundering, need transfer all savings to safe account for audit, they on video call now got show warrant",
+    "got": "macau_impersonation",
+    "ok": true,
+    "ms": 5688.239375129342
+   },
+   {
+    "id": 4,
+    "lang": "zh",
+    "expected": "macau_impersonation",
+    "text": "您好，我是警察局的陈警官。您的身份证号码涉及一宗洗钱案件，请您配合调查，把存款转到国家银行的安全账户，不要告诉家人。",
+    "got": "macau_impersonation",
+    "ok": true,
+    "ms": 1964.905499946326
+   },
+   {
+    "id": 5,
+    "lang": "ms",
+    "expected": "macau_impersonation",
+    "text": "Ini mahkamah. Anda ada saman tertunggak dan waran tangkap akan dikeluarkan hari ini. Sila tekan 9 untuk bercakap dengan pegawai.",
+    "got": "macau_impersonation",
+    "ok": true,
+    "ms": 1912.0695828460157
+   },
+   {
+    "id": 6,
+    "lang": "en",
+    "expected": "investment",
+    "text": "Join our VIP Telegram group! Our AI trading robot guarantees 30% monthly returns. Minimum deposit RM500, withdraw anytime. Limited slots, register with mentor Jessica now.",
+    "got": "job_task",
+    "ok": false,
+    "ms": 1314.6358341909945
+   },
+   {
+    "id": 7,
+    "lang": "ms",
+    "expected": "investment",
+    "text": "Pelaburan emas patuh syariah, pulangan 5% seminggu dijamin. Ramai dah untung. Pindah ke akaun syarikat dan admin akan masukkan dalam app.",
+    "got": "job_task",
+    "ok": false,
+    "ms": 1325.5965830758214
+   },
+   {
+    "id": 8,
+    "lang": "mixed",
+    "expected": "investment",
+    "text": "The app shows my profit already RM48k but when I want withdraw they say must pay 20% tax first then can release. Mentor say very normal one",
+    "got": "job_task",
+    "ok": false,
+    "ms": 1349.0499998442829
+   },
+   {
+    "id": 9,
+    "lang": "zh",
+    "expected": "investment",
+    "text": "老师带单炒股，保证每月收益百分之二十，先充值五千元到APP，名额有限。",
+    "got": "job_task",
+    "ok": false,
+    "ms": 3559.5748340710998
+   },
+   {
+    "id": 10,
+    "lang": "en",
+    "expected": "parcel",
+    "text": "PosLaju: Your parcel is on hold due to an incomplete address. Pay RM1.50 redelivery fee within 24h: pos-redelivery-my.top/pay",
+    "got": "parcel",
+    "ok": true,
+    "ms": 1337.9517919383943
+   },
+   {
+    "id": 11,
+    "lang": "ms",
+    "expected": "parcel",
+    "text": "J&T: Bungkusan anda tidak dapat dihantar. Kemas kini alamat dan bayar caj RM2.90 di pautan ini sebelum dipulangkan.",
+    "got": "parcel",
+    "ok": true,
+    "ms": 3209.512791596353
+   },
+   {
+    "id": 12,
+    "lang": "mixed",
+    "expected": "parcel",
+    "text": "Got SMS say my Shopee parcel stuck at customs need pay small fee 3 ringgit using card, the link ask card number and OTP",
+    "got": "phishing_link",
+    "ok": true,
+    "ms": 6508.54295771569
+   },
+   {
+    "id": 13,
+    "lang": "ms",
+    "expected": "job_task",
+    "text": "Kerja sambilan dari rumah! Like video TikTok dan dapat RM10 setiap tugasan. Gaji RM300 sehari. WhatsApp HR untuk mula.",
+    "got": "job_task",
+    "ok": true,
+    "ms": 2911.5765830501914
+   },
+   {
+    "id": 14,
+    "lang": "en",
+    "expected": "job_task",
+    "text": "Hi, I'm Sarah from the recruitment team. Rate hotels online and earn RM50-RM500 daily. For the premium tasks you need to top up first, then you'll get commission back.",
+    "got": "job_task",
+    "ok": true,
+    "ms": 1695.1315831393003
+   },
+   {
+    "id": 15,
+    "lang": "mixed",
+    "expected": "job_task",
+    "text": "Already done 30 tasks, they say my account frozen because negative balance, must top up RM2,000 more to unlock and withdraw all my salary",
+    "got": "job_task",
+    "ok": true,
+    "ms": 1521.4004581794143
+   },
+   {
+    "id": 16,
+    "lang": "en",
+    "expected": "love_romance",
+    "text": "My darling, I'm a US army doctor in Syria. I sent you a box with my savings but customs in KL need a clearance fee of RM8,000 before release. Please help me, I will pay you back when I come to Malaysia.",
+    "got": "parcel",
+    "ok": false,
+    "ms": 1158.753375057131
+   },
+   {
+    "id": 17,
+    "lang": "ms",
+    "expected": "love_romance",
+    "text": "Sayang, saya terkandas di lapangan terbang, beg dan dompet hilang. Boleh transfer RM3,000 dulu untuk tiket? Nanti saya bayar balik bila jumpa.",
+    "got": "not_a_scam",
+    "ok": false,
+    "ms": 5387.136582750827
+   },
+   {
+    "id": 18,
+    "lang": "mixed",
+    "expected": "ecommerce",
+    "text": "I paid deposit RM450 for iPhone on Facebook Marketplace, seller ask pay full first then post, now block me already",
+    "got": "job_task",
+    "ok": false,
+    "ms": 5556.684208102524
+   },
+   {
+    "id": 19,
+    "lang": "ms",
+    "expected": "ecommerce",
+    "text": "Jual tiket konsert murah RM150 sahaja, bayar dulu ke akaun peribadi, e-tiket hantar lepas bayaran. Tak boleh COD.",
+    "got": "not_a_scam",
+    "ok": false,
+    "ms": 1181.5017499029636
+   },
+   {
+    "id": 20,
+    "lang": "ms",
+    "expected": "loan",
+    "text": "Pinjaman peribadi lulus segera tanpa semakan CTOS, RM20,000. Bayar yuran pemprosesan RM800 dahulu untuk pengeluaran.",
+    "got": "not_a_scam",
+    "ok": false,
+    "ms": 1094.1742081195116
+   },
+   {
+    "id": 21,
+    "lang": "en",
+    "expected": "loan",
+    "text": "Your loan of RM15,000 is approved. To disburse, please transfer the insurance and stamping fee of RM1,200 to our officer's account.",
+    "got": "job_task",
+    "ok": false,
+    "ms": 1538.1032922305167
+   },
+   {
+    "id": 22,
+    "lang": "ms",
+    "expected": "phishing_link",
+    "text": "Tahniah! Anda layak bayaran balik cukai RM1,280 daripada LHDN. Klik pautan untuk tuntut sebelum tamat tempoh: lhdn-refund-my.com/claim",
+    "got": "phishing_link",
+    "ok": true,
+    "ms": 1792.3724157735705
+   },
+   {
+    "id": 23,
+    "lang": "en",
+    "expected": "phishing_link",
+    "text": "Maybank2u: Your account has been temporarily suspended due to unusual activity. Verify your identity at m2u-secure-verify.com to restore access.",
+    "got": "phishing_link",
+    "ok": true,
+    "ms": 1785.7145420275629
+   },
+   {
+    "id": 24,
+    "lang": "ms",
+    "expected": "phishing_link",
+    "text": "KWSP: Pengeluaran khas RM3,000 diluluskan. Sahkan akaun bank anda melalui pautan dan masukkan TAC untuk terima bayaran.",
+    "got": "phishing_link",
+    "ok": true,
+    "ms": 3582.636249717325
+   },
+   {
+    "id": 25,
+    "lang": "en",
+    "expected": "phishing_link",
+    "text": "Touch 'n Go eWallet: your account will be deactivated today. Log in here to keep your balance: tng-ewallet-update.net",
+    "got": "phishing_link",
+    "ok": true,
+    "ms": 1407.1573340333998
+   },
+   {
+    "id": 26,
+    "lang": "en",
+    "expected": "malware_apk",
+    "text": "Your appointment with the health clinic is confirmed. Download our app to fill the form: klinik-temujanji.apk",
+    "got": "phishing_link",
+    "ok": false,
+    "ms": 1373.3763750642538
+   },
+   {
+    "id": 27,
+    "lang": "ms",
+    "expected": "malware_apk",
+    "text": "Jemputan majlis perkahwinan kami. Sila muat turun kad jemputan digital: kad_kahwin.apk",
+    "got": "phishing_link",
+    "ok": false,
+    "ms": 1304.4005841948092
+   },
+   {
+    "id": 28,
+    "lang": "mixed",
+    "expected": "malware_apk",
+    "text": "Cleaner say must install their booking app from link not from Play Store, after install it ask accessibility permission",
+    "got": "phishing_link",
+    "ok": false,
+    "ms": 1685.294833034277
+   },
+   {
+    "id": 29,
+    "lang": "en",
+    "expected": "bec_supplier",
+    "text": "Dear valued customer, please note our company has changed bank due to an audit. Kindly remit payment for invoice INV-2231 to our new account at another bank effective immediately. Do not use the old account.",
+    "got": "bec_supplier",
+    "ok": true,
+    "ms": 1174.2039592936635
+   },
+   {
+    "id": 30,
+    "lang": "ms",
+    "expected": "bec_supplier",
+    "text": "Kepada pelanggan, akaun bank syarikat kami telah ditukar. Sila buat bayaran invois bulan ini ke akaun baharu di bawah. Akaun lama tidak lagi aktif.",
+    "got": "bec_supplier",
+    "ok": true,
+    "ms": 1356.536792125553
+   },
+   {
+    "id": 31,
+    "lang": "mixed",
+    "expected": "bec_supplier",
+    "text": "Supplier email say they change to new bank account, but the email domain slightly different and they rush us to pay today",
+    "got": "bec_supplier",
+    "ok": true,
+    "ms": 1485.1911668665707
+   },
+   {
+    "id": 32,
+    "lang": "en",
+    "expected": "account_takeover",
+    "text": "I received an SMS with a code I didn't request, then someone called pretending to be my bank and asked me to read the code to them to 'cancel' a transaction.",
+    "got": "phishing_link",
+    "ok": true,
+    "ms": 1702.04491680488
+   },
+   {
+    "id": 33,
+    "lang": "ms",
+    "expected": "account_takeover",
+    "text": "Pemanggil mengaku dari bank dan minta saya beri kod TAC yang baru masuk supaya transaksi tidak sah dibatalkan.",
+    "got": "phishing_link",
+    "ok": true,
+    "ms": 4351.9222917966545
+   },
+   {
+    "id": 34,
+    "lang": "en",
+    "expected": "not_a_scam",
+    "text": "Hi Mum, I'll be home late tonight, still at the office. Can you keep some dinner for me?",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 1562.6661670394242
+   },
+   {
+    "id": 35,
+    "lang": "ms",
+    "expected": "not_a_scam",
+    "text": "Mesyuarat persatuan penduduk akan diadakan pada Sabtu ini jam 9 pagi di dewan serbaguna. Sila hadir.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 861.1084162257612
+   },
+   {
+    "id": 36,
+    "lang": "en",
+    "expected": "not_a_scam",
+    "text": "Your Grab ride is arriving in 3 minutes. Driver: white Perodua Bezza.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 1061.1004577949643
+   },
+   {
+    "id": 37,
+    "lang": "mixed",
+    "expected": "not_a_scam",
+    "text": "Bro tomorrow futsal 8pm at the usual place ok, bring extra jersey",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 2848.6607908271253
+   },
+   {
+    "id": 38,
+    "lang": "zh",
+    "expected": "not_a_scam",
+    "text": "明天中午一起吃饭吗？我们在老地方见。",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 869.3417920731008
+   },
+   {
+    "id": 39,
+    "lang": "en",
+    "expected": "not_a_scam",
+    "text": "Reminder: your dental appointment at Klinik Pergigian Seri is on Monday 10am. Reply YES to confirm.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 1214.084082748741
+   },
+   {
+    "id": 40,
+    "lang": "ms",
+    "expected": "not_a_scam",
+    "text": "Terima kasih kerana membeli-belah. Pesanan anda telah dihantar dan akan tiba dalam 2-3 hari bekerja.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 1103.6025420762599
+   },
+   {
+    "id": 41,
+    "lang": "en",
+    "expected": "not_a_scam",
+    "text": "Your monthly electricity bill of RM87.40 is ready. Pay via the myTNB app or any bank before the due date.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 1050.3061250783503
+   }
+  ]
+ },
+ {
+  "name": "Super, relaxed enum decoding",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "reasoning": false,
+  "options": {
+   "strict": false
+  },
+  "accuracy": 0.024390243902439025,
+  "scam_vs_normal": 0.024390243902439025,
+  "false_alarms": 0,
+  "missed_scams": 0,
+  "errors": 40,
+  "p50_ms": 1262.0510421693325,
+  "p95_ms": 1262.0510421693325,
+  "by_lang": {
+   "ms": 0.06666666666666667,
+   "en": 0.0,
+   "mixed": 0.0,
+   "zh": 0.0
+  },
+  "rows": [
+   {
+    "id": 1,
+    "lang": "ms",
+    "expected": "macau_impersonation",
+    "text": "Selamat petang puan, saya Inspektor Rahman dari IPD Dang Wangi. Nombor IC puan digunakan untuk buka akaun pengubahan wang haram. Saya akan sambungkan puan kepada pegawai BNM untuk siasatan. Jangan beritahu sesiapa.",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 2,
+    "lang": "en",
+    "expected": "macau_impersonation",
+    "text": "This is Pos Malaysia. A parcel under your name containing 5 fake passports was seized by customs. Press 1 to speak to the police officer handling your case.",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 3,
+    "lang": "mixed",
+    "expected": "macau_impersonation",
+    "text": "Bro my mother got call from 'Bank Negara officer' say her account involved in money laundering, need transfer all savings to safe account for audit, they on video call now got show warrant",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 4,
+    "lang": "zh",
+    "expected": "macau_impersonation",
+    "text": "您好，我是警察局的陈警官。您的身份证号码涉及一宗洗钱案件，请您配合调查，把存款转到国家银行的安全账户，不要告诉家人。",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 5,
+    "lang": "ms",
+    "expected": "macau_impersonation",
+    "text": "Ini mahkamah. Anda ada saman tertunggak dan waran tangkap akan dikeluarkan hari ini. Sila tekan 9 untuk bercakap dengan pegawai.",
+    "got": "macau_impersonation",
+    "ok": true,
+    "ms": 1262.0510421693325
+   },
+   {
+    "id": 6,
+    "lang": "en",
+    "expected": "investment",
+    "text": "Join our VIP Telegram group! Our AI trading robot guarantees 30% monthly returns. Minimum deposit RM500, withdraw anytime. Limited slots, register with mentor Jessica now.",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 7,
+    "lang": "ms",
+    "expected": "investment",
+    "text": "Pelaburan emas patuh syariah, pulangan 5% seminggu dijamin. Ramai dah untung. Pindah ke akaun syarikat dan admin akan masukkan dalam app.",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 8,
+    "lang": "mixed",
+    "expected": "investment",
+    "text": "The app shows my profit already RM48k but when I want withdraw they say must pay 20% tax first then can release. Mentor say very normal one",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 9,
+    "lang": "zh",
+    "expected": "investment",
+    "text": "老师带单炒股，保证每月收益百分之二十，先充值五千元到APP，名额有限。",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 10,
+    "lang": "en",
+    "expected": "parcel",
+    "text": "PosLaju: Your parcel is on hold due to an incomplete address. Pay RM1.50 redelivery fee within 24h: pos-redelivery-my.top/pay",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 11,
+    "lang": "ms",
+    "expected": "parcel",
+    "text": "J&T: Bungkusan anda tidak dapat dihantar. Kemas kini alamat dan bayar caj RM2.90 di pautan ini sebelum dipulangkan.",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 12,
+    "lang": "mixed",
+    "expected": "parcel",
+    "text": "Got SMS say my Shopee parcel stuck at customs need pay small fee 3 ringgit using card, the link ask card number and OTP",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 13,
+    "lang": "ms",
+    "expected": "job_task",
+    "text": "Kerja sambilan dari rumah! Like video TikTok dan dapat RM10 setiap tugasan. Gaji RM300 sehari. WhatsApp HR untuk mula.",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 14,
+    "lang": "en",
+    "expected": "job_task",
+    "text": "Hi, I'm Sarah from the recruitment team. Rate hotels online and earn RM50-RM500 daily. For the premium tasks you need to top up first, then you'll get commission back.",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 15,
+    "lang": "mixed",
+    "expected": "job_task",
+    "text": "Already done 30 tasks, they say my account frozen because negative balance, must top up RM2,000 more to unlock and withdraw all my salary",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 16,
+    "lang": "en",
+    "expected": "love_romance",
+    "text": "My darling, I'm a US army doctor in Syria. I sent you a box with my savings but customs in KL need a clearance fee of RM8,000 before release. Please help me, I will pay you back when I come to Malaysia.",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 17,
+    "lang": "ms",
+    "expected": "love_romance",
+    "text": "Sayang, saya terkandas di lapangan terbang, beg dan dompet hilang. Boleh transfer RM3,000 dulu untuk tiket? Nanti saya bayar balik bila jumpa.",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 18,
+    "lang": "mixed",
+    "expected": "ecommerce",
+    "text": "I paid deposit RM450 for iPhone on Facebook Marketplace, seller ask pay full first then post, now block me already",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 19,
+    "lang": "ms",
+    "expected": "ecommerce",
+    "text": "Jual tiket konsert murah RM150 sahaja, bayar dulu ke akaun peribadi, e-tiket hantar lepas bayaran. Tak boleh COD.",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 20,
+    "lang": "ms",
+    "expected": "loan",
+    "text": "Pinjaman peribadi lulus segera tanpa semakan CTOS, RM20,000. Bayar yuran pemprosesan RM800 dahulu untuk pengeluaran.",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 21,
+    "lang": "en",
+    "expected": "loan",
+    "text": "Your loan of RM15,000 is approved. To disburse, please transfer the insurance and stamping fee of RM1,200 to our officer's account.",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 22,
+    "lang": "ms",
+    "expected": "phishing_link",
+    "text": "Tahniah! Anda layak bayaran balik cukai RM1,280 daripada LHDN. Klik pautan untuk tuntut sebelum tamat tempoh: lhdn-refund-my.com/claim",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 23,
+    "lang": "en",
+    "expected": "phishing_link",
+    "text": "Maybank2u: Your account has been temporarily suspended due to unusual activity. Verify your identity at m2u-secure-verify.com to restore access.",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 24,
+    "lang": "ms",
+    "expected": "phishing_link",
+    "text": "KWSP: Pengeluaran khas RM3,000 diluluskan. Sahkan akaun bank anda melalui pautan dan masukkan TAC untuk terima bayaran.",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 25,
+    "lang": "en",
+    "expected": "phishing_link",
+    "text": "Touch 'n Go eWallet: your account will be deactivated today. Log in here to keep your balance: tng-ewallet-update.net",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 26,
+    "lang": "en",
+    "expected": "malware_apk",
+    "text": "Your appointment with the health clinic is confirmed. Download our app to fill the form: klinik-temujanji.apk",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 27,
+    "lang": "ms",
+    "expected": "malware_apk",
+    "text": "Jemputan majlis perkahwinan kami. Sila muat turun kad jemputan digital: kad_kahwin.apk",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 28,
+    "lang": "mixed",
+    "expected": "malware_apk",
+    "text": "Cleaner say must install their booking app from link not from Play Store, after install it ask accessibility permission",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 29,
+    "lang": "en",
+    "expected": "bec_supplier",
+    "text": "Dear valued customer, please note our company has changed bank due to an audit. Kindly remit payment for invoice INV-2231 to our new account at another bank effective immediately. Do not use the old account.",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 30,
+    "lang": "ms",
+    "expected": "bec_supplier",
+    "text": "Kepada pelanggan, akaun bank syarikat kami telah ditukar. Sila buat bayaran invois bulan ini ke akaun baharu di bawah. Akaun lama tidak lagi aktif.",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 31,
+    "lang": "mixed",
+    "expected": "bec_supplier",
+    "text": "Supplier email say they change to new bank account, but the email domain slightly different and they rush us to pay today",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 32,
+    "lang": "en",
+    "expected": "account_takeover",
+    "text": "I received an SMS with a code I didn't request, then someone called pretending to be my bank and asked me to read the code to them to 'cancel' a transaction.",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 33,
+    "lang": "ms",
+    "expected": "account_takeover",
+    "text": "Pemanggil mengaku dari bank dan minta saya beri kod TAC yang baru masuk supaya transaksi tidak sah dibatalkan.",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 34,
+    "lang": "en",
+    "expected": "not_a_scam",
+    "text": "Hi Mum, I'll be home late tonight, still at the office. Can you keep some dinner for me?",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 35,
+    "lang": "ms",
+    "expected": "not_a_scam",
+    "text": "Mesyuarat persatuan penduduk akan diadakan pada Sabtu ini jam 9 pagi di dewan serbaguna. Sila hadir.",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 36,
+    "lang": "en",
+    "expected": "not_a_scam",
+    "text": "Your Grab ride is arriving in 3 minutes. Driver: white Perodua Bezza.",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 37,
+    "lang": "mixed",
+    "expected": "not_a_scam",
+    "text": "Bro tomorrow futsal 8pm at the usual place ok, bring extra jersey",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 38,
+    "lang": "zh",
+    "expected": "not_a_scam",
+    "text": "明天中午一起吃饭吗？我们在老地方见。",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 39,
+    "lang": "en",
+    "expected": "not_a_scam",
+    "text": "Reminder: your dental appointment at Klinik Pergigian Seri is on Monday 10am. Reply YES to confirm.",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 40,
+    "lang": "ms",
+    "expected": "not_a_scam",
+    "text": "Terima kasih kerana membeli-belah. Pesanan anda telah dihantar dan akan tiba dalam 2-3 hari bekerja.",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 41,
+    "lang": "en",
+    "expected": "not_a_scam",
+    "text": "Your monthly electricity bill of RM87.40 is ready. Pay via the myTNB app or any bank before the due date.",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   }
+  ]
+ },
+ {
+  "name": "Nemotron 3.5 Lightning",
+  "model": "nvidia/Nemotron-3_5-Lightning",
+  "reasoning": false,
+  "options": {},
+  "accuracy": 0.926829268292683,
+  "scam_vs_normal": 0.975609756097561,
+  "false_alarms": 0,
+  "missed_scams": 1,
+  "errors": 0,
+  "p50_ms": 5804.813665803522,
+  "p95_ms": 13846.94941714406,
+  "by_lang": {
+   "ms": 0.9333333333333333,
+   "en": 0.9333333333333333,
+   "mixed": 0.875,
+   "zh": 1.0
+  },
+  "rows": [
+   {
+    "id": 1,
+    "lang": "ms",
+    "expected": "macau_impersonation",
+    "text": "Selamat petang puan, saya Inspektor Rahman dari IPD Dang Wangi. Nombor IC puan digunakan untuk buka akaun pengubahan wang haram. Saya akan sambungkan puan kepada pegawai BNM untuk siasatan. Jangan beritahu sesiapa.",
+    "got": "macau_impersonation",
+    "ok": true,
+    "ms": 9238.345167133957
+   },
+   {
+    "id": 2,
+    "lang": "en",
+    "expected": "macau_impersonation",
+    "text": "This is Pos Malaysia. A parcel under your name containing 5 fake passports was seized by customs. Press 1 to speak to the police officer handling your case.",
+    "got": "parcel",
+    "ok": true,
+    "ms": 7890.406624879688
+   },
+   {
+    "id": 3,
+    "lang": "mixed",
+    "expected": "macau_impersonation",
+    "text": "Bro my mother got call from 'Bank Negara officer' say her account involved in money laundering, need transfer all savings to safe account for audit, they on video call now got show warrant",
+    "got": "macau_impersonation",
+    "ok": true,
+    "ms": 59677.7999997139
+   },
+   {
+    "id": 4,
+    "lang": "zh",
+    "expected": "macau_impersonation",
+    "text": "您好，我是警察局的陈警官。您的身份证号码涉及一宗洗钱案件，请您配合调查，把存款转到国家银行的安全账户，不要告诉家人。",
+    "got": "macau_impersonation",
+    "ok": true,
+    "ms": 9988.39187528938
+   },
+   {
+    "id": 5,
+    "lang": "ms",
+    "expected": "macau_impersonation",
+    "text": "Ini mahkamah. Anda ada saman tertunggak dan waran tangkap akan dikeluarkan hari ini. Sila tekan 9 untuk bercakap dengan pegawai.",
+    "got": "macau_impersonation",
+    "ok": true,
+    "ms": 5479.944166727364
+   },
+   {
+    "id": 6,
+    "lang": "en",
+    "expected": "investment",
+    "text": "Join our VIP Telegram group! Our AI trading robot guarantees 30% monthly returns. Minimum deposit RM500, withdraw anytime. Limited slots, register with mentor Jessica now.",
+    "got": "investment",
+    "ok": true,
+    "ms": 4166.351541876793
+   },
+   {
+    "id": 7,
+    "lang": "ms",
+    "expected": "investment",
+    "text": "Pelaburan emas patuh syariah, pulangan 5% seminggu dijamin. Ramai dah untung. Pindah ke akaun syarikat dan admin akan masukkan dalam app.",
+    "got": "investment",
+    "ok": true,
+    "ms": 3848.1751661747694
+   },
+   {
+    "id": 8,
+    "lang": "mixed",
+    "expected": "investment",
+    "text": "The app shows my profit already RM48k but when I want withdraw they say must pay 20% tax first then can release. Mentor say very normal one",
+    "got": "investment",
+    "ok": true,
+    "ms": 10731.577625032514
+   },
+   {
+    "id": 9,
+    "lang": "zh",
+    "expected": "investment",
+    "text": "老师带单炒股，保证每月收益百分之二十，先充值五千元到APP，名额有限。",
+    "got": "investment",
+    "ok": true,
+    "ms": 5664.820582605898
+   },
+   {
+    "id": 10,
+    "lang": "en",
+    "expected": "parcel",
+    "text": "PosLaju: Your parcel is on hold due to an incomplete address. Pay RM1.50 redelivery fee within 24h: pos-redelivery-my.top/pay",
+    "got": "parcel",
+    "ok": true,
+    "ms": 12288.089292123914
+   },
+   {
+    "id": 11,
+    "lang": "ms",
+    "expected": "parcel",
+    "text": "J&T: Bungkusan anda tidak dapat dihantar. Kemas kini alamat dan bayar caj RM2.90 di pautan ini sebelum dipulangkan.",
+    "got": "parcel",
+    "ok": true,
+    "ms": 5006.22275006026
+   },
+   {
+    "id": 12,
+    "lang": "mixed",
+    "expected": "parcel",
+    "text": "Got SMS say my Shopee parcel stuck at customs need pay small fee 3 ringgit using card, the link ask card number and OTP",
+    "got": "parcel",
+    "ok": true,
+    "ms": 4527.691208291799
+   },
+   {
+    "id": 13,
+    "lang": "ms",
+    "expected": "job_task",
+    "text": "Kerja sambilan dari rumah! Like video TikTok dan dapat RM10 setiap tugasan. Gaji RM300 sehari. WhatsApp HR untuk mula.",
+    "got": "job_task",
+    "ok": true,
+    "ms": 8407.594541087747
+   },
+   {
+    "id": 14,
+    "lang": "en",
+    "expected": "job_task",
+    "text": "Hi, I'm Sarah from the recruitment team. Rate hotels online and earn RM50-RM500 daily. For the premium tasks you need to top up first, then you'll get commission back.",
+    "got": "investment",
+    "ok": false,
+    "ms": 5279.566917102784
+   },
+   {
+    "id": 15,
+    "lang": "mixed",
+    "expected": "job_task",
+    "text": "Already done 30 tasks, they say my account frozen because negative balance, must top up RM2,000 more to unlock and withdraw all my salary",
+    "got": "investment",
+    "ok": false,
+    "ms": 3323.0398329906166
+   },
+   {
+    "id": 16,
+    "lang": "en",
+    "expected": "love_romance",
+    "text": "My darling, I'm a US army doctor in Syria. I sent you a box with my savings but customs in KL need a clearance fee of RM8,000 before release. Please help me, I will pay you back when I come to Malaysia.",
+    "got": "love_romance",
+    "ok": true,
+    "ms": 13279.428250156343
+   },
+   {
+    "id": 17,
+    "lang": "ms",
+    "expected": "love_romance",
+    "text": "Sayang, saya terkandas di lapangan terbang, beg dan dompet hilang. Boleh transfer RM3,000 dulu untuk tiket? Nanti saya bayar balik bila jumpa.",
+    "got": "love_romance",
+    "ok": true,
+    "ms": 4101.572582963854
+   },
+   {
+    "id": 18,
+    "lang": "mixed",
+    "expected": "ecommerce",
+    "text": "I paid deposit RM450 for iPhone on Facebook Marketplace, seller ask pay full first then post, now block me already",
+    "got": "ecommerce",
+    "ok": true,
+    "ms": 5908.342208247632
+   },
+   {
+    "id": 19,
+    "lang": "ms",
+    "expected": "ecommerce",
+    "text": "Jual tiket konsert murah RM150 sahaja, bayar dulu ke akaun peribadi, e-tiket hantar lepas bayaran. Tak boleh COD.",
+    "got": "ecommerce",
+    "ok": true,
+    "ms": 6526.213041972369
+   },
+   {
+    "id": 20,
+    "lang": "ms",
+    "expected": "loan",
+    "text": "Pinjaman peribadi lulus segera tanpa semakan CTOS, RM20,000. Bayar yuran pemprosesan RM800 dahulu untuk pengeluaran.",
+    "got": "loan",
+    "ok": true,
+    "ms": 2984.3478333204985
+   },
+   {
+    "id": 21,
+    "lang": "en",
+    "expected": "loan",
+    "text": "Your loan of RM15,000 is approved. To disburse, please transfer the insurance and stamping fee of RM1,200 to our officer's account.",
+    "got": "loan",
+    "ok": true,
+    "ms": 5804.813665803522
+   },
+   {
+    "id": 22,
+    "lang": "ms",
+    "expected": "phishing_link",
+    "text": "Tahniah! Anda layak bayaran balik cukai RM1,280 daripada LHDN. Klik pautan untuk tuntut sebelum tamat tempoh: lhdn-refund-my.com/claim",
+    "got": "phishing_link",
+    "ok": true,
+    "ms": 6816.875583026558
+   },
+   {
+    "id": 23,
+    "lang": "en",
+    "expected": "phishing_link",
+    "text": "Maybank2u: Your account has been temporarily suspended due to unusual activity. Verify your identity at m2u-secure-verify.com to restore access.",
+    "got": "phishing_link",
+    "ok": true,
+    "ms": 4810.643959324807
+   },
+   {
+    "id": 24,
+    "lang": "ms",
+    "expected": "phishing_link",
+    "text": "KWSP: Pengeluaran khas RM3,000 diluluskan. Sahkan akaun bank anda melalui pautan dan masukkan TAC untuk terima bayaran.",
+    "got": "phishing_link",
+    "ok": true,
+    "ms": 4636.587541084737
+   },
+   {
+    "id": 25,
+    "lang": "en",
+    "expected": "phishing_link",
+    "text": "Touch 'n Go eWallet: your account will be deactivated today. Log in here to keep your balance: tng-ewallet-update.net",
+    "got": "phishing_link",
+    "ok": true,
+    "ms": 7284.997165668756
+   },
+   {
+    "id": 26,
+    "lang": "en",
+    "expected": "malware_apk",
+    "text": "Your appointment with the health clinic is confirmed. Download our app to fill the form: klinik-temujanji.apk",
+    "got": "malware_apk",
+    "ok": true,
+    "ms": 8291.727332863957
+   },
+   {
+    "id": 27,
+    "lang": "ms",
+    "expected": "malware_apk",
+    "text": "Jemputan majlis perkahwinan kami. Sila muat turun kad jemputan digital: kad_kahwin.apk",
+    "got": "not_a_scam",
+    "ok": false,
+    "ms": 8627.700624987483
+   },
+   {
+    "id": 28,
+    "lang": "mixed",
+    "expected": "malware_apk",
+    "text": "Cleaner say must install their booking app from link not from Play Store, after install it ask accessibility permission",
+    "got": "malware_apk",
+    "ok": true,
+    "ms": 12379.50083333999
+   },
+   {
+    "id": 29,
+    "lang": "en",
+    "expected": "bec_supplier",
+    "text": "Dear valued customer, please note our company has changed bank due to an audit. Kindly remit payment for invoice INV-2231 to our new account at another bank effective immediately. Do not use the old account.",
+    "got": "bec_supplier",
+    "ok": true,
+    "ms": 13132.816834375262
+   },
+   {
+    "id": 30,
+    "lang": "ms",
+    "expected": "bec_supplier",
+    "text": "Kepada pelanggan, akaun bank syarikat kami telah ditukar. Sila buat bayaran invois bulan ini ke akaun baharu di bawah. Akaun lama tidak lagi aktif.",
+    "got": "bec_supplier",
+    "ok": true,
+    "ms": 13846.94941714406
+   },
+   {
+    "id": 31,
+    "lang": "mixed",
+    "expected": "bec_supplier",
+    "text": "Supplier email say they change to new bank account, but the email domain slightly different and they rush us to pay today",
+    "got": "bec_supplier",
+    "ok": true,
+    "ms": 2877.237290609628
+   },
+   {
+    "id": 32,
+    "lang": "en",
+    "expected": "account_takeover",
+    "text": "I received an SMS with a code I didn't request, then someone called pretending to be my bank and asked me to read the code to them to 'cancel' a transaction.",
+    "got": "account_takeover",
+    "ok": true,
+    "ms": 55544.645375106484
+   },
+   {
+    "id": 33,
+    "lang": "ms",
+    "expected": "account_takeover",
+    "text": "Pemanggil mengaku dari bank dan minta saya beri kod TAC yang baru masuk supaya transaksi tidak sah dibatalkan.",
+    "got": "account_takeover",
+    "ok": true,
+    "ms": 5367.848416324705
+   },
+   {
+    "id": 34,
+    "lang": "en",
+    "expected": "not_a_scam",
+    "text": "Hi Mum, I'll be home late tonight, still at the office. Can you keep some dinner for me?",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 3376.8880418501794
+   },
+   {
+    "id": 35,
+    "lang": "ms",
+    "expected": "not_a_scam",
+    "text": "Mesyuarat persatuan penduduk akan diadakan pada Sabtu ini jam 9 pagi di dewan serbaguna. Sila hadir.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 1986.384749878198
+   },
+   {
+    "id": 36,
+    "lang": "en",
+    "expected": "not_a_scam",
+    "text": "Your Grab ride is arriving in 3 minutes. Driver: white Perodua Bezza.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 4180.270042270422
+   },
+   {
+    "id": 37,
+    "lang": "mixed",
+    "expected": "not_a_scam",
+    "text": "Bro tomorrow futsal 8pm at the usual place ok, bring extra jersey",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 25129.04766621068
+   },
+   {
+    "id": 38,
+    "lang": "zh",
+    "expected": "not_a_scam",
+    "text": "明天中午一起吃饭吗？我们在老地方见。",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 4350.843375083059
+   },
+   {
+    "id": 39,
+    "lang": "en",
+    "expected": "not_a_scam",
+    "text": "Reminder: your dental appointment at Klinik Pergigian Seri is on Monday 10am. Reply YES to confirm.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 3162.967790849507
+   },
+   {
+    "id": 40,
+    "lang": "ms",
+    "expected": "not_a_scam",
+    "text": "Terima kasih kerana membeli-belah. Pesanan anda telah dihantar dan akan tiba dalam 2-3 hari bekerja.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 2485.0240419618785
+   },
+   {
+    "id": 41,
+    "lang": "en",
+    "expected": "not_a_scam",
+    "text": "Your monthly electricity bill of RM87.40 is ready. Pay via the myTNB app or any bank before the due date.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 7778.901416808367
+   }
+  ]
+ },
+ {
+  "name": "Nemotron 3 Nano 30B",
+  "model": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+  "reasoning": false,
+  "options": {},
+  "accuracy": 0.926829268292683,
+  "scam_vs_normal": 0.975609756097561,
+  "false_alarms": 0,
+  "missed_scams": 0,
+  "errors": 1,
+  "p50_ms": 1224.0832711104304,
+  "p95_ms": 1724.452874623239,
+  "by_lang": {
+   "ms": 0.9333333333333333,
+   "en": 1.0,
+   "mixed": 0.75,
+   "zh": 1.0
+  },
+  "rows": [
+   {
+    "id": 1,
+    "lang": "ms",
+    "expected": "macau_impersonation",
+    "text": "Selamat petang puan, saya Inspektor Rahman dari IPD Dang Wangi. Nombor IC puan digunakan untuk buka akaun pengubahan wang haram. Saya akan sambungkan puan kepada pegawai BNM untuk siasatan. Jangan beritahu sesiapa.",
+    "got": "macau_impersonation",
+    "ok": true,
+    "ms": 1408.9130833745003
+   },
+   {
+    "id": 2,
+    "lang": "en",
+    "expected": "macau_impersonation",
+    "text": "This is Pos Malaysia. A parcel under your name containing 5 fake passports was seized by customs. Press 1 to speak to the police officer handling your case.",
+    "got": "parcel",
+    "ok": true,
+    "ms": 1576.037334278226
+   },
+   {
+    "id": 3,
+    "lang": "mixed",
+    "expected": "macau_impersonation",
+    "text": "Bro my mother got call from 'Bank Negara officer' say her account involved in money laundering, need transfer all savings to safe account for audit, they on video call now got show warrant",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 4,
+    "lang": "zh",
+    "expected": "macau_impersonation",
+    "text": "您好，我是警察局的陈警官。您的身份证号码涉及一宗洗钱案件，请您配合调查，把存款转到国家银行的安全账户，不要告诉家人。",
+    "got": "macau_impersonation",
+    "ok": true,
+    "ms": 1665.6964579597116
+   },
+   {
+    "id": 5,
+    "lang": "ms",
+    "expected": "macau_impersonation",
+    "text": "Ini mahkamah. Anda ada saman tertunggak dan waran tangkap akan dikeluarkan hari ini. Sila tekan 9 untuk bercakap dengan pegawai.",
+    "got": "macau_impersonation",
+    "ok": true,
+    "ms": 1162.6863330602646
+   },
+   {
+    "id": 6,
+    "lang": "en",
+    "expected": "investment",
+    "text": "Join our VIP Telegram group! Our AI trading robot guarantees 30% monthly returns. Minimum deposit RM500, withdraw anytime. Limited slots, register with mentor Jessica now.",
+    "got": "investment",
+    "ok": true,
+    "ms": 1630.7340003550053
+   },
+   {
+    "id": 7,
+    "lang": "ms",
+    "expected": "investment",
+    "text": "Pelaburan emas patuh syariah, pulangan 5% seminggu dijamin. Ramai dah untung. Pindah ke akaun syarikat dan admin akan masukkan dalam app.",
+    "got": "investment",
+    "ok": true,
+    "ms": 1272.7945828810334
+   },
+   {
+    "id": 8,
+    "lang": "mixed",
+    "expected": "investment",
+    "text": "The app shows my profit already RM48k but when I want withdraw they say must pay 20% tax first then can release. Mentor say very normal one",
+    "got": "investment",
+    "ok": true,
+    "ms": 1334.2945408076048
+   },
+   {
+    "id": 9,
+    "lang": "zh",
+    "expected": "investment",
+    "text": "老师带单炒股，保证每月收益百分之二十，先充值五千元到APP，名额有限。",
+    "got": "investment",
+    "ok": true,
+    "ms": 1106.4891670830548
+   },
+   {
+    "id": 10,
+    "lang": "en",
+    "expected": "parcel",
+    "text": "PosLaju: Your parcel is on hold due to an incomplete address. Pay RM1.50 redelivery fee within 24h: pos-redelivery-my.top/pay",
+    "got": "parcel",
+    "ok": true,
+    "ms": 1222.9018341749907
+   },
+   {
+    "id": 11,
+    "lang": "ms",
+    "expected": "parcel",
+    "text": "J&T: Bungkusan anda tidak dapat dihantar. Kemas kini alamat dan bayar caj RM2.90 di pautan ini sebelum dipulangkan.",
+    "got": "parcel",
+    "ok": true,
+    "ms": 1981.3884580507874
+   },
+   {
+    "id": 12,
+    "lang": "mixed",
+    "expected": "parcel",
+    "text": "Got SMS say my Shopee parcel stuck at customs need pay small fee 3 ringgit using card, the link ask card number and OTP",
+    "got": "parcel",
+    "ok": true,
+    "ms": 1268.6060830019414
+   },
+   {
+    "id": 13,
+    "lang": "ms",
+    "expected": "job_task",
+    "text": "Kerja sambilan dari rumah! Like video TikTok dan dapat RM10 setiap tugasan. Gaji RM300 sehari. WhatsApp HR untuk mula.",
+    "got": "job_task",
+    "ok": true,
+    "ms": 1251.9777910783887
+   },
+   {
+    "id": 14,
+    "lang": "en",
+    "expected": "job_task",
+    "text": "Hi, I'm Sarah from the recruitment team. Rate hotels online and earn RM50-RM500 daily. For the premium tasks you need to top up first, then you'll get commission back.",
+    "got": "job_task",
+    "ok": true,
+    "ms": 864.9466247297823
+   },
+   {
+    "id": 15,
+    "lang": "mixed",
+    "expected": "job_task",
+    "text": "Already done 30 tasks, they say my account frozen because negative balance, must top up RM2,000 more to unlock and withdraw all my salary",
+    "got": "investment",
+    "ok": false,
+    "ms": 1187.7055410295725
+   },
+   {
+    "id": 16,
+    "lang": "en",
+    "expected": "love_romance",
+    "text": "My darling, I'm a US army doctor in Syria. I sent you a box with my savings but customs in KL need a clearance fee of RM8,000 before release. Please help me, I will pay you back when I come to Malaysia.",
+    "got": "love_romance",
+    "ok": true,
+    "ms": 1724.452874623239
+   },
+   {
+    "id": 17,
+    "lang": "ms",
+    "expected": "love_romance",
+    "text": "Sayang, saya terkandas di lapangan terbang, beg dan dompet hilang. Boleh transfer RM3,000 dulu untuk tiket? Nanti saya bayar balik bila jumpa.",
+    "got": "love_romance",
+    "ok": true,
+    "ms": 1390.4317077249289
+   },
+   {
+    "id": 18,
+    "lang": "mixed",
+    "expected": "ecommerce",
+    "text": "I paid deposit RM450 for iPhone on Facebook Marketplace, seller ask pay full first then post, now block me already",
+    "got": "ecommerce",
+    "ok": true,
+    "ms": 1398.2038339599967
+   },
+   {
+    "id": 19,
+    "lang": "ms",
+    "expected": "ecommerce",
+    "text": "Jual tiket konsert murah RM150 sahaja, bayar dulu ke akaun peribadi, e-tiket hantar lepas bayaran. Tak boleh COD.",
+    "got": "ecommerce",
+    "ok": true,
+    "ms": 1312.683209311217
+   },
+   {
+    "id": 20,
+    "lang": "ms",
+    "expected": "loan",
+    "text": "Pinjaman peribadi lulus segera tanpa semakan CTOS, RM20,000. Bayar yuran pemprosesan RM800 dahulu untuk pengeluaran.",
+    "got": "loan",
+    "ok": true,
+    "ms": 1199.4312079623342
+   },
+   {
+    "id": 21,
+    "lang": "en",
+    "expected": "loan",
+    "text": "Your loan of RM15,000 is approved. To disburse, please transfer the insurance and stamping fee of RM1,200 to our officer's account.",
+    "got": "loan",
+    "ok": true,
+    "ms": 1388.3812502026558
+   },
+   {
+    "id": 22,
+    "lang": "ms",
+    "expected": "phishing_link",
+    "text": "Tahniah! Anda layak bayaran balik cukai RM1,280 daripada LHDN. Klik pautan untuk tuntut sebelum tamat tempoh: lhdn-refund-my.com/claim",
+    "got": "phishing_link",
+    "ok": true,
+    "ms": 1712.5457082875073
+   },
+   {
+    "id": 23,
+    "lang": "en",
+    "expected": "phishing_link",
+    "text": "Maybank2u: Your account has been temporarily suspended due to unusual activity. Verify your identity at m2u-secure-verify.com to restore access.",
+    "got": "phishing_link",
+    "ok": true,
+    "ms": 1031.0899592004716
+   },
+   {
+    "id": 24,
+    "lang": "ms",
+    "expected": "phishing_link",
+    "text": "KWSP: Pengeluaran khas RM3,000 diluluskan. Sahkan akaun bank anda melalui pautan dan masukkan TAC untuk terima bayaran.",
+    "got": "phishing_link",
+    "ok": true,
+    "ms": 1493.573124986142
+   },
+   {
+    "id": 25,
+    "lang": "en",
+    "expected": "phishing_link",
+    "text": "Touch 'n Go eWallet: your account will be deactivated today. Log in here to keep your balance: tng-ewallet-update.net",
+    "got": "phishing_link",
+    "ok": true,
+    "ms": 1349.0316248498857
+   },
+   {
+    "id": 26,
+    "lang": "en",
+    "expected": "malware_apk",
+    "text": "Your appointment with the health clinic is confirmed. Download our app to fill the form: klinik-temujanji.apk",
+    "got": "malware_apk",
+    "ok": true,
+    "ms": 918.1958329863846
+   },
+   {
+    "id": 27,
+    "lang": "ms",
+    "expected": "malware_apk",
+    "text": "Jemputan majlis perkahwinan kami. Sila muat turun kad jemputan digital: kad_kahwin.apk",
+    "got": "other",
+    "ok": false,
+    "ms": 1235.9526669606566
+   },
+   {
+    "id": 28,
+    "lang": "mixed",
+    "expected": "malware_apk",
+    "text": "Cleaner say must install their booking app from link not from Play Store, after install it ask accessibility permission",
+    "got": "malware_apk",
+    "ok": true,
+    "ms": 1127.9045417904854
+   },
+   {
+    "id": 29,
+    "lang": "en",
+    "expected": "bec_supplier",
+    "text": "Dear valued customer, please note our company has changed bank due to an audit. Kindly remit payment for invoice INV-2231 to our new account at another bank effective immediately. Do not use the old account.",
+    "got": "bec_supplier",
+    "ok": true,
+    "ms": 984.8110000602901
+   },
+   {
+    "id": 30,
+    "lang": "ms",
+    "expected": "bec_supplier",
+    "text": "Kepada pelanggan, akaun bank syarikat kami telah ditukar. Sila buat bayaran invois bulan ini ke akaun baharu di bawah. Akaun lama tidak lagi aktif.",
+    "got": "bec_supplier",
+    "ok": true,
+    "ms": 1092.1602500602603
+   },
+   {
+    "id": 31,
+    "lang": "mixed",
+    "expected": "bec_supplier",
+    "text": "Supplier email say they change to new bank account, but the email domain slightly different and they rush us to pay today",
+    "got": "bec_supplier",
+    "ok": true,
+    "ms": 1054.4127090834081
+   },
+   {
+    "id": 32,
+    "lang": "en",
+    "expected": "account_takeover",
+    "text": "I received an SMS with a code I didn't request, then someone called pretending to be my bank and asked me to read the code to them to 'cancel' a transaction.",
+    "got": "account_takeover",
+    "ok": true,
+    "ms": 1080.430207774043
+   },
+   {
+    "id": 33,
+    "lang": "ms",
+    "expected": "account_takeover",
+    "text": "Pemanggil mengaku dari bank dan minta saya beri kod TAC yang baru masuk supaya transaksi tidak sah dibatalkan.",
+    "got": "phishing_link",
+    "ok": true,
+    "ms": 1225.26470804587
+   },
+   {
+    "id": 34,
+    "lang": "en",
+    "expected": "not_a_scam",
+    "text": "Hi Mum, I'll be home late tonight, still at the office. Can you keep some dinner for me?",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 1159.878209233284
+   },
+   {
+    "id": 35,
+    "lang": "ms",
+    "expected": "not_a_scam",
+    "text": "Mesyuarat persatuan penduduk akan diadakan pada Sabtu ini jam 9 pagi di dewan serbaguna. Sila hadir.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 1759.7281667403877
+   },
+   {
+    "id": 36,
+    "lang": "en",
+    "expected": "not_a_scam",
+    "text": "Your Grab ride is arriving in 3 minutes. Driver: white Perodua Bezza.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 1059.1772077605128
+   },
+   {
+    "id": 37,
+    "lang": "mixed",
+    "expected": "not_a_scam",
+    "text": "Bro tomorrow futsal 8pm at the usual place ok, bring extra jersey",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 1061.034542042762
+   },
+   {
+    "id": 38,
+    "lang": "zh",
+    "expected": "not_a_scam",
+    "text": "明天中午一起吃饭吗？我们在老地方见。",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 855.7181246578693
+   },
+   {
+    "id": 39,
+    "lang": "en",
+    "expected": "not_a_scam",
+    "text": "Reminder: your dental appointment at Klinik Pergigian Seri is on Monday 10am. Reply YES to confirm.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 894.3041251040995
+   },
+   {
+    "id": 40,
+    "lang": "ms",
+    "expected": "not_a_scam",
+    "text": "Terima kasih kerana membeli-belah. Pesanan anda telah dihantar dan akan tiba dalam 2-3 hari bekerja.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 1051.4767500571907
+   },
+   {
+    "id": 41,
+    "lang": "en",
+    "expected": "not_a_scam",
+    "text": "Your monthly electricity bill of RM87.40 is ready. Pay via the myTNB app or any bank before the due date.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 934.9349583499134
+   }
+  ]
+ },
+ {
+  "name": "Nemotron 3 Super 120B",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "reasoning": false,
+  "options": {},
+  "accuracy": 1.0,
+  "scam_vs_normal": 1.0,
+  "false_alarms": 0,
+  "missed_scams": 0,
+  "errors": 0,
+  "p50_ms": 2328.479040879756,
+  "p95_ms": 5026.142916176468,
+  "by_lang": {
+   "ms": 1.0,
+   "en": 1.0,
+   "mixed": 1.0,
+   "zh": 1.0
+  },
+  "rows": [
+   {
+    "id": 1,
+    "lang": "ms",
+    "expected": "macau_impersonation",
+    "text": "Selamat petang puan, saya Inspektor Rahman dari IPD Dang Wangi. Nombor IC puan digunakan untuk buka akaun pengubahan wang haram. Saya akan sambungkan puan kepada pegawai BNM untuk siasatan. Jangan beritahu sesiapa.",
+    "got": "macau_impersonation",
+    "ok": true,
+    "ms": 3158.6604579351842
+   },
+   {
+    "id": 2,
+    "lang": "en",
+    "expected": "macau_impersonation",
+    "text": "This is Pos Malaysia. A parcel under your name containing 5 fake passports was seized by customs. Press 1 to speak to the police officer handling your case.",
+    "got": "macau_impersonation",
+    "ok": true,
+    "ms": 2897.9795407503843
+   },
+   {
+    "id": 3,
+    "lang": "mixed",
+    "expected": "macau_impersonation",
+    "text": "Bro my mother got call from 'Bank Negara officer' say her account involved in money laundering, need transfer all savings to safe account for audit, they on video call now got show warrant",
+    "got": "macau_impersonation",
+    "ok": true,
+    "ms": 3385.6724998913705
+   },
+   {
+    "id": 4,
+    "lang": "zh",
+    "expected": "macau_impersonation",
+    "text": "您好，我是警察局的陈警官。您的身份证号码涉及一宗洗钱案件，请您配合调查，把存款转到国家银行的安全账户，不要告诉家人。",
+    "got": "macau_impersonation",
+    "ok": true,
+    "ms": 2075.459583196789
+   },
+   {
+    "id": 5,
+    "lang": "ms",
+    "expected": "macau_impersonation",
+    "text": "Ini mahkamah. Anda ada saman tertunggak dan waran tangkap akan dikeluarkan hari ini. Sila tekan 9 untuk bercakap dengan pegawai.",
+    "got": "macau_impersonation",
+    "ok": true,
+    "ms": 2776.9340411759913
+   },
+   {
+    "id": 6,
+    "lang": "en",
+    "expected": "investment",
+    "text": "Join our VIP Telegram group! Our AI trading robot guarantees 30% monthly returns. Minimum deposit RM500, withdraw anytime. Limited slots, register with mentor Jessica now.",
+    "got": "investment",
+    "ok": true,
+    "ms": 1668.770208954811
+   },
+   {
+    "id": 7,
+    "lang": "ms",
+    "expected": "investment",
+    "text": "Pelaburan emas patuh syariah, pulangan 5% seminggu dijamin. Ramai dah untung. Pindah ke akaun syarikat dan admin akan masukkan dalam app.",
+    "got": "investment",
+    "ok": true,
+    "ms": 1371.2296248413622
+   },
+   {
+    "id": 8,
+    "lang": "mixed",
+    "expected": "investment",
+    "text": "The app shows my profit already RM48k but when I want withdraw they say must pay 20% tax first then can release. Mentor say very normal one",
+    "got": "investment",
+    "ok": true,
+    "ms": 1331.181166227907
+   },
+   {
+    "id": 9,
+    "lang": "zh",
+    "expected": "investment",
+    "text": "老师带单炒股，保证每月收益百分之二十，先充值五千元到APP，名额有限。",
+    "got": "investment",
+    "ok": true,
+    "ms": 2328.479040879756
+   },
+   {
+    "id": 10,
+    "lang": "en",
+    "expected": "parcel",
+    "text": "PosLaju: Your parcel is on hold due to an incomplete address. Pay RM1.50 redelivery fee within 24h: pos-redelivery-my.top/pay",
+    "got": "parcel",
+    "ok": true,
+    "ms": 1583.808375056833
+   },
+   {
+    "id": 11,
+    "lang": "ms",
+    "expected": "parcel",
+    "text": "J&T: Bungkusan anda tidak dapat dihantar. Kemas kini alamat dan bayar caj RM2.90 di pautan ini sebelum dipulangkan.",
+    "got": "parcel",
+    "ok": true,
+    "ms": 1688.3054999634624
+   },
+   {
+    "id": 12,
+    "lang": "mixed",
+    "expected": "parcel",
+    "text": "Got SMS say my Shopee parcel stuck at customs need pay small fee 3 ringgit using card, the link ask card number and OTP",
+    "got": "parcel",
+    "ok": true,
+    "ms": 4885.46312507242
+   },
+   {
+    "id": 13,
+    "lang": "ms",
+    "expected": "job_task",
+    "text": "Kerja sambilan dari rumah! Like video TikTok dan dapat RM10 setiap tugasan. Gaji RM300 sehari. WhatsApp HR untuk mula.",
+    "got": "job_task",
+    "ok": true,
+    "ms": 4249.786209315062
+   },
+   {
+    "id": 14,
+    "lang": "en",
+    "expected": "job_task",
+    "text": "Hi, I'm Sarah from the recruitment team. Rate hotels online and earn RM50-RM500 daily. For the premium tasks you need to top up first, then you'll get commission back.",
+    "got": "job_task",
+    "ok": true,
+    "ms": 1905.771083664149
+   },
+   {
+    "id": 15,
+    "lang": "mixed",
+    "expected": "job_task",
+    "text": "Already done 30 tasks, they say my account frozen because negative balance, must top up RM2,000 more to unlock and withdraw all my salary",
+    "got": "job_task",
+    "ok": true,
+    "ms": 2900.5722920410335
+   },
+   {
+    "id": 16,
+    "lang": "en",
+    "expected": "love_romance",
+    "text": "My darling, I'm a US army doctor in Syria. I sent you a box with my savings but customs in KL need a clearance fee of RM8,000 before release. Please help me, I will pay you back when I come to Malaysia.",
+    "got": "love_romance",
+    "ok": true,
+    "ms": 5026.142916176468
+   },
+   {
+    "id": 17,
+    "lang": "ms",
+    "expected": "love_romance",
+    "text": "Sayang, saya terkandas di lapangan terbang, beg dan dompet hilang. Boleh transfer RM3,000 dulu untuk tiket? Nanti saya bayar balik bila jumpa.",
+    "got": "love_romance",
+    "ok": true,
+    "ms": 1236.0499170608819
+   },
+   {
+    "id": 18,
+    "lang": "mixed",
+    "expected": "ecommerce",
+    "text": "I paid deposit RM450 for iPhone on Facebook Marketplace, seller ask pay full first then post, now block me already",
+    "got": "ecommerce",
+    "ok": true,
+    "ms": 1251.3941670767963
+   },
+   {
+    "id": 19,
+    "lang": "ms",
+    "expected": "ecommerce",
+    "text": "Jual tiket konsert murah RM150 sahaja, bayar dulu ke akaun peribadi, e-tiket hantar lepas bayaran. Tak boleh COD.",
+    "got": "ecommerce",
+    "ok": true,
+    "ms": 1294.329958036542
+   },
+   {
+    "id": 20,
+    "lang": "ms",
+    "expected": "loan",
+    "text": "Pinjaman peribadi lulus segera tanpa semakan CTOS, RM20,000. Bayar yuran pemprosesan RM800 dahulu untuk pengeluaran.",
+    "got": "loan",
+    "ok": true,
+    "ms": 1488.2247908972204
+   },
+   {
+    "id": 21,
+    "lang": "en",
+    "expected": "loan",
+    "text": "Your loan of RM15,000 is approved. To disburse, please transfer the insurance and stamping fee of RM1,200 to our officer's account.",
+    "got": "loan",
+    "ok": true,
+    "ms": 1431.4142079092562
+   },
+   {
+    "id": 22,
+    "lang": "ms",
+    "expected": "phishing_link",
+    "text": "Tahniah! Anda layak bayaran balik cukai RM1,280 daripada LHDN. Klik pautan untuk tuntut sebelum tamat tempoh: lhdn-refund-my.com/claim",
+    "got": "phishing_link",
+    "ok": true,
+    "ms": 3941.0213329829276
+   },
+   {
+    "id": 23,
+    "lang": "en",
+    "expected": "phishing_link",
+    "text": "Maybank2u: Your account has been temporarily suspended due to unusual activity. Verify your identity at m2u-secure-verify.com to restore access.",
+    "got": "phishing_link",
+    "ok": true,
+    "ms": 6036.027541849762
+   },
+   {
+    "id": 24,
+    "lang": "ms",
+    "expected": "phishing_link",
+    "text": "KWSP: Pengeluaran khas RM3,000 diluluskan. Sahkan akaun bank anda melalui pautan dan masukkan TAC untuk terima bayaran.",
+    "got": "phishing_link",
+    "ok": true,
+    "ms": 2065.168916247785
+   },
+   {
+    "id": 25,
+    "lang": "en",
+    "expected": "phishing_link",
+    "text": "Touch 'n Go eWallet: your account will be deactivated today. Log in here to keep your balance: tng-ewallet-update.net",
+    "got": "phishing_link",
+    "ok": true,
+    "ms": 3178.6596248857677
+   },
+   {
+    "id": 26,
+    "lang": "en",
+    "expected": "malware_apk",
+    "text": "Your appointment with the health clinic is confirmed. Download our app to fill the form: klinik-temujanji.apk",
+    "got": "malware_apk",
+    "ok": true,
+    "ms": 6880.448875017464
+   },
+   {
+    "id": 27,
+    "lang": "ms",
+    "expected": "malware_apk",
+    "text": "Jemputan majlis perkahwinan kami. Sila muat turun kad jemputan digital: kad_kahwin.apk",
+    "got": "malware_apk",
+    "ok": true,
+    "ms": 6044.9094995856285
+   },
+   {
+    "id": 28,
+    "lang": "mixed",
+    "expected": "malware_apk",
+    "text": "Cleaner say must install their booking app from link not from Play Store, after install it ask accessibility permission",
+    "got": "malware_apk",
+    "ok": true,
+    "ms": 1742.663917131722
+   },
+   {
+    "id": 29,
+    "lang": "en",
+    "expected": "bec_supplier",
+    "text": "Dear valued customer, please note our company has changed bank due to an audit. Kindly remit payment for invoice INV-2231 to our new account at another bank effective immediately. Do not use the old account.",
+    "got": "bec_supplier",
+    "ok": true,
+    "ms": 1457.7357922680676
+   },
+   {
+    "id": 30,
+    "lang": "ms",
+    "expected": "bec_supplier",
+    "text": "Kepada pelanggan, akaun bank syarikat kami telah ditukar. Sila buat bayaran invois bulan ini ke akaun baharu di bawah. Akaun lama tidak lagi aktif.",
+    "got": "bec_supplier",
+    "ok": true,
+    "ms": 1134.4863749109209
+   },
+   {
+    "id": 31,
+    "lang": "mixed",
+    "expected": "bec_supplier",
+    "text": "Supplier email say they change to new bank account, but the email domain slightly different and they rush us to pay today",
+    "got": "bec_supplier",
+    "ok": true,
+    "ms": 3361.8397917598486
+   },
+   {
+    "id": 32,
+    "lang": "en",
+    "expected": "account_takeover",
+    "text": "I received an SMS with a code I didn't request, then someone called pretending to be my bank and asked me to read the code to them to 'cancel' a transaction.",
+    "got": "account_takeover",
+    "ok": true,
+    "ms": 2125.813083257526
+   },
+   {
+    "id": 33,
+    "lang": "ms",
+    "expected": "account_takeover",
+    "text": "Pemanggil mengaku dari bank dan minta saya beri kod TAC yang baru masuk supaya transaksi tidak sah dibatalkan.",
+    "got": "account_takeover",
+    "ok": true,
+    "ms": 1351.3781251385808
+   },
+   {
+    "id": 34,
+    "lang": "en",
+    "expected": "not_a_scam",
+    "text": "Hi Mum, I'll be home late tonight, still at the office. Can you keep some dinner for me?",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 2411.091959103942
+   },
+   {
+    "id": 35,
+    "lang": "ms",
+    "expected": "not_a_scam",
+    "text": "Mesyuarat persatuan penduduk akan diadakan pada Sabtu ini jam 9 pagi di dewan serbaguna. Sila hadir.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 2253.216791898012
+   },
+   {
+    "id": 36,
+    "lang": "en",
+    "expected": "not_a_scam",
+    "text": "Your Grab ride is arriving in 3 minutes. Driver: white Perodua Bezza.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 2917.0379173010588
+   },
+   {
+    "id": 37,
+    "lang": "mixed",
+    "expected": "not_a_scam",
+    "text": "Bro tomorrow futsal 8pm at the usual place ok, bring extra jersey",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 3635.192332789302
+   },
+   {
+    "id": 38,
+    "lang": "zh",
+    "expected": "not_a_scam",
+    "text": "明天中午一起吃饭吗？我们在老地方见。",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 4062.301750294864
+   },
+   {
+    "id": 39,
+    "lang": "en",
+    "expected": "not_a_scam",
+    "text": "Reminder: your dental appointment at Klinik Pergigian Seri is on Monday 10am. Reply YES to confirm.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 3060.0375831127167
+   },
+   {
+    "id": 40,
+    "lang": "ms",
+    "expected": "not_a_scam",
+    "text": "Terima kasih kerana membeli-belah. Pesanan anda telah dihantar dan akan tiba dalam 2-3 hari bekerja.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 2075.5653749220073
+   },
+   {
+    "id": 41,
+    "lang": "en",
+    "expected": "not_a_scam",
+    "text": "Your monthly electricity bill of RM87.40 is ready. Pay via the myTNB app or any bank before the due date.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 4142.633624840528
+   }
+  ]
+ },
+ {
+  "name": "Nemotron 3 Super 120B + reasoning",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "reasoning": true,
+  "options": {},
+  "accuracy": 1.0,
+  "scam_vs_normal": 1.0,
+  "false_alarms": 0,
+  "missed_scams": 0,
+  "errors": 0,
+  "p50_ms": 5860.382542014122,
+  "p95_ms": 10945.006958208978,
+  "by_lang": {
+   "ms": 1.0,
+   "en": 1.0,
+   "mixed": 1.0,
+   "zh": 1.0
+  },
+  "rows": [
+   {
+    "id": 1,
+    "lang": "ms",
+    "expected": "macau_impersonation",
+    "text": "Selamat petang puan, saya Inspektor Rahman dari IPD Dang Wangi. Nombor IC puan digunakan untuk buka akaun pengubahan wang haram. Saya akan sambungkan puan kepada pegawai BNM untuk siasatan. Jangan beritahu sesiapa.",
+    "got": "macau_impersonation",
+    "ok": true,
+    "ms": 5066.068917047232
+   },
+   {
+    "id": 2,
+    "lang": "en",
+    "expected": "macau_impersonation",
+    "text": "This is Pos Malaysia. A parcel under your name containing 5 fake passports was seized by customs. Press 1 to speak to the police officer handling your case.",
+    "got": "parcel",
+    "ok": true,
+    "ms": 4970.783708617091
+   },
+   {
+    "id": 3,
+    "lang": "mixed",
+    "expected": "macau_impersonation",
+    "text": "Bro my mother got call from 'Bank Negara officer' say her account involved in money laundering, need transfer all savings to safe account for audit, they on video call now got show warrant",
+    "got": "macau_impersonation",
+    "ok": true,
+    "ms": 5802.655584178865
+   },
+   {
+    "id": 4,
+    "lang": "zh",
+    "expected": "macau_impersonation",
+    "text": "您好，我是警察局的陈警官。您的身份证号码涉及一宗洗钱案件，请您配合调查，把存款转到国家银行的安全账户，不要告诉家人。",
+    "got": "macau_impersonation",
+    "ok": true,
+    "ms": 9650.673874653876
+   },
+   {
+    "id": 5,
+    "lang": "ms",
+    "expected": "macau_impersonation",
+    "text": "Ini mahkamah. Anda ada saman tertunggak dan waran tangkap akan dikeluarkan hari ini. Sila tekan 9 untuk bercakap dengan pegawai.",
+    "got": "macau_impersonation",
+    "ok": true,
+    "ms": 6437.60958313942
+   },
+   {
+    "id": 6,
+    "lang": "en",
+    "expected": "investment",
+    "text": "Join our VIP Telegram group! Our AI trading robot guarantees 30% monthly returns. Minimum deposit RM500, withdraw anytime. Limited slots, register with mentor Jessica now.",
+    "got": "investment",
+    "ok": true,
+    "ms": 4294.221666641533
+   },
+   {
+    "id": 7,
+    "lang": "ms",
+    "expected": "investment",
+    "text": "Pelaburan emas patuh syariah, pulangan 5% seminggu dijamin. Ramai dah untung. Pindah ke akaun syarikat dan admin akan masukkan dalam app.",
+    "got": "investment",
+    "ok": true,
+    "ms": 5637.784666847438
+   },
+   {
+    "id": 8,
+    "lang": "mixed",
+    "expected": "investment",
+    "text": "The app shows my profit already RM48k but when I want withdraw they say must pay 20% tax first then can release. Mentor say very normal one",
+    "got": "investment",
+    "ok": true,
+    "ms": 4256.786792073399
+   },
+   {
+    "id": 9,
+    "lang": "zh",
+    "expected": "investment",
+    "text": "老师带单炒股，保证每月收益百分之二十，先充值五千元到APP，名额有限。",
+    "got": "investment",
+    "ok": true,
+    "ms": 9813.046167138964
+   },
+   {
+    "id": 10,
+    "lang": "en",
+    "expected": "parcel",
+    "text": "PosLaju: Your parcel is on hold due to an incomplete address. Pay RM1.50 redelivery fee within 24h: pos-redelivery-my.top/pay",
+    "got": "parcel",
+    "ok": true,
+    "ms": 4639.875833876431
+   },
+   {
+    "id": 11,
+    "lang": "ms",
+    "expected": "parcel",
+    "text": "J&T: Bungkusan anda tidak dapat dihantar. Kemas kini alamat dan bayar caj RM2.90 di pautan ini sebelum dipulangkan.",
+    "got": "parcel",
+    "ok": true,
+    "ms": 5522.154875099659
+   },
+   {
+    "id": 12,
+    "lang": "mixed",
+    "expected": "parcel",
+    "text": "Got SMS say my Shopee parcel stuck at customs need pay small fee 3 ringgit using card, the link ask card number and OTP",
+    "got": "parcel",
+    "ok": true,
+    "ms": 3990.432540886104
+   },
+   {
+    "id": 13,
+    "lang": "ms",
+    "expected": "job_task",
+    "text": "Kerja sambilan dari rumah! Like video TikTok dan dapat RM10 setiap tugasan. Gaji RM300 sehari. WhatsApp HR untuk mula.",
+    "got": "job_task",
+    "ok": true,
+    "ms": 5619.992124848068
+   },
+   {
+    "id": 14,
+    "lang": "en",
+    "expected": "job_task",
+    "text": "Hi, I'm Sarah from the recruitment team. Rate hotels online and earn RM50-RM500 daily. For the premium tasks you need to top up first, then you'll get commission back.",
+    "got": "job_task",
+    "ok": true,
+    "ms": 7686.401749961078
+   },
+   {
+    "id": 15,
+    "lang": "mixed",
+    "expected": "job_task",
+    "text": "Already done 30 tasks, they say my account frozen because negative balance, must top up RM2,000 more to unlock and withdraw all my salary",
+    "got": "job_task",
+    "ok": true,
+    "ms": 13668.39687526226
+   },
+   {
+    "id": 16,
+    "lang": "en",
+    "expected": "love_romance",
+    "text": "My darling, I'm a US army doctor in Syria. I sent you a box with my savings but customs in KL need a clearance fee of RM8,000 before release. Please help me, I will pay you back when I come to Malaysia.",
+    "got": "love_romance",
+    "ok": true,
+    "ms": 8390.751624945551
+   },
+   {
+    "id": 17,
+    "lang": "ms",
+    "expected": "love_romance",
+    "text": "Sayang, saya terkandas di lapangan terbang, beg dan dompet hilang. Boleh transfer RM3,000 dulu untuk tiket? Nanti saya bayar balik bila jumpa.",
+    "got": "love_romance",
+    "ok": true,
+    "ms": 13885.816917289048
+   },
+   {
+    "id": 18,
+    "lang": "mixed",
+    "expected": "ecommerce",
+    "text": "I paid deposit RM450 for iPhone on Facebook Marketplace, seller ask pay full first then post, now block me already",
+    "got": "ecommerce",
+    "ok": true,
+    "ms": 6701.400334015489
+   },
+   {
+    "id": 19,
+    "lang": "ms",
+    "expected": "ecommerce",
+    "text": "Jual tiket konsert murah RM150 sahaja, bayar dulu ke akaun peribadi, e-tiket hantar lepas bayaran. Tak boleh COD.",
+    "got": "ecommerce",
+    "ok": true,
+    "ms": 10606.327124871314
+   },
+   {
+    "id": 20,
+    "lang": "ms",
+    "expected": "loan",
+    "text": "Pinjaman peribadi lulus segera tanpa semakan CTOS, RM20,000. Bayar yuran pemprosesan RM800 dahulu untuk pengeluaran.",
+    "got": "loan",
+    "ok": true,
+    "ms": 9905.722208321095
+   },
+   {
+    "id": 21,
+    "lang": "en",
+    "expected": "loan",
+    "text": "Your loan of RM15,000 is approved. To disburse, please transfer the insurance and stamping fee of RM1,200 to our officer's account.",
+    "got": "loan",
+    "ok": true,
+    "ms": 6920.39545904845
+   },
+   {
+    "id": 22,
+    "lang": "ms",
+    "expected": "phishing_link",
+    "text": "Tahniah! Anda layak bayaran balik cukai RM1,280 daripada LHDN. Klik pautan untuk tuntut sebelum tamat tempoh: lhdn-refund-my.com/claim",
+    "got": "phishing_link",
+    "ok": true,
+    "ms": 6542.727041989565
+   },
+   {
+    "id": 23,
+    "lang": "en",
+    "expected": "phishing_link",
+    "text": "Maybank2u: Your account has been temporarily suspended due to unusual activity. Verify your identity at m2u-secure-verify.com to restore access.",
+    "got": "phishing_link",
+    "ok": true,
+    "ms": 6190.148750320077
+   },
+   {
+    "id": 24,
+    "lang": "ms",
+    "expected": "phishing_link",
+    "text": "KWSP: Pengeluaran khas RM3,000 diluluskan. Sahkan akaun bank anda melalui pautan dan masukkan TAC untuk terima bayaran.",
+    "got": "phishing_link",
+    "ok": true,
+    "ms": 6091.1884172819555
+   },
+   {
+    "id": 25,
+    "lang": "en",
+    "expected": "phishing_link",
+    "text": "Touch 'n Go eWallet: your account will be deactivated today. Log in here to keep your balance: tng-ewallet-update.net",
+    "got": "phishing_link",
+    "ok": true,
+    "ms": 5314.510708209127
+   },
+   {
+    "id": 26,
+    "lang": "en",
+    "expected": "malware_apk",
+    "text": "Your appointment with the health clinic is confirmed. Download our app to fill the form: klinik-temujanji.apk",
+    "got": "malware_apk",
+    "ok": true,
+    "ms": 4642.207249999046
+   },
+   {
+    "id": 27,
+    "lang": "ms",
+    "expected": "malware_apk",
+    "text": "Jemputan majlis perkahwinan kami. Sila muat turun kad jemputan digital: kad_kahwin.apk",
+    "got": "malware_apk",
+    "ok": true,
+    "ms": 5860.382542014122
+   },
+   {
+    "id": 28,
+    "lang": "mixed",
+    "expected": "malware_apk",
+    "text": "Cleaner say must install their booking app from link not from Play Store, after install it ask accessibility permission",
+    "got": "malware_apk",
+    "ok": true,
+    "ms": 7007.172875106335
+   },
+   {
+    "id": 29,
+    "lang": "en",
+    "expected": "bec_supplier",
+    "text": "Dear valued customer, please note our company has changed bank due to an audit. Kindly remit payment for invoice INV-2231 to our new account at another bank effective immediately. Do not use the old account.",
+    "got": "bec_supplier",
+    "ok": true,
+    "ms": 3891.385874710977
+   },
+   {
+    "id": 30,
+    "lang": "ms",
+    "expected": "bec_supplier",
+    "text": "Kepada pelanggan, akaun bank syarikat kami telah ditukar. Sila buat bayaran invois bulan ini ke akaun baharu di bawah. Akaun lama tidak lagi aktif.",
+    "got": "bec_supplier",
+    "ok": true,
+    "ms": 5540.654707700014
+   },
+   {
+    "id": 31,
+    "lang": "mixed",
+    "expected": "bec_supplier",
+    "text": "Supplier email say they change to new bank account, but the email domain slightly different and they rush us to pay today",
+    "got": "bec_supplier",
+    "ok": true,
+    "ms": 5628.213832620531
+   },
+   {
+    "id": 32,
+    "lang": "en",
+    "expected": "account_takeover",
+    "text": "I received an SMS with a code I didn't request, then someone called pretending to be my bank and asked me to read the code to them to 'cancel' a transaction.",
+    "got": "account_takeover",
+    "ok": true,
+    "ms": 10945.006958208978
+   },
+   {
+    "id": 33,
+    "lang": "ms",
+    "expected": "account_takeover",
+    "text": "Pemanggil mengaku dari bank dan minta saya beri kod TAC yang baru masuk supaya transaksi tidak sah dibatalkan.",
+    "got": "account_takeover",
+    "ok": true,
+    "ms": 5522.239875048399
+   },
+   {
+    "id": 34,
+    "lang": "en",
+    "expected": "not_a_scam",
+    "text": "Hi Mum, I'll be home late tonight, still at the office. Can you keep some dinner for me?",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 3543.8997079618275
+   },
+   {
+    "id": 35,
+    "lang": "ms",
+    "expected": "not_a_scam",
+    "text": "Mesyuarat persatuan penduduk akan diadakan pada Sabtu ini jam 9 pagi di dewan serbaguna. Sila hadir.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 6716.030375100672
+   },
+   {
+    "id": 36,
+    "lang": "en",
+    "expected": "not_a_scam",
+    "text": "Your Grab ride is arriving in 3 minutes. Driver: white Perodua Bezza.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 3664.194207638502
+   },
+   {
+    "id": 37,
+    "lang": "mixed",
+    "expected": "not_a_scam",
+    "text": "Bro tomorrow futsal 8pm at the usual place ok, bring extra jersey",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 11721.86258295551
+   },
+   {
+    "id": 38,
+    "lang": "zh",
+    "expected": "not_a_scam",
+    "text": "明天中午一起吃饭吗？我们在老地方见。",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 6333.144791424274
+   },
+   {
+    "id": 39,
+    "lang": "en",
+    "expected": "not_a_scam",
+    "text": "Reminder: your dental appointment at Klinik Pergigian Seri is on Monday 10am. Reply YES to confirm.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 4634.775625076145
+   },
+   {
+    "id": 40,
+    "lang": "ms",
+    "expected": "not_a_scam",
+    "text": "Terima kasih kerana membeli-belah. Pesanan anda telah dihantar dan akan tiba dalam 2-3 hari bekerja.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 4679.195208009332
+   },
+   {
+    "id": 41,
+    "lang": "en",
+    "expected": "not_a_scam",
+    "text": "Your monthly electricity bill of RM87.40 is ready. Pay via the myTNB app or any bank before the due date.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 9308.385250158608
+   }
+  ]
+ },
+ {
+  "name": "Nemotron 3 Ultra 550B",
+  "model": "nvidia/Nemotron-3-Ultra-550b-a55b",
+  "reasoning": false,
+  "options": {},
+  "accuracy": 1.0,
+  "scam_vs_normal": 1.0,
+  "false_alarms": 0,
+  "missed_scams": 0,
+  "errors": 0,
+  "p50_ms": 1131.5805837512016,
+  "p95_ms": 1673.8789593800902,
+  "by_lang": {
+   "ms": 1.0,
+   "en": 1.0,
+   "mixed": 1.0,
+   "zh": 1.0
+  },
+  "rows": [
+   {
+    "id": 1,
+    "lang": "ms",
+    "expected": "macau_impersonation",
+    "text": "Selamat petang puan, saya Inspektor Rahman dari IPD Dang Wangi. Nombor IC puan digunakan untuk buka akaun pengubahan wang haram. Saya akan sambungkan puan kepada pegawai BNM untuk siasatan. Jangan beritahu sesiapa.",
+    "got": "macau_impersonation",
+    "ok": true,
+    "ms": 1220.9185408428311
+   },
+   {
+    "id": 2,
+    "lang": "en",
+    "expected": "macau_impersonation",
+    "text": "This is Pos Malaysia. A parcel under your name containing 5 fake passports was seized by customs. Press 1 to speak to the police officer handling your case.",
+    "got": "macau_impersonation",
+    "ok": true,
+    "ms": 1275.9092496708035
+   },
+   {
+    "id": 3,
+    "lang": "mixed",
+    "expected": "macau_impersonation",
+    "text": "Bro my mother got call from 'Bank Negara officer' say her account involved in money laundering, need transfer all savings to safe account for audit, they on video call now got show warrant",
+    "got": "macau_impersonation",
+    "ok": true,
+    "ms": 1880.67620806396
+   },
+   {
+    "id": 4,
+    "lang": "zh",
+    "expected": "macau_impersonation",
+    "text": "您好，我是警察局的陈警官。您的身份证号码涉及一宗洗钱案件，请您配合调查，把存款转到国家银行的安全账户，不要告诉家人。",
+    "got": "macau_impersonation",
+    "ok": true,
+    "ms": 1518.7115832231939
+   },
+   {
+    "id": 5,
+    "lang": "ms",
+    "expected": "macau_impersonation",
+    "text": "Ini mahkamah. Anda ada saman tertunggak dan waran tangkap akan dikeluarkan hari ini. Sila tekan 9 untuk bercakap dengan pegawai.",
+    "got": "macau_impersonation",
+    "ok": true,
+    "ms": 848.1167498975992
+   },
+   {
+    "id": 6,
+    "lang": "en",
+    "expected": "investment",
+    "text": "Join our VIP Telegram group! Our AI trading robot guarantees 30% monthly returns. Minimum deposit RM500, withdraw anytime. Limited slots, register with mentor Jessica now.",
+    "got": "investment",
+    "ok": true,
+    "ms": 863.6838747188449
+   },
+   {
+    "id": 7,
+    "lang": "ms",
+    "expected": "investment",
+    "text": "Pelaburan emas patuh syariah, pulangan 5% seminggu dijamin. Ramai dah untung. Pindah ke akaun syarikat dan admin akan masukkan dalam app.",
+    "got": "investment",
+    "ok": true,
+    "ms": 1054.4277499429882
+   },
+   {
+    "id": 8,
+    "lang": "mixed",
+    "expected": "investment",
+    "text": "The app shows my profit already RM48k but when I want withdraw they say must pay 20% tax first then can release. Mentor say very normal one",
+    "got": "investment",
+    "ok": true,
+    "ms": 1190.5425423756242
+   },
+   {
+    "id": 9,
+    "lang": "zh",
+    "expected": "investment",
+    "text": "老师带单炒股，保证每月收益百分之二十，先充值五千元到APP，名额有限。",
+    "got": "investment",
+    "ok": true,
+    "ms": 1086.6340422071517
+   },
+   {
+    "id": 10,
+    "lang": "en",
+    "expected": "parcel",
+    "text": "PosLaju: Your parcel is on hold due to an incomplete address. Pay RM1.50 redelivery fee within 24h: pos-redelivery-my.top/pay",
+    "got": "parcel",
+    "ok": true,
+    "ms": 2155.908207874745
+   },
+   {
+    "id": 11,
+    "lang": "ms",
+    "expected": "parcel",
+    "text": "J&T: Bungkusan anda tidak dapat dihantar. Kemas kini alamat dan bayar caj RM2.90 di pautan ini sebelum dipulangkan.",
+    "got": "parcel",
+    "ok": true,
+    "ms": 1258.1914579495788
+   },
+   {
+    "id": 12,
+    "lang": "mixed",
+    "expected": "parcel",
+    "text": "Got SMS say my Shopee parcel stuck at customs need pay small fee 3 ringgit using card, the link ask card number and OTP",
+    "got": "parcel",
+    "ok": true,
+    "ms": 1131.5805837512016
+   },
+   {
+    "id": 13,
+    "lang": "ms",
+    "expected": "job_task",
+    "text": "Kerja sambilan dari rumah! Like video TikTok dan dapat RM10 setiap tugasan. Gaji RM300 sehari. WhatsApp HR untuk mula.",
+    "got": "job_task",
+    "ok": true,
+    "ms": 1051.8640419468284
+   },
+   {
+    "id": 14,
+    "lang": "en",
+    "expected": "job_task",
+    "text": "Hi, I'm Sarah from the recruitment team. Rate hotels online and earn RM50-RM500 daily. For the premium tasks you need to top up first, then you'll get commission back.",
+    "got": "job_task",
+    "ok": true,
+    "ms": 1005.0224168226123
+   },
+   {
+    "id": 15,
+    "lang": "mixed",
+    "expected": "job_task",
+    "text": "Already done 30 tasks, they say my account frozen because negative balance, must top up RM2,000 more to unlock and withdraw all my salary",
+    "got": "job_task",
+    "ok": true,
+    "ms": 1124.797916971147
+   },
+   {
+    "id": 16,
+    "lang": "en",
+    "expected": "love_romance",
+    "text": "My darling, I'm a US army doctor in Syria. I sent you a box with my savings but customs in KL need a clearance fee of RM8,000 before release. Please help me, I will pay you back when I come to Malaysia.",
+    "got": "love_romance",
+    "ok": true,
+    "ms": 1426.5637090429664
+   },
+   {
+    "id": 17,
+    "lang": "ms",
+    "expected": "love_romance",
+    "text": "Sayang, saya terkandas di lapangan terbang, beg dan dompet hilang. Boleh transfer RM3,000 dulu untuk tiket? Nanti saya bayar balik bila jumpa.",
+    "got": "love_romance",
+    "ok": true,
+    "ms": 1673.8789593800902
+   },
+   {
+    "id": 18,
+    "lang": "mixed",
+    "expected": "ecommerce",
+    "text": "I paid deposit RM450 for iPhone on Facebook Marketplace, seller ask pay full first then post, now block me already",
+    "got": "ecommerce",
+    "ok": true,
+    "ms": 786.850375123322
+   },
+   {
+    "id": 19,
+    "lang": "ms",
+    "expected": "ecommerce",
+    "text": "Jual tiket konsert murah RM150 sahaja, bayar dulu ke akaun peribadi, e-tiket hantar lepas bayaran. Tak boleh COD.",
+    "got": "ecommerce",
+    "ok": true,
+    "ms": 1213.589749764651
+   },
+   {
+    "id": 20,
+    "lang": "ms",
+    "expected": "loan",
+    "text": "Pinjaman peribadi lulus segera tanpa semakan CTOS, RM20,000. Bayar yuran pemprosesan RM800 dahulu untuk pengeluaran.",
+    "got": "loan",
+    "ok": true,
+    "ms": 957.2353330440819
+   },
+   {
+    "id": 21,
+    "lang": "en",
+    "expected": "loan",
+    "text": "Your loan of RM15,000 is approved. To disburse, please transfer the insurance and stamping fee of RM1,200 to our officer's account.",
+    "got": "loan",
+    "ok": true,
+    "ms": 1061.203584074974
+   },
+   {
+    "id": 22,
+    "lang": "ms",
+    "expected": "phishing_link",
+    "text": "Tahniah! Anda layak bayaran balik cukai RM1,280 daripada LHDN. Klik pautan untuk tuntut sebelum tamat tempoh: lhdn-refund-my.com/claim",
+    "got": "phishing_link",
+    "ok": true,
+    "ms": 1527.0084580406547
+   },
+   {
+    "id": 23,
+    "lang": "en",
+    "expected": "phishing_link",
+    "text": "Maybank2u: Your account has been temporarily suspended due to unusual activity. Verify your identity at m2u-secure-verify.com to restore access.",
+    "got": "phishing_link",
+    "ok": true,
+    "ms": 913.0222499370575
+   },
+   {
+    "id": 24,
+    "lang": "ms",
+    "expected": "phishing_link",
+    "text": "KWSP: Pengeluaran khas RM3,000 diluluskan. Sahkan akaun bank anda melalui pautan dan masukkan TAC untuk terima bayaran.",
+    "got": "phishing_link",
+    "ok": true,
+    "ms": 934.7957498393953
+   },
+   {
+    "id": 25,
+    "lang": "en",
+    "expected": "phishing_link",
+    "text": "Touch 'n Go eWallet: your account will be deactivated today. Log in here to keep your balance: tng-ewallet-update.net",
+    "got": "phishing_link",
+    "ok": true,
+    "ms": 1354.0489580482244
+   },
+   {
+    "id": 26,
+    "lang": "en",
+    "expected": "malware_apk",
+    "text": "Your appointment with the health clinic is confirmed. Download our app to fill the form: klinik-temujanji.apk",
+    "got": "malware_apk",
+    "ok": true,
+    "ms": 1302.7133750729263
+   },
+   {
+    "id": 27,
+    "lang": "ms",
+    "expected": "malware_apk",
+    "text": "Jemputan majlis perkahwinan kami. Sila muat turun kad jemputan digital: kad_kahwin.apk",
+    "got": "malware_apk",
+    "ok": true,
+    "ms": 1281.324166804552
+   },
+   {
+    "id": 28,
+    "lang": "mixed",
+    "expected": "malware_apk",
+    "text": "Cleaner say must install their booking app from link not from Play Store, after install it ask accessibility permission",
+    "got": "malware_apk",
+    "ok": true,
+    "ms": 1246.3754592463374
+   },
+   {
+    "id": 29,
+    "lang": "en",
+    "expected": "bec_supplier",
+    "text": "Dear valued customer, please note our company has changed bank due to an audit. Kindly remit payment for invoice INV-2231 to our new account at another bank effective immediately. Do not use the old account.",
+    "got": "bec_supplier",
+    "ok": true,
+    "ms": 1858.6733331903815
+   },
+   {
+    "id": 30,
+    "lang": "ms",
+    "expected": "bec_supplier",
+    "text": "Kepada pelanggan, akaun bank syarikat kami telah ditukar. Sila buat bayaran invois bulan ini ke akaun baharu di bawah. Akaun lama tidak lagi aktif.",
+    "got": "bec_supplier",
+    "ok": true,
+    "ms": 1078.152542002499
+   },
+   {
+    "id": 31,
+    "lang": "mixed",
+    "expected": "bec_supplier",
+    "text": "Supplier email say they change to new bank account, but the email domain slightly different and they rush us to pay today",
+    "got": "bec_supplier",
+    "ok": true,
+    "ms": 1067.3364168033004
+   },
+   {
+    "id": 32,
+    "lang": "en",
+    "expected": "account_takeover",
+    "text": "I received an SMS with a code I didn't request, then someone called pretending to be my bank and asked me to read the code to them to 'cancel' a transaction.",
+    "got": "account_takeover",
+    "ok": true,
+    "ms": 1279.2317918501794
+   },
+   {
+    "id": 33,
+    "lang": "ms",
+    "expected": "account_takeover",
+    "text": "Pemanggil mengaku dari bank dan minta saya beri kod TAC yang baru masuk supaya transaksi tidak sah dibatalkan.",
+    "got": "account_takeover",
+    "ok": true,
+    "ms": 1016.2602500058711
+   },
+   {
+    "id": 34,
+    "lang": "en",
+    "expected": "not_a_scam",
+    "text": "Hi Mum, I'll be home late tonight, still at the office. Can you keep some dinner for me?",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 1043.3323332108557
+   },
+   {
+    "id": 35,
+    "lang": "ms",
+    "expected": "not_a_scam",
+    "text": "Mesyuarat persatuan penduduk akan diadakan pada Sabtu ini jam 9 pagi di dewan serbaguna. Sila hadir.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 1016.7903751134872
+   },
+   {
+    "id": 36,
+    "lang": "en",
+    "expected": "not_a_scam",
+    "text": "Your Grab ride is arriving in 3 minutes. Driver: white Perodua Bezza.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 1032.6512078754604
+   },
+   {
+    "id": 37,
+    "lang": "mixed",
+    "expected": "not_a_scam",
+    "text": "Bro tomorrow futsal 8pm at the usual place ok, bring extra jersey",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 1210.9958748333156
+   },
+   {
+    "id": 38,
+    "lang": "zh",
+    "expected": "not_a_scam",
+    "text": "明天中午一起吃饭吗？我们在老地方见。",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 1253.0895844101906
+   },
+   {
+    "id": 39,
+    "lang": "en",
+    "expected": "not_a_scam",
+    "text": "Reminder: your dental appointment at Klinik Pergigian Seri is on Monday 10am. Reply YES to confirm.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 1198.7217501737177
+   },
+   {
+    "id": 40,
+    "lang": "ms",
+    "expected": "not_a_scam",
+    "text": "Terima kasih kerana membeli-belah. Pesanan anda telah dihantar dan akan tiba dalam 2-3 hari bekerja.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 1000.8441247045994
+   },
+   {
+    "id": 41,
+    "lang": "en",
+    "expected": "not_a_scam",
+    "text": "Your monthly electricity bill of RM87.40 is ready. Pay via the myTNB app or any bank before the due date.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 761.1179170198739
+   }
+  ]
+ },
+ {
+  "name": "Nemotron 3 Ultra 550B + reasoning",
+  "model": "nvidia/Nemotron-3-Ultra-550b-a55b",
+  "reasoning": true,
+  "options": {},
+  "accuracy": 0.975609756097561,
+  "scam_vs_normal": 0.975609756097561,
+  "false_alarms": 0,
+  "missed_scams": 0,
+  "errors": 1,
+  "p50_ms": 1883.576687425375,
+  "p95_ms": 3107.7480423264205,
+  "by_lang": {
+   "ms": 1.0,
+   "en": 0.9333333333333333,
+   "mixed": 1.0,
+   "zh": 1.0
+  },
+  "rows": [
+   {
+    "id": 1,
+    "lang": "ms",
+    "expected": "macau_impersonation",
+    "text": "Selamat petang puan, saya Inspektor Rahman dari IPD Dang Wangi. Nombor IC puan digunakan untuk buka akaun pengubahan wang haram. Saya akan sambungkan puan kepada pegawai BNM untuk siasatan. Jangan beritahu sesiapa.",
+    "got": "macau_impersonation",
+    "ok": true,
+    "ms": 2946.510791312903
+   },
+   {
+    "id": 2,
+    "lang": "en",
+    "expected": "macau_impersonation",
+    "text": "This is Pos Malaysia. A parcel under your name containing 5 fake passports was seized by customs. Press 1 to speak to the police officer handling your case.",
+    "got": "macau_impersonation",
+    "ok": true,
+    "ms": 2051.5502500347793
+   },
+   {
+    "id": 3,
+    "lang": "mixed",
+    "expected": "macau_impersonation",
+    "text": "Bro my mother got call from 'Bank Negara officer' say her account involved in money laundering, need transfer all savings to safe account for audit, they on video call now got show warrant",
+    "got": "macau_impersonation",
+    "ok": true,
+    "ms": 3107.7480423264205
+   },
+   {
+    "id": 4,
+    "lang": "zh",
+    "expected": "macau_impersonation",
+    "text": "您好，我是警察局的陈警官。您的身份证号码涉及一宗洗钱案件，请您配合调查，把存款转到国家银行的安全账户，不要告诉家人。",
+    "got": "macau_impersonation",
+    "ok": true,
+    "ms": 2768.4884583577514
+   },
+   {
+    "id": 5,
+    "lang": "ms",
+    "expected": "macau_impersonation",
+    "text": "Ini mahkamah. Anda ada saman tertunggak dan waran tangkap akan dikeluarkan hari ini. Sila tekan 9 untuk bercakap dengan pegawai.",
+    "got": "macau_impersonation",
+    "ok": true,
+    "ms": 2091.045083012432
+   },
+   {
+    "id": 6,
+    "lang": "en",
+    "expected": "investment",
+    "text": "Join our VIP Telegram group! Our AI trading robot guarantees 30% monthly returns. Minimum deposit RM500, withdraw anytime. Limited slots, register with mentor Jessica now.",
+    "got": "investment",
+    "ok": true,
+    "ms": 2769.273000303656
+   },
+   {
+    "id": 7,
+    "lang": "ms",
+    "expected": "investment",
+    "text": "Pelaburan emas patuh syariah, pulangan 5% seminggu dijamin. Ramai dah untung. Pindah ke akaun syarikat dan admin akan masukkan dalam app.",
+    "got": "investment",
+    "ok": true,
+    "ms": 2766.789125278592
+   },
+   {
+    "id": 8,
+    "lang": "mixed",
+    "expected": "investment",
+    "text": "The app shows my profit already RM48k but when I want withdraw they say must pay 20% tax first then can release. Mentor say very normal one",
+    "got": "investment",
+    "ok": true,
+    "ms": 2249.0017083473504
+   },
+   {
+    "id": 9,
+    "lang": "zh",
+    "expected": "investment",
+    "text": "老师带单炒股，保证每月收益百分之二十，先充值五千元到APP，名额有限。",
+    "got": "investment",
+    "ok": true,
+    "ms": 1717.8687080740929
+   },
+   {
+    "id": 10,
+    "lang": "en",
+    "expected": "parcel",
+    "text": "PosLaju: Your parcel is on hold due to an incomplete address. Pay RM1.50 redelivery fee within 24h: pos-redelivery-my.top/pay",
+    "got": "parcel",
+    "ok": true,
+    "ms": 2099.524541758001
+   },
+   {
+    "id": 11,
+    "lang": "ms",
+    "expected": "parcel",
+    "text": "J&T: Bungkusan anda tidak dapat dihantar. Kemas kini alamat dan bayar caj RM2.90 di pautan ini sebelum dipulangkan.",
+    "got": "parcel",
+    "ok": true,
+    "ms": 1716.1779161542654
+   },
+   {
+    "id": 12,
+    "lang": "mixed",
+    "expected": "parcel",
+    "text": "Got SMS say my Shopee parcel stuck at customs need pay small fee 3 ringgit using card, the link ask card number and OTP",
+    "got": "parcel",
+    "ok": true,
+    "ms": 4035.8334579505026
+   },
+   {
+    "id": 13,
+    "lang": "ms",
+    "expected": "job_task",
+    "text": "Kerja sambilan dari rumah! Like video TikTok dan dapat RM10 setiap tugasan. Gaji RM300 sehari. WhatsApp HR untuk mula.",
+    "got": "job_task",
+    "ok": true,
+    "ms": 1761.646042112261
+   },
+   {
+    "id": 14,
+    "lang": "en",
+    "expected": "job_task",
+    "text": "Hi, I'm Sarah from the recruitment team. Rate hotels online and earn RM50-RM500 daily. For the premium tasks you need to top up first, then you'll get commission back.",
+    "got": "error",
+    "ok": false,
+    "ms": null
+   },
+   {
+    "id": 15,
+    "lang": "mixed",
+    "expected": "job_task",
+    "text": "Already done 30 tasks, they say my account frozen because negative balance, must top up RM2,000 more to unlock and withdraw all my salary",
+    "got": "job_task",
+    "ok": true,
+    "ms": 1621.7700000852346
+   },
+   {
+    "id": 16,
+    "lang": "en",
+    "expected": "love_romance",
+    "text": "My darling, I'm a US army doctor in Syria. I sent you a box with my savings but customs in KL need a clearance fee of RM8,000 before release. Please help me, I will pay you back when I come to Malaysia.",
+    "got": "love_romance",
+    "ok": true,
+    "ms": 1726.0697078891098
+   },
+   {
+    "id": 17,
+    "lang": "ms",
+    "expected": "love_romance",
+    "text": "Sayang, saya terkandas di lapangan terbang, beg dan dompet hilang. Boleh transfer RM3,000 dulu untuk tiket? Nanti saya bayar balik bila jumpa.",
+    "got": "love_romance",
+    "ok": true,
+    "ms": 1871.6964167542756
+   },
+   {
+    "id": 18,
+    "lang": "mixed",
+    "expected": "ecommerce",
+    "text": "I paid deposit RM450 for iPhone on Facebook Marketplace, seller ask pay full first then post, now block me already",
+    "got": "ecommerce",
+    "ok": true,
+    "ms": 10226.250209379941
+   },
+   {
+    "id": 19,
+    "lang": "ms",
+    "expected": "ecommerce",
+    "text": "Jual tiket konsert murah RM150 sahaja, bayar dulu ke akaun peribadi, e-tiket hantar lepas bayaran. Tak boleh COD.",
+    "got": "ecommerce",
+    "ok": true,
+    "ms": 2171.8187080696225
+   },
+   {
+    "id": 20,
+    "lang": "ms",
+    "expected": "loan",
+    "text": "Pinjaman peribadi lulus segera tanpa semakan CTOS, RM20,000. Bayar yuran pemprosesan RM800 dahulu untuk pengeluaran.",
+    "got": "loan",
+    "ok": true,
+    "ms": 2018.6974159441888
+   },
+   {
+    "id": 21,
+    "lang": "en",
+    "expected": "loan",
+    "text": "Your loan of RM15,000 is approved. To disburse, please transfer the insurance and stamping fee of RM1,200 to our officer's account.",
+    "got": "loan",
+    "ok": true,
+    "ms": 1808.2509576343
+   },
+   {
+    "id": 22,
+    "lang": "ms",
+    "expected": "phishing_link",
+    "text": "Tahniah! Anda layak bayaran balik cukai RM1,280 daripada LHDN. Klik pautan untuk tuntut sebelum tamat tempoh: lhdn-refund-my.com/claim",
+    "got": "phishing_link",
+    "ok": true,
+    "ms": 1600.203291978687
+   },
+   {
+    "id": 23,
+    "lang": "en",
+    "expected": "phishing_link",
+    "text": "Maybank2u: Your account has been temporarily suspended due to unusual activity. Verify your identity at m2u-secure-verify.com to restore access.",
+    "got": "phishing_link",
+    "ok": true,
+    "ms": 1804.3017499148846
+   },
+   {
+    "id": 24,
+    "lang": "ms",
+    "expected": "phishing_link",
+    "text": "KWSP: Pengeluaran khas RM3,000 diluluskan. Sahkan akaun bank anda melalui pautan dan masukkan TAC untuk terima bayaran.",
+    "got": "phishing_link",
+    "ok": true,
+    "ms": 2742.9853747598827
+   },
+   {
+    "id": 25,
+    "lang": "en",
+    "expected": "phishing_link",
+    "text": "Touch 'n Go eWallet: your account will be deactivated today. Log in here to keep your balance: tng-ewallet-update.net",
+    "got": "phishing_link",
+    "ok": true,
+    "ms": 1789.4741669297218
+   },
+   {
+    "id": 26,
+    "lang": "en",
+    "expected": "malware_apk",
+    "text": "Your appointment with the health clinic is confirmed. Download our app to fill the form: klinik-temujanji.apk",
+    "got": "malware_apk",
+    "ok": true,
+    "ms": 2182.301791384816
+   },
+   {
+    "id": 27,
+    "lang": "ms",
+    "expected": "malware_apk",
+    "text": "Jemputan majlis perkahwinan kami. Sila muat turun kad jemputan digital: kad_kahwin.apk",
+    "got": "malware_apk",
+    "ok": true,
+    "ms": 1935.6491658836603
+   },
+   {
+    "id": 28,
+    "lang": "mixed",
+    "expected": "malware_apk",
+    "text": "Cleaner say must install their booking app from link not from Play Store, after install it ask accessibility permission",
+    "got": "malware_apk",
+    "ok": true,
+    "ms": 1951.0349170304835
+   },
+   {
+    "id": 29,
+    "lang": "en",
+    "expected": "bec_supplier",
+    "text": "Dear valued customer, please note our company has changed bank due to an audit. Kindly remit payment for invoice INV-2231 to our new account at another bank effective immediately. Do not use the old account.",
+    "got": "bec_supplier",
+    "ok": true,
+    "ms": 1703.3592499792576
+   },
+   {
+    "id": 30,
+    "lang": "ms",
+    "expected": "bec_supplier",
+    "text": "Kepada pelanggan, akaun bank syarikat kami telah ditukar. Sila buat bayaran invois bulan ini ke akaun baharu di bawah. Akaun lama tidak lagi aktif.",
+    "got": "bec_supplier",
+    "ok": true,
+    "ms": 1826.972832903266
+   },
+   {
+    "id": 31,
+    "lang": "mixed",
+    "expected": "bec_supplier",
+    "text": "Supplier email say they change to new bank account, but the email domain slightly different and they rush us to pay today",
+    "got": "bec_supplier",
+    "ok": true,
+    "ms": 2009.1049578040838
+   },
+   {
+    "id": 32,
+    "lang": "en",
+    "expected": "account_takeover",
+    "text": "I received an SMS with a code I didn't request, then someone called pretending to be my bank and asked me to read the code to them to 'cancel' a transaction.",
+    "got": "account_takeover",
+    "ok": true,
+    "ms": 2885.187374893576
+   },
+   {
+    "id": 33,
+    "lang": "ms",
+    "expected": "account_takeover",
+    "text": "Pemanggil mengaku dari bank dan minta saya beri kod TAC yang baru masuk supaya transaksi tidak sah dibatalkan.",
+    "got": "account_takeover",
+    "ok": true,
+    "ms": 1767.6432500593364
+   },
+   {
+    "id": 34,
+    "lang": "en",
+    "expected": "not_a_scam",
+    "text": "Hi Mum, I'll be home late tonight, still at the office. Can you keep some dinner for me?",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 1083.207624964416
+   },
+   {
+    "id": 35,
+    "lang": "ms",
+    "expected": "not_a_scam",
+    "text": "Mesyuarat persatuan penduduk akan diadakan pada Sabtu ini jam 9 pagi di dewan serbaguna. Sila hadir.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 1895.4569580964744
+   },
+   {
+    "id": 36,
+    "lang": "en",
+    "expected": "not_a_scam",
+    "text": "Your Grab ride is arriving in 3 minutes. Driver: white Perodua Bezza.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 1352.0617079921067
+   },
+   {
+    "id": 37,
+    "lang": "mixed",
+    "expected": "not_a_scam",
+    "text": "Bro tomorrow futsal 8pm at the usual place ok, bring extra jersey",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 1413.2418748922646
+   },
+   {
+    "id": 38,
+    "lang": "zh",
+    "expected": "not_a_scam",
+    "text": "明天中午一起吃饭吗？我们在老地方见。",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 1737.3945829458535
+   },
+   {
+    "id": 39,
+    "lang": "en",
+    "expected": "not_a_scam",
+    "text": "Reminder: your dental appointment at Klinik Pergigian Seri is on Monday 10am. Reply YES to confirm.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 1465.5848750844598
+   },
+   {
+    "id": 40,
+    "lang": "ms",
+    "expected": "not_a_scam",
+    "text": "Terima kasih kerana membeli-belah. Pesanan anda telah dihantar dan akan tiba dalam 2-3 hari bekerja.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 1840.328791178763
+   },
+   {
+    "id": 41,
+    "lang": "en",
+    "expected": "not_a_scam",
+    "text": "Your monthly electricity bill of RM87.40 is ready. Pay via the myTNB app or any bank before the due date.",
+    "got": "not_a_scam",
+    "ok": true,
+    "ms": 1568.9368331804872
+   }
+  ]
+ }
+]

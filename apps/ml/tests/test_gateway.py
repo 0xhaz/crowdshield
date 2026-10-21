@@ -4,6 +4,7 @@ import httpx
 import pytest
 import respx
 
+from crowdshield_ml.config import DEFAULT_ROUTES, Models
 from crowdshield_ml.llm import NebiusClient
 from crowdshield_ml.redact import redact
 from crowdshield_ml.services import Gateway, mentions, names_company, official_domain, search_terms
@@ -28,7 +29,18 @@ class MemoryCache:
 
 
 def gateway():
-    return Gateway(NebiusClient(NEBIUS, "k"), TavilyClient("t"), MemoryCache(), "text-model", "vision-model")
+    models = Models(
+        {
+            "lightning": "lightning-model",
+            "nano": "nano-model",
+            "super": "super-model",
+            "ultra": "ultra-model",
+            "vision": "vision-model",
+            "embed": "embed-model",
+        },
+        dict(DEFAULT_ROUTES),
+    )
+    return Gateway(NebiusClient(NEBIUS, "k"), TavilyClient("t"), MemoryCache(), models)
 
 
 def llm_reply(payload: dict) -> httpx.Response:
