@@ -304,16 +304,16 @@ Phase 6 so far:
 
 Judged on four equal criteria (tie-break in this order): **Technological Implementation** (how well built, how well it uses Nebius Token Factory and NVIDIA Nemotron), **Design** (complete, coherent product, a quick "aha"), **Potential Impact** (credible, specific, real audience), **Quality of the Idea** (non-obvious use of the platform, real understanding of trade-offs including model choices). Stage One is pass/fail: theme fit plus using the required APIs.
 
-- [ ] **Public demo on AWS (us-east-1)**, single VM with HTTPS, plus a "Try it now" check on the landing page (number, link or screenshot; no Telegram needed; rate-limited). *(Design, Impact)*
-- [ ] **Nemotron 3 Ultra case brief:** "Generate case brief" on bank cases drafts the NSRC/PDRM referral pack in BM/EN, with reasoning on, citing the case's evidence. *(Tech, Idea)*
-- [ ] **Model evaluation and trade-off table:** gold set of ~40 BM/EN/Manglish scam texts + invoices. Accuracy, latency and cost for Lightning / Nano / Super / Ultra, reasoning on vs off. Results drive model routing and go in the README and deck. *(Tech, Idea)*
-- [ ] **AI trace visible** in the web app and bot: model, time, prompt version, redaction. *(Tech, Design)*
-- [ ] **Submission hygiene:** git history, private GitHub repo `0xhaz/crowdshield`, CI running all tests, README with an architecture diagram, Devpost write-up, video. *(Tech)*
-- [ ] **Campaign detection:** Qwen3-Embedding → pgvector; new-script clusters labelled by Nemotron; shown on the Campaigns page. *(Idea, Impact)*
-- [ ] **Customer banking-app screen:** what the victim sees during the call-to-transfer warning. *(Design, Impact)*
-- [ ] **Real-world grounding:** Tavily news run ("scams in the news this week", with citations); deck figures replaced with sourced ones. *(Impact)*
-- [ ] **Bot quick start:** example buttons on `/start`. *(Design)*
-- [ ] **Model routing:** Nemotron 3.5 Lightning (~0.5 s) for fast classification where the evaluation shows it holds up. *(Tech)*
+- [x] **Public demo on AWS (us-east-1)**, single VM with HTTPS, plus a "Try it now" check on the landing page (number, link or screenshot; no Telegram needed; rate-limited). *(Design, Impact)*
+- [x] **Nemotron 3 Ultra case brief:** "Generate case brief" on bank cases drafts the NSRC/PDRM referral pack in BM/EN, with reasoning on, citing the case's evidence. *(Tech, Idea)*
+- [x] **Model evaluation and trade-off table:** gold set of ~40 BM/EN/Manglish scam texts + invoices. Accuracy, latency and cost for Lightning / Nano / Super / Ultra, reasoning on vs off. Results drive model routing and go in the README and deck. *(Tech, Idea)*
+- [x] **AI trace visible** in the web app and bot: model, time, prompt version, redaction. *(Tech, Design)*
+- [ ] **Submission hygiene:** git history, private GitHub repo `0xhaz/crowdshield`, CI running all tests, README with an architecture diagram, Devpost write-up, video. *(Tech)* Done except the video recording (script in `docs/video-script.md`) and the Devpost form itself (text in `docs/devpost.md`).
+- [x] **Campaign detection:** Qwen3-Embedding → pgvector; new-script clusters labelled by Nemotron; shown on the Campaigns page. *(Idea, Impact)*
+- [x] **Customer banking-app screen:** what the victim sees during the call-to-transfer warning. *(Design, Impact)*
+- [x] **Real-world grounding:** Tavily news run ("scams in the news this week", with citations); deck figures replaced with sourced ones. *(Impact)*
+- [x] **Bot quick start:** example buttons on `/start`. *(Design)*
+- [x] **Model routing:** Nemotron 3.5 Lightning (~0.5 s) for fast classification where the evaluation shows it holds up. *(Tech)* Outcome: the evaluation put Ultra first on both accuracy and speed, so Ultra classifies; Lightning/Nano (93%) are configured fallbacks via `ROUTE_<TASK>` (`docs/model-choices.md`).
 - [ ] *(Needs the user's Meta setup)* WhatsApp adapter. *(Not possible: voice-note checks; no speech model is listed on Token Factory.)*
 
 ## 4. Schedule (21–30 Oct)

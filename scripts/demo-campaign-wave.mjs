@@ -4,10 +4,13 @@
 // victims) through the bot's API path. Their scripts don't
 // match any known campaign, so detection clusters them and Nemotron Ultra labels the candidate for
 // the fraud team to confirm on /bank/campaigns. Usage: pnpm demo:wave
+// On the demo VM: docker compose --env-file .env.prod -f compose.prod.yml exec -T api node scripts/demo-campaign-wave.mjs
 import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
-process.loadEnvFile(`${root}.env`);
+try {
+  process.loadEnvFile(`${root}.env`); // local; on the demo VM the container env has everything
+} catch {}
 const api = process.env.API_URL ?? "http://localhost:4020";
 const H = { "x-api-key": process.env.BOT_API_KEY ?? "", "content-type": "application/json" };
 

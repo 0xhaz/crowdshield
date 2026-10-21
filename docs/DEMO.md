@@ -10,6 +10,7 @@ All data is synthetic. Company, app and people names are invented and were check
 pnpm demo:start          # infra + migrations + API (4020), web (3020), ML gateway (8020), Telegram bot
 pnpm demo:reset          # clean seeded data; clears verdict caches, bot sessions, idempotency keys
 pnpm demo:prewarm        # caches every Nebius/Tavily call the demo makes (valid 24 h)
+pnpm demo:wave           # optional: a new scam wave for the Campaigns beat
 pnpm e2e                 # optional: 5 browser smoke tests, then resets the data again
 ```
 
@@ -91,6 +92,14 @@ Check:
    - Tick the callback step, then **It's fake: reject and report** → "reported to CrowdShield to protect other businesses and banks."
 
 **Say:** "Malaysia's mandatory e-invoicing gives us TIN and invoice checks that foreign fraud tools don't have. And the fake account goes straight into the same graph the banks use."
+
+## Extra beats for judging (pick what fits the time)
+
+- **No-install check (landing, ~20 s):** open the public URL, "Try it now" → **A ‘police’ call**. Nemotron 3 Ultra names the pattern, the Macau wave is flagged, and the AI trace chip shows the model and time. **A scam chat screenshot** shows the vision model.
+- **The victim's banking app (~30 s):** `/demo/bank-app` → **Mule account, on a scam call** → Transfer. "We've paused this transfer", with the BM/EN warning. Then the same alert is in the analyst's queue (Step 3 from the other side).
+- **AI case brief (~30 s):** any case with a money trail → **Write the brief**. Nemotron 3 Ultra with reasoning (~12 s fresh, instant once cached); click an evidence chip to jump to the timeline item; copy the BM referral note.
+- **A new scam wave (~30 s):** before the demo run `pnpm demo:wave` (on the VM: `dc exec -T api node scripts/demo-campaign-wave.mjs`). On **Campaigns**, the KWSP "Account 3 agent" candidate shows Ultra's label, repeated phrases and draft warning; **Confirm campaign**, then forward a similar message to the bot to see "Known scam wave".
+- **Bot first contact:** `/start` shows four example buttons; each runs a real check.
 
 ## Close (~20 s)
 

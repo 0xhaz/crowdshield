@@ -5,7 +5,9 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
-process.loadEnvFile(`${root}.env`);
+try {
+  process.loadEnvFile(`${root}.env`); // local; on the demo VM the container env has everything
+} catch {}
 const ml = process.env.ML_GATEWAY_URL ?? "http://localhost:8020";
 const H = { "x-internal-key": process.env.ML_API_KEY ?? "" };
 
