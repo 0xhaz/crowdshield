@@ -32,5 +32,11 @@
         "^build"
       ]
     }
-  }
+  },
+  "globalPassThroughEnv": [
+    "DATABASE_URL",
+    "DATABASE_URL_TEST",
+    "REDIS_URL",
+    "CI"
+  ]
 }
