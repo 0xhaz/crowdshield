@@ -1,5 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { CaseBriefPanel } from "@/components/CaseBriefPanel";
 import { HeaderBox } from "@/components/HeaderBox";
 import { RiskBadge } from "@/components/RiskBadge";
 import { api } from "@/lib/api";
@@ -23,6 +24,8 @@ export default async function CaseDetail({ params }: { params: Promise<{ id: str
             </blockquote>
           )}
 
+          <CaseBriefPanel caseId={c.id} />
+
           <section className="panel flex flex-col gap-3">
             <h2 className="panel-title">Timeline</h2>
             {c.timeline.length === 0 ? (
@@ -30,7 +33,11 @@ export default async function CaseDetail({ params }: { params: Promise<{ id: str
             ) : (
               <ol className="relative ml-2 border-l border-gray-200">
                 {c.timeline.map((t, i) => (
-                  <li key={i} className="mb-5 ml-4">
+                  <li
+                    key={i}
+                    id={`event-${i + 1}`}
+                    className="mb-5 ml-4 scroll-mt-20 target:rounded-md target:bg-blue-25"
+                  >
                     <span
                       className="absolute -left-1.5 mt-1.5 size-3 rounded-full bg-brand"
                       aria-hidden
@@ -66,7 +73,8 @@ export default async function CaseDetail({ params }: { params: Promise<{ id: str
                 {c.moneyTrail.map((h, i) => (
                   <li
                     key={i}
-                    className="flex flex-wrap items-center gap-3 rounded-lg border border-gray-200 p-3"
+                    id={`hop-${i + 1}`}
+                    className="flex scroll-mt-20 flex-wrap items-center gap-3 rounded-lg border border-gray-200 p-3 target:border-brand target:bg-blue-25"
                   >
                     <span className="chip border-gray-200 bg-gray-50 text-gray-700">
                       Hop {h.hopNo}
@@ -109,7 +117,7 @@ export default async function CaseDetail({ params }: { params: Promise<{ id: str
                   Cash-out (restricted: your bank and law enforcement)
                 </p>
                 {c.cashouts.map((x, i) => (
-                  <p key={i}>
+                  <p key={i} id={`cashout-${i + 1}`} className="scroll-mt-20 target:bg-blue-25">
                     {titleCase(x.method)} · {x.locationRef} · {x.state} · {formatMyr(x.amountMyr)} ·{" "}
                     {formatDateTime(x.at)}
                   </p>

@@ -425,7 +425,7 @@ class Gateway:
             payload,
             CaseBrief,
             prompt_version=prompts.BRIEF_V,
-            max_tokens=6000,
+            max_tokens=12000,  # reasoning tokens count too; 6000 truncated long cases
             thinking=True,
         )
         result = {**out.model_dump(), "model": self.model("brief"), "prompt_version": prompts.BRIEF_V}
@@ -488,8 +488,15 @@ class Gateway:
         except LlmError:
             judged = NewsItems(items=[])
         items = []
+        seen_incidents: set[tuple] = set()
         for j in judged.items:
             if j.relevant and 0 <= j.index < len(results):
+                # one story, several outlets: the same loss in the same state is one incident
+                incident = (int(j.loss_myr // 1000), j.state) if j.loss_myr else None
+                if incident in seen_incidents:
+                    continue
+                if incident:
+                    seen_incidents.add(incident)
                 r = results[j.index]
                 items.append(
                     {

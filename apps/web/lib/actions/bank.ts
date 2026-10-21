@@ -1,6 +1,6 @@
 "use server";
 
-import type { PayeeCheckResult } from "@crowdshield/contracts";
+import type { CaseBrief, DetectResult, PayeeCheckResult } from "@crowdshield/contracts";
 import { revalidatePath } from "next/cache";
 import type { z } from "zod";
 import { api, errorMessage } from "../api";
@@ -94,5 +94,42 @@ export async function payeeCheck(_: PayeeState, f: FormData): Promise<PayeeState
     return { result, input };
   } catch (e) {
     return { error: errorMessage(e), input };
+  }
+}
+
+export type BriefState = { error?: string; brief?: z.infer<typeof CaseBrief> };
+
+/** Nemotron Ultra with reasoning: takes 10–30 s on a fresh case, instant when cached. */
+export async function caseBrief(_: BriefState, f: FormData): Promise<BriefState> {
+  try {
+    return { brief: await (await api()).call("caseBrief", { params: { id: str(f, "id")! } }) };
+  } catch (e) {
+    return { error: errorMessage(e) };
+  }
+}
+
+export async function reviewCampaign(_: ActionState, f: FormData): Promise<ActionState> {
+  const decision = str(f, "decision") as "confirm" | "dismiss";
+  try {
+    await (
+      await api()
+    ).call("reviewCampaign", { params: { id: Number(str(f, "id")) }, body: { decision } });
+  } catch (e) {
+    return { error: errorMessage(e) };
+  }
+  revalidatePath("/bank/campaigns");
+  revalidatePath("/bank");
+  return { ok: decision === "confirm" ? "Confirmed: the bot now warns about it" : "Dismissed" };
+}
+
+export type DetectState = { error?: string; result?: z.infer<typeof DetectResult> };
+
+export async function detectCampaigns(): Promise<DetectState> {
+  try {
+    const result = await (await api()).call("detectCampaigns");
+    revalidatePath("/bank/campaigns");
+    return { result };
+  } catch (e) {
+    return { error: errorMessage(e) };
   }
 }

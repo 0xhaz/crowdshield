@@ -52,6 +52,7 @@ export function CampaignRow({ c, max }: { c: C; max: number }) {
         <p className="text-12 text-gray-600">
           {scamLabel(c.scamType)} · {c.totalCases} cases
           {spiking && <b className="text-risk-high"> · spiking (z {c.spikeZ.toFixed(1)})</b>}
+          {c.status === "candidate" && <b className="text-indigo-700"> · new, needs review</b>}
         </p>
       </div>
     </div>

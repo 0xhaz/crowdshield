@@ -30,6 +30,9 @@ import {
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
+import { NewsSection, NewsSkeleton } from "@/components/NewsSection";
+import { TryIt } from "@/components/TryIt";
 import { getToken } from "@/lib/session";
 
 export const metadata: Metadata = {
@@ -360,6 +363,9 @@ export default async function Landing() {
             aria-label="Sections"
             className="hidden items-center gap-6 text-14 font-medium text-gray-700 md:flex"
           >
+            <a href="#try" className="hover:text-brand">
+              Try it
+            </a>
             <a href="#roles" className="hover:text-brand">
               How it works
             </a>
@@ -453,6 +459,17 @@ export default async function Landing() {
             </div>
           </div>
         </section>
+
+        {/* ---------- try it ---------- */}
+        <Section
+          id="try"
+          tone="tint"
+          eyebrow="Try it now"
+          title="Got a suspicious message? Check it here"
+          intro="The same check as the Telegram bot. Paste a number, an account, a link or the whole message, or upload a screenshot. No sign-in."
+        >
+          <TryIt />
+        </Section>
 
         {/* ---------- roles ---------- */}
         <Section
@@ -629,6 +646,18 @@ export default async function Landing() {
             <b>police, BNM and banks never ask you to transfer money to protect it.</b> When in
             doubt, hang up and call back on an official number.
           </p>
+        </Section>
+
+        {/* ---------- news ---------- */}
+        <Section
+          id="news"
+          eyebrow="This week"
+          title="Scams in the Malaysian news"
+          intro="Found by a live web search (Tavily) and sorted by Nemotron, which keeps only real Malaysian cases and warnings. Every item links to its source."
+        >
+          <Suspense fallback={<NewsSkeleton />}>
+            <NewsSection />
+          </Suspense>
         </Section>
 
         {/* ---------- compare ---------- */}

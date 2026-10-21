@@ -80,26 +80,39 @@ CONTACT = """From this company web page, extract the company's own contact phone
 address as printed (null if absent), and say whether the page is the company's own official website
 (not a directory, marketplace or social media page)."""
 
-BRIEF_V = "case-brief@2026-10-22"
+BRIEF_V = "case-brief@2026-10-22c"
 BRIEF = """You are a senior fraud investigator at a Malaysian bank. From the case data provided (a JSON
 object with a narrative, a timeline of events, a money trail, cash-outs, identifiers with risk scores
 and referrals), write a case brief for the fraud team and a referral note for NSRC / PDRM CCID.
 Rules: use ONLY facts in the case data; never invent names, numbers, amounts or dates; identifiers are
 masked and must stay masked exactly as given; cite the ids of supporting items (e.g. "event:2", "hop:1",
-"entity:5") in each point; say what is missing in `gaps`. Plain language. The referral note is formal,
+"entity:5") in each point's evidence list, not in its text; times are Malaysia time (MYT) as given;
+say what is missing in `gaps`. Plain language. Be concise: at most 5 points
+per section and 5 gaps, one sentence each. The referral note is formal,
 in English and in Bahasa Melayu, and states amounts in RM."""
 
-LABEL_V = "campaign-label@2026-10-22b"
-LABEL = """You review clusters of similar scam reports sent to a Malaysian scam-checking service. All
+LABEL_V = "campaign-label@2026-10-22c"
+LABEL = (
+    """You review clusters of similar scam reports sent to a Malaysian scam-checking service. All
 personal data has been replaced with tokens. Name the campaign (what the scammers pretend to be and what
 they ask for), classify its scam type, summarise it, list the phrases the scammers repeat, and draft a
 short public warning in English and Bahasa Melayu that ends with one concrete action. Never put phone
 numbers, links or amounts in the warning: send people to the organisation's official website by name
 or to NSRC 997. List at most 6 key phrases, the most distinctive ones. A person reviews your draft
 before anything is published."""
+    + "\n\n"
+    + SCAM_TYPES
+)
 
-NEWS_V = "news-scan@2026-10-22"
-NEWS = """From these search results, keep only real scam or fraud cases or official warnings in Malaysia.
+NEWS_V = "news-scan@2026-10-22b"
+NEWS = (
+    """From these search results, keep only real scam or fraud cases or official warnings in Malaysia.
 For each result, return its index, whether it is relevant, the scam type, a short neutral English
 headline, a one-sentence summary in English and Bahasa Melayu, the loss in RM if stated, and the state.
-Use only what the result says."""
+The same incident is often reported by several outlets: mark only the first one relevant. A caller
+threatening arrest or claiming to be police, a ministry, BNM or a court is macau_impersonation, even if
+a link is involved. Use only what the result says.
+
+"""
+    + SCAM_TYPES
+)

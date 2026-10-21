@@ -242,11 +242,19 @@ export async function caseDetail(db: Db, id: string, p: Principal) {
  * an id ("event:2", "hop:1", "entity:5") that the brief must cite.
  */
 export function briefInput(d: Awaited<ReturnType<typeof caseDetail>>) {
+  // Malaysia time, as the victim and the bank would say it (the model otherwise quotes UTC)
+  const myt = (iso: string | null) =>
+    iso &&
+    `${new Date(iso).toLocaleString("en-GB", {
+      timeZone: "Asia/Kuala_Lumpur",
+      dateStyle: "medium",
+      timeStyle: "short",
+    })} MYT`;
   return {
     case: {
       scamType: d.scamType,
-      reportedAt: d.reportedAt,
-      occurredAt: d.occurredAt,
+      reportedAt: myt(d.reportedAt),
+      occurredAt: myt(d.occurredAt),
       lossMyr: d.lossMyr,
       nearMiss: d.nearMiss,
       verification: d.verification,
@@ -269,7 +277,7 @@ export function briefInput(d: Awaited<ReturnType<typeof caseDetail>>) {
     })),
     timeline: d.timeline.map((t, i) => ({
       id: `event:${i + 1}`,
-      at: t.at,
+      at: myt(t.at),
       channel: t.channel,
       kind: t.kind,
       identifier: t.entity ? `entity:${t.entity.id}` : null,
@@ -283,17 +291,17 @@ export function briefInput(d: Awaited<ReturnType<typeof caseDetail>>) {
       to: h.to ? `entity:${h.to.id} (${h.to.masked})` : "unknown",
       amountMyr: h.amountMyr,
       frozenMyr: h.frozenMyr,
-      at: h.at,
+      at: myt(h.at),
       rail: h.rail,
       senderBank: h.senderBank,
       receiverBank: h.receiverBank,
     })),
-    cashouts: d.cashouts.map((c, i) => ({ id: `cashout:${i + 1}`, ...c })),
+    cashouts: d.cashouts.map((c, i) => ({ id: `cashout:${i + 1}`, ...c, at: myt(c.at) })),
     referrals: d.referrals.map((r, i) => ({
       id: `referral:${i + 1}`,
       agency: r.agency,
       status: r.status,
-      sentAt: r.sentAt,
+      sentAt: myt(r.sentAt),
       recoveredMyr: r.recoveredMyr,
     })),
     evidence: d.evidence.map((e, i) => ({ id: `evidence:${i + 1}`, kind: e.kind })),

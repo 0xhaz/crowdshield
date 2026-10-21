@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 
-const PUBLIC = ["/sign-in"];
+// sign-in, the customer banking-app demo, and the public API routes proxied for the landing page
+const PUBLIC = ["/sign-in", "/demo/", "/v1/public/", "/v1/news"];
 const PUBLIC_EXACT = ["/"]; // the landing page
 
 // Cheap gate only: the API verifies the token on every call.
@@ -12,4 +13,4 @@ export function middleware(req: NextRequest) {
   return NextResponse.next();
 }
 
-export const config = { matcher: ["/((?!_next|icons|favicon.ico|logo.svg).*)"] };
+export const config = { matcher: ["/((?!_next|icons|favicon.ico|logo.svg|demo/.*\\.png).*)"] };
