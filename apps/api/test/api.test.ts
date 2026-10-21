@@ -1,7 +1,8 @@
 // End-to-end: the demo script (workplan §0) against the real API process.
 import { ApiError, routes } from "@crowdshield/contracts";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { as, BASE, bot, mlCalls, startApi } from "./harness.js";
+import { as, BASE, bot, mlCalls, PARTNER_KEY, startApi } from "./harness.js";
+import { createClient } from "@crowdshield/contracts";
 
 let api: Awaited<ReturnType<typeof startApi>>;
 beforeAll(async () => {
@@ -489,5 +490,190 @@ describe("Semak supplier (demo step 5)", () => {
     expect(d.suppliersByStatus.verified).toBe(3);
     expect(d.checksThisMonth).toBe(3);
     expect(d.flaggedChecks).toHaveLength(2);
+  });
+});
+
+describe("partner bank API (customer banking app)", () => {
+  const partner = () => createClient({ baseUrl: BASE, apiKey: PARTNER_KEY });
+
+  it("runs the payee check with the bank's partner key, and nothing else", async () => {
+    const r = await partner().call("payeeCheck", {
+      body: {
+        payee: { type: "bank_account", value: "Public Bank 6471 2093 5518" },
+        amountMyr: 500,
+      },
+    });
+    expect(r.payee.entity.masked).toBe("PBB ****5518");
+    expect(await status(partner().call("listAlerts", { query: {} as never }))).toBe(403);
+    expect(await status(partner().call("listCases", { query: {} as never }))).toBe(403);
+    const bad = createClient({ baseUrl: BASE, apiKey: "not-a-real-partner-key-000000" });
+    expect(await status(bad.call("payeeCheck", { body: {} as never }))).toBe(401);
+  });
+});
+
+describe("case brief (Nemotron Ultra)", () => {
+  it("sends only masked identifiers with citable ids, and returns the brief with its trace", async () => {
+    const analyst = await as("analyst@nusabank.demo");
+    const { items } = await analyst.call("listCases", { query: { withLoss: true } as never });
+    const c = items.find((x) => x.entities.length)!;
+    const brief = await analyst.call("caseBrief", { params: { id: c.id } });
+    expect(brief.headline.en).toContain("Mule");
+    expect(brief.trace.calls[0]).toMatchObject({ reasoning: true });
+    const sent = mlCalls.findLast((m) => m.path === "/v1/brief")!.body.case as {
+      identifiers: { id: string; masked: string }[];
+    };
+    expect(sent.identifiers[0]!.id).toMatch(/^entity:\d+$/);
+    const json = JSON.stringify(sent);
+    expect(json).toContain("PBB ****5518");
+    for (const raw of ["647120935518", "1123454821"]) expect(json).not.toContain(raw); // full account / phone
+    const sme = await as("owner@majuvista.demo");
+    expect(await status(sme.call("caseBrief", { params: { id: c.id } }))).toBe(403);
+  });
+});
+
+describe("campaign detection (embeddings + Nemotron labels)", () => {
+  const kwsp = (n: number) =>
+    `Saya pegawai KWSP. Permohonan pengeluaran KWSP anda diluluskan tetapi akaun anda dibekukan. Sila pindah RM${n} ke akaun selamat hari ini untuk pengesahan.`;
+  const report = (i: number) =>
+    bot().call("createReport", {
+      body: {
+        reporter: { channel: "telegram", externalId: `kwsp-victim-${i}` },
+        scamType: "macau_impersonation",
+        scriptText: kwsp(1000 * i),
+        identifiers: [{ type: "phone", value: `011-5550 10${10 + i}`, role: "caller" }],
+        shareConsent: true,
+      },
+    });
+  const caseIds: string[] = [];
+  let campaignId = 0;
+
+  it("backfills scripts for seeded cases (service only)", async () => {
+    expect((await bot().call("backfillScripts")).embedded).toBeGreaterThan(0);
+    expect((await bot().call("backfillScripts")).embedded).toBe(0);
+    const analyst = await as("analyst@nusabank.demo");
+    expect(await status(analyst.call("backfillScripts"))).toBe(403);
+  });
+
+  it("turns three similar unmatched reports into a candidate campaign for review", async () => {
+    for (let i = 1; i <= 3; i++) caseIds.push((await report(i)).caseId);
+    const analyst = await as("analyst@nusabank.demo");
+    for (let i = 0; i < 50 && !campaignId; i++) {
+      await analyst.call("detectCampaigns"); // detection also runs in the background after each report
+      const list = await analyst.call("listCampaigns");
+      for (const c of list.filter((x) => x.origin === "detected")) {
+        const cases = await analyst.call("listCases", { query: { campaignId: c.id } as never });
+        if (caseIds.every((id) => cases.items.some((x) => x.id === id))) campaignId = c.id;
+      }
+      if (!campaignId) await new Promise((r) => setTimeout(r, 100));
+    }
+    const c = (await analyst.call("listCampaigns")).find((x) => x.id === campaignId)!;
+    expect(c).toMatchObject({
+      status: "candidate",
+      origin: "detected",
+      label: "Fake KWSP withdrawal officer, Oct 2026",
+      keyPhrases: ["pengeluaran KWSP", "akaun selamat"],
+    });
+    expect(c.totalCases).toBe(3);
+    // the stored script is the gateway's redacted text, never the raw message
+    const embedded = mlCalls.filter((m) => m.path === "/v1/embed");
+    expect(embedded.length).toBeGreaterThan(0);
+  });
+
+  it("tells consumers about a campaign only once a person confirms it", async () => {
+    const before = await bot().call("campaignMatch", { body: { text: kwsp(4000) } });
+    expect(before.campaign).toBeNull(); // candidate: not reviewed yet
+    const analyst = await as("analyst@nusabank.demo");
+    const confirmed = await analyst.call("reviewCampaign", {
+      params: { id: campaignId },
+      body: { decision: "confirm" },
+    });
+    expect(confirmed.status).toBe("active");
+    const after = await bot().call("campaignMatch", { body: { text: kwsp(5000) } });
+    expect(after.campaign?.id).toBe(campaignId);
+    expect(after.similarity).toBeGreaterThanOrEqual(0.72);
+    const fourth = await report(4);
+    expect(fourth.campaign).toMatchObject({ id: campaignId, label: confirmed.label });
+    // an unrelated message stays unmatched
+    const other = await bot().call("campaignMatch", {
+      body: { text: "Tahniah! Anda menang hadiah iPhone, klik pautan untuk tuntut sekarang." },
+    });
+    expect(other.campaign).toBeNull();
+  });
+
+  it("dismissing a candidate releases its cases", async () => {
+    const analyst = await as("analyst@nusabank.demo");
+    for (let i = 10; i <= 12; i++)
+      await bot().call("createReport", {
+        body: {
+          reporter: { channel: "telegram", externalId: `parcel-${i}` },
+          scriptText: `Bungkusan anda ditahan di kastam. Bayar RM${i} cukai melalui pautan ini sebelum dipulangkan kepada pengirim kurier.`,
+          identifiers: [{ type: "phone", value: `011-5551 20${i}`, role: "messenger" }],
+          shareConsent: true,
+        },
+      });
+    let cand;
+    for (let i = 0; i < 50 && !cand; i++) {
+      await analyst.call("detectCampaigns");
+      cand = (await analyst.call("listCampaigns")).find(
+        (x) => x.status === "candidate" && x.id !== campaignId,
+      );
+      if (!cand) await new Promise((r) => setTimeout(r, 100));
+    }
+    expect(cand).toBeDefined();
+    if (!cand) return;
+    const d = await analyst.call("reviewCampaign", {
+      params: { id: cand.id },
+      body: { decision: "dismiss" },
+    });
+    expect(d.status).toBe("dismissed");
+    expect((await analyst.call("listCampaigns")).some((x) => x.id === cand.id)).toBe(false);
+    const cases = await analyst.call("listCases", { query: { campaignId: cand.id } as never });
+    expect(cases.total).toBe(0);
+  });
+});
+
+describe("public check (landing page, no sign-in)", () => {
+  const anon = () => createClient({ baseUrl: BASE });
+
+  it("checks identifiers in a pasted message and names the scam pattern", async () => {
+    const r = await anon().call("publicCheck", {
+      body: { text: "Pegawai polis: pindah wang ke Public Bank 6471 2093 5518 sekarang juga." },
+    });
+    expect(r.verdicts.map((v) => v.entity.masked)).toEqual(["PBB ****5518"]);
+    expect(r.pattern).toMatchObject({ scamType: "macau_impersonation" });
+    expect(r.pattern!.action).not.toBeNull();
+    expect(r.trace!.calls.map((c) => c.kind)).toEqual(
+      expect.arrayContaining(["model", "embedding"]),
+    );
+    const short = await anon().call("publicCheck", { body: { text: "0123456789" } });
+    expect(short.pattern).toBeNull();
+    expect(short.trace).toBeNull();
+  });
+
+  it("reads a screenshot, then runs the same check on its text", async () => {
+    const r = await anon().call("publicScreenshot", {
+      body: { imageBase64: Buffer.alloc(300, 7).toString("base64"), mime: "image/png" },
+    });
+    expect(r.transcript).toContain("Public Bank");
+    expect(r.verdicts[0]!.entity.masked).toBe("PBB ****5518");
+    expect(r.pattern!.scamType).toBe("macau_impersonation");
+  });
+
+  it("rate-limits screenshots per visitor", async () => {
+    const codes = [];
+    for (let i = 0; i < 6; i++)
+      codes.push(
+        await status(
+          anon().call("publicScreenshot", {
+            body: { imageBase64: Buffer.alloc(300, i).toString("base64"), mime: "image/png" },
+          }),
+        ),
+      );
+    expect(codes).toContain(429);
+  });
+
+  it("serves this week's scam news with sources", async () => {
+    const n = await anon().call("news");
+    expect(n.items[0]).toMatchObject({ lossMyr: 120000, source: "news.example.my" });
   });
 });

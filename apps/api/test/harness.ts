@@ -11,6 +11,7 @@ export const PORT = 4120;
 export const BASE = `http://localhost:${PORT}`;
 export const BOT_KEY = "test-bot-key-0123456789abcdef0123456789";
 export const PASSWORD = "crowdshield-demo";
+export const PARTNER_KEY = "test-partner-key-0123456789abcdef";
 const ML_PORT = 4121;
 const ML_KEY = "test-ml-key";
 export const mlCalls: { path: string; body: Record<string, unknown> }[] = [];
@@ -26,6 +27,22 @@ function fakeMl(): Promise<Server> {
     relevant,
   });
   const now = () => new Date().toISOString();
+  const trace = (kind = "model") => ({
+    calls: [{ kind, model: "nvidia/test", ms: 5 }],
+    total_ms: 5,
+    cached: false,
+  });
+  // Bag-of-words embedding: messages sharing most words are close, different scams are far apart
+  const embed = (text: string) => {
+    const v = new Array<number>(1024).fill(0);
+    for (const w of text.toLowerCase().match(/[a-z0-9]+/g) ?? []) {
+      let h = 0;
+      for (const ch of w) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+      v[h % 1024]! += 1;
+    }
+    const norm = Math.hypot(...v) || 1;
+    return v.map((x) => x / norm);
+  };
   const replies: Record<string, (b: Record<string, unknown>) => unknown> = {
     "/v1/web/identifier": (b) => ({
       query: `"${String(b.value)}" scam`,
@@ -64,16 +81,88 @@ function fakeMl(): Promise<Server> {
       cached: false,
       fetched_at: now(),
     }),
+    "/v1/embed": (b) => ({
+      items: (b.texts as string[]).map((t) => ({
+        redacted: t.replace(/\d[\d -]{6,}\d/g, "[NUMBER]"),
+        embedding: embed(t),
+      })),
+      trace: trace("embedding"),
+    }),
+    "/v1/classify": (b) => ({
+      scam_type: /parcel|kurier/i.test(String(b.text)) ? "parcel" : "macau_impersonation",
+      language: "ms",
+      urgency: true,
+      bank_change_language: false,
+      impersonating: "PDRM",
+      summary: { en: "A fake officer asks for money", ms: "Pegawai palsu minta wang" },
+      roles: [],
+      needs_review: false,
+      prompt_version: "classify-text@test",
+      trace: trace(),
+    }),
+    "/v1/screenshot": () => ({
+      text: "Encik, akaun anda disiasat. Pindah ke Public Bank 6471 2093 5518 segera.",
+      scam_type: "macau_impersonation",
+      language: "ms",
+      urgency: true,
+      impersonating: "PDRM",
+      summary: { en: "Fake police", ms: "Polis palsu" },
+      needs_review: false,
+      prompt_version: "read-screenshot@test",
+      trace: trace(),
+    }),
+    "/v1/brief": (b) => {
+      const c = b.case as { identifiers: { id: string }[] };
+      return {
+        headline: { en: "Mule account paid after a fake police call", ms: "Akaun keldai" },
+        modus_operandi: [{ text: "Fake officer call", evidence: ["event:1"] }],
+        money_trail: [{ text: "Paid to the mule", evidence: ["hop:1"] }],
+        red_flags: [],
+        recommended_actions: [{ text: "Freeze", evidence: [c.identifiers[0]?.id ?? ""] }],
+        referral: { en: "To NSRC", ms: "Kepada NSRC" },
+        gaps: ["No police report"],
+        model: "nvidia/Nemotron-3-Ultra-550b-a55b",
+        prompt_version: "case-brief@test",
+        trace: { ...trace(), calls: [{ kind: "model", model: "ultra", ms: 9, reasoning: true }] },
+      };
+    },
+    "/v1/campaigns/label": () => ({
+      label: "Fake KWSP withdrawal officer, Oct 2026",
+      scam_type: "macau_impersonation",
+      summary: { en: "Fake EPF officers", ms: "Pegawai KWSP palsu" },
+      key_phrases: ["pengeluaran KWSP", "akaun selamat"],
+      warning: { en: "KWSP never calls you to move money.", ms: "KWSP tidak akan menelefon." },
+      model: "ultra",
+      prompt_version: "campaign-label@test",
+    }),
+    "/v1/news": () => ({
+      items: [
+        {
+          headline: "Retiree loses RM120,000 to fake police",
+          summary: { en: "A retiree lost savings.", ms: "Pesara rugi." },
+          scam_type: "macau_impersonation",
+          loss_myr: 120000,
+          state: "Johor",
+          url: "https://news.example.my/a",
+          source: "news.example.my",
+          published_at: null,
+        },
+      ],
+      fetched_at: now(),
+      cached: false,
+      trace: trace("tavily"),
+    }),
   };
   const server = createServer((req, res) => {
     let raw = "";
     req.on("data", (c) => (raw += c));
     req.on("end", () => {
-      const reply = replies[req.url ?? ""];
+      const reply = replies[new URL(req.url ?? "/", "http://x").pathname];
       if (req.headers["x-internal-key"] !== ML_KEY) return void res.writeHead(401).end();
       if (!reply) return void res.writeHead(404).end();
-      const body = JSON.parse(raw || "{}") as Record<string, unknown>;
-      mlCalls.push({ path: req.url!, body });
+      const json = req.headers["content-type"]?.startsWith("application/json");
+      const body = (json ? JSON.parse(raw || "{}") : {}) as Record<string, unknown>;
+      mlCalls.push({ path: new URL(req.url!, "http://x").pathname, body });
       res.writeHead(200, { "content-type": "application/json" }).end(JSON.stringify(reply(body)));
     });
   });
@@ -114,6 +203,7 @@ export async function startApi(): Promise<{ stop: () => Promise<void> }> {
         BOT_API_KEY: BOT_KEY,
         ML_GATEWAY_URL: `http://localhost:${ML_PORT}`,
         ML_API_KEY: ML_KEY,
+        BANK_PARTNER_KEY: PARTNER_KEY,
       },
       stdio: ["ignore", "inherit", "inherit"],
     },

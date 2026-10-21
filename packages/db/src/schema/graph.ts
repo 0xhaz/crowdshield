@@ -223,7 +223,11 @@ export const campaign = pgTable("campaign", {
   reports24h: integer("reports_24h").notNull().default(0), // explicit: snake_case casing would give "reports24h"
   baselineDaily: real().notNull().default(0),
   spikeZ: real().notNull().default(0),
-  status: text().notNull().default("active"),
+  status: text().notNull().default("active"), // active | candidate (detected, awaiting review) | dismissed
+  origin: text().notNull().default("seed"), // seed | detected
+  summary: jsonb(), // CampaignLabel from Nemotron: summary, key phrases, draft warning (human-approved)
+  reviewedBy: uuid(),
+  reviewedAt: tstz(),
 });
 
 export const scriptSnippet = pgTable(

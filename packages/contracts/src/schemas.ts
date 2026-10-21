@@ -67,6 +67,7 @@ export const UserRole = z.enum([
   "sme_owner",
   "sme_member",
   "admin",
+  "bank_partner", // a bank's backend calling with its partner key (e.g. the banking app's payee check)
 ]);
 export const AlertStatus = z.enum([
   "open",
@@ -102,6 +103,24 @@ export const Channel = z.enum(["web", "whatsapp", "telegram", "email"]);
 
 export const Text = z.object({ en: z.string(), ms: z.string() });
 export const Timestamp = z.string().describe("ISO 8601 timestamp");
+
+/** What the AI did for a result: models, web calls, timings (shown to users as the "AI trace"). */
+export const AiTrace = z.object({
+  calls: z.array(
+    z.object({
+      kind: z.enum(["model", "embedding", "tavily"]),
+      model: z.string().optional(),
+      op: z.string().optional(),
+      prompt: z.string().optional(),
+      ms: z.number(),
+      tokens: z.number().nullable().optional(),
+      reasoning: z.boolean().optional(),
+      reasoningTokens: z.number().nullable().optional(),
+    }),
+  ),
+  totalMs: z.number(),
+  cached: z.boolean(),
+});
 export const Money = z.number().nonnegative().describe("Amount in MYR");
 
 export const Page = <T extends z.ZodType>(item: T) =>
@@ -194,6 +213,13 @@ export const ReportInput = z.object({
     .max(4000)
     .optional()
     .describe("Must already be redacted (no names, IC, full numbers)"),
+  scriptText: z
+    .string()
+    .max(4000)
+    .optional()
+    .describe(
+      "The scam message or screenshot transcript as received; redacted by the gateway, only the redacted text is stored",
+    ),
   language: z.enum(["ms", "en", "zh", "ta", "mixed"]).optional(),
   victimState: z.string().max(40).optional(),
   victimAgeBand: AgeBand.optional(),
@@ -262,6 +288,16 @@ export const ReportResult = z.object({
     .string()
     .nullable()
     .describe("Earlier case from the same reporter with the same identifiers"),
+  campaign: z
+    .object({
+      id: z.number().int(),
+      label: z.string(),
+      reports24h: z.number().int(),
+      similarity: z.number(),
+    })
+    .nullable()
+    .default(null)
+    .describe("A known scam campaign this report's script matches (embedding similarity)"),
   verdicts: z.array(Verdict),
   callSheet: CallSheet,
 });
@@ -495,6 +531,10 @@ export const Campaign = z.object({
   spikeZ: z.number(),
   status: z.string(),
   totalCases: z.number().int(),
+  origin: z.enum(["seed", "detected"]).default("seed"),
+  summary: Text.nullable().default(null),
+  keyPhrases: z.array(z.string()).default([]),
+  warning: Text.nullable().default(null),
 });
 export const BankDashboard = z.object({
   openAlerts: z.number().int(),
@@ -644,6 +684,7 @@ export const WebLeads = z.object({
   relevantCount: z.number().int(),
   cached: z.boolean(),
   fetchedAt: Timestamp,
+  trace: AiTrace.optional(),
 });
 export const UrlCheckInput = z.object({ url: z.string().min(4).max(2000) });
 export const UrlCheckResult = z.object({
@@ -662,8 +703,81 @@ export const UrlCheckResult = z.object({
     .nullable(),
   cached: z.boolean(),
   fetchedAt: Timestamp,
+  trace: AiTrace.optional(),
 });
 export const InvestmentCheckInput = z.object({ name: z.string().min(2).max(200) });
+
+// ---------- Phase 7: case brief, campaign detection, public check, news ----------
+const BriefPoint = z.object({ text: z.string(), evidence: z.array(z.string()) });
+export const CaseBrief = z.object({
+  headline: Text,
+  modusOperandi: z.array(BriefPoint),
+  moneyTrail: z.array(BriefPoint),
+  redFlags: z.array(BriefPoint),
+  recommendedActions: z.array(BriefPoint),
+  referral: Text,
+  gaps: z.array(z.string()),
+  model: z.string(),
+  promptVersion: z.string(),
+  trace: AiTrace,
+});
+export const CampaignMatchInput = z.object({ text: z.string().min(10).max(4000) });
+const MatchedCampaign = z
+  .object({
+    id: z.number().int(),
+    label: z.string(),
+    reports24h: z.number().int(),
+    scamType: ScamType.nullable(),
+  })
+  .nullable();
+export const CampaignMatch = z.object({
+  campaign: MatchedCampaign,
+  similarity: z.number().nullable(),
+  trace: AiTrace.optional(),
+});
+export const DetectResult = z.object({
+  checked: z.number().int().describe("Unassigned scripts in the novelty pool"),
+  created: z.array(
+    z.object({ id: z.number().int(), label: z.string(), reports: z.number().int() }),
+  ),
+});
+export const CampaignReviewInput = z.object({ decision: z.enum(["confirm", "dismiss"]) });
+export const PublicCheckInput = z.object({ text: z.string().min(2).max(2000) });
+export const PublicScreenshotInput = z.object({
+  imageBase64: z
+    .string()
+    .min(100)
+    .max(8_000_000)
+    .describe("PNG, JPEG or WebP, base64, up to ~5.5 MB"),
+  mime: z.enum(["image/png", "image/jpeg", "image/webp"]),
+});
+export const PublicCheckResult = z.object({
+  verdicts: z.array(Verdict),
+  pattern: z
+    .object({ scamType: z.string(), summary: Text, action: Text.nullable() })
+    .nullable()
+    .describe("The scam pattern Nemotron recognises (messages of 30+ characters, or a screenshot)"),
+  transcript: z.string().nullable().describe("Screenshot only: the text Nemotron read"),
+  campaign: MatchedCampaign,
+  trace: AiTrace.nullable(),
+});
+export const NewsFeed = z.object({
+  items: z.array(
+    z.object({
+      headline: z.string(),
+      summary: Text,
+      scamType: z.string().nullable(),
+      lossMyr: z.number().nullable(),
+      state: z.string().nullable(),
+      url: z.string(),
+      source: z.string(),
+      publishedAt: z.string().nullable(),
+    }),
+  ),
+  fetchedAt: Timestamp,
+  cached: z.boolean(),
+  trace: AiTrace.optional(),
+});
 
 export type Verdict = z.infer<typeof Verdict>;
 export type Me = z.infer<typeof Me>;

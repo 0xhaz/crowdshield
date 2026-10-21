@@ -24,7 +24,9 @@ export type UserPrincipal = {
   role: string;
 };
 export type ServicePrincipal = { kind: "service"; name: string };
-export type Principal = UserPrincipal | ServicePrincipal;
+/** A bank's own backend (partner key), e.g. the banking app asking for a payee check. */
+export type PartnerPrincipal = { kind: "partner"; orgId: string; role: "bank_partner" };
+export type Principal = UserPrincipal | ServicePrincipal | PartnerPrincipal;
 
 declare module "express" {
   interface Request {
@@ -92,14 +94,29 @@ export class AuthGuard implements CanActivate {
       if (p.kind === "service" || (p.kind === "user" && p.role === "admin")) return true;
       throw new ForbiddenException("Service key required");
     }
-    if (p.kind === "user" && auth.includes(p.role as never)) return true;
+    if (p.kind !== "service" && auth.includes(p.role as never)) return true;
     throw new ForbiddenException("Your role can't use this endpoint");
+  }
+
+  private partnerOrgId?: string;
+  private async partnerOrg(): Promise<string> {
+    if (!this.partnerOrgId) {
+      const [o] = await this.db
+        .select({ id: org.id })
+        .from(org)
+        .where(eq(org.name, this.config.bankPartnerOrg));
+      if (!o) throw new UnauthorizedException("Partner bank is not set up");
+      this.partnerOrgId = o.id;
+    }
+    return this.partnerOrgId;
   }
 
   private async authenticate(req: Request): Promise<Principal | undefined> {
     const key = req.header("x-api-key");
     if (key) {
       if (safeEqual(key, this.config.botApiKey)) return { kind: "service", name: "bot" };
+      if (this.config.bankPartnerKey && safeEqual(key, this.config.bankPartnerKey))
+        return { kind: "partner", orgId: await this.partnerOrg(), role: "bank_partner" };
       throw new UnauthorizedException("Invalid API key");
     }
     const header = req.header("authorization");
@@ -132,6 +149,12 @@ export const CurrentPrincipal = createParamDecorator(
 export function requireUser(p: Principal | undefined): UserPrincipal {
   if (p?.kind !== "user") throw new ForbiddenException("A signed-in user is required");
   return p;
+}
+
+/** The organisation acting: a signed-in user's org, or the partner bank's backend. */
+export function requireOrg(p: Principal | undefined): { orgId: string } {
+  if (p?.kind === "user" || p?.kind === "partner") return { orgId: p.orgId };
+  throw new ForbiddenException("An organisation is required");
 }
 
 export const actorId = (p: Principal | undefined) => (p?.kind === "user" ? p.userId : null);

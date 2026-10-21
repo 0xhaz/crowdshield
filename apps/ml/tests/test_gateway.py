@@ -209,3 +209,33 @@ def test_official_contact_requires_the_page_to_name_the_company():
         "Cenviro Sdn Bhd, waste management. Call +603-27276100", "Cemvora Trading Sdn Bhd"
     )
     assert not names_company("Southern Latex Sdn Bhd gloves", "Glovexa Supply Sdn Bhd")
+
+
+# ---------- case brief ----------
+BRIEF = {
+    "headline": {"en": "Mule paid", "ms": "Akaun keldai"},
+    "modus_operandi": [],
+    "money_trail": [],
+    "red_flags": [],
+    "recommended_actions": [],
+    "referral": {"en": "To NSRC", "ms": "Kepada NSRC"},
+    "gaps": [],
+}
+
+
+@respx.mock
+async def test_case_brief_redacts_free_text_but_keeps_dates_and_masked_ids():
+    route = respx.post(f"{NEBIUS}/chat/completions").mock(return_value=llm_reply(BRIEF))
+    case = {
+        "narrative": "He called from 011-2345 4821 and said pay Maybank 5123 4567 8812",
+        "identifiers": [{"id": "entity:1", "masked": "+60 11-***-4821"}],
+        "timeline": [{"id": "event:1", "at": "2026-10-18T06:48:18.764Z", "detail": "IC 680312-10-5524 shown"}],
+        "moneyTrail": [{"id": "hop:1", "at": "2026-10-18T06:48:18.764Z", "amountMyr": 48000}],
+    }
+    out = await gateway().case_brief(case)
+    sent = json.loads(route.calls[0].request.content)["messages"][-1]["content"]
+    for secret in ["011-2345 4821", "5123 4567 8812", "680312-10-5524"]:
+        assert secret not in sent
+    assert "2026-10-18T06:48:18.764Z" in sent and "+60 11-***-4821" in sent
+    assert out["model"] == "ultra-model" and out["headline"]["en"] == "Mule paid"
+    assert json.loads(route.calls[0].request.content)["chat_template_kwargs"] == {"enable_thinking": True}

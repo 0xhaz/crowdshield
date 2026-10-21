@@ -22,13 +22,38 @@ export class MlClient {
   private readonly log = new Logger("ml");
   constructor(private readonly config: Config) {}
 
-  async post<T>(path: string, body: unknown, timeoutMs = 20_000): Promise<T> {
+  post<T>(path: string, body: unknown, timeoutMs = 20_000): Promise<T> {
+    return this.request<T>(
+      path,
+      {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(body),
+      },
+      timeoutMs,
+    );
+  }
+
+  get<T>(path: string, timeoutMs = 20_000): Promise<T> {
+    return this.request<T>(path, { method: "GET" }, timeoutMs);
+  }
+
+  /** Multipart upload (screenshots, invoices). */
+  upload<T>(path: string, data: Buffer, mime: string, timeoutMs = 30_000): Promise<T> {
+    const form = new FormData();
+    form.append("file", new Blob([new Uint8Array(data)], { type: mime }), "upload");
+    return this.request<T>(path, { method: "POST", body: form }, timeoutMs);
+  }
+
+  private async request<T>(path: string, init: RequestInit, timeoutMs: number): Promise<T> {
     const started = Date.now();
     try {
       const res = await fetch(new URL(path, this.config.mlUrl), {
-        method: "POST",
-        headers: { "content-type": "application/json", "x-internal-key": this.config.mlKey },
-        body: JSON.stringify(body),
+        ...init,
+        headers: {
+          ...(init.headers as Record<string, string>),
+          "x-internal-key": this.config.mlKey,
+        },
         signal: AbortSignal.timeout(timeoutMs),
       });
       if (!res.ok) throw new Error(`ML gateway ${res.status}`);
@@ -37,7 +62,7 @@ export class MlClient {
       return out;
     } catch (e) {
       this.log.warn(`${path} failed after ${Date.now() - started}ms: ${(e as Error).message}`);
-      throw new ServiceUnavailableException("Web check is unavailable right now");
+      throw new ServiceUnavailableException("The AI service is unavailable right now");
     }
   }
 }

@@ -22,7 +22,8 @@
     "demo:start": "pnpm infra:up && pnpm db:migrate && turbo run dev",
     "demo:reset": "node scripts/demo-reset.mjs",
     "demo:prewarm": "node scripts/demo-prewarm.mjs",
-    "e2e": "pnpm --filter @crowdshield/web e2e"
+    "e2e": "pnpm --filter @crowdshield/web e2e",
+    "demo:wave": "node scripts/demo-campaign-wave.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

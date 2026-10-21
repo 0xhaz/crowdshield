@@ -8,12 +8,14 @@ import { ResponseContractInterceptor } from "./common/route.js";
 import { VerdictService } from "./common/verdicts.js";
 import { InfraModule } from "./infra.js";
 import { BankController, BankService } from "./modules/bank.js";
+import { CampaignService, CampaignsController } from "./modules/campaigns.js";
 import { CasesController } from "./modules/cases.js";
 import { CoreController } from "./modules/core.controller.js";
 import { EntitiesController } from "./modules/entities.js";
 import { GraphActions } from "./modules/graph-actions.js";
 import { ReportsController, ReportsService } from "./modules/reports.js";
 import { SmeController, SupplierCheckService } from "./modules/sme/sme.js";
+import { PublicCheckService, PublicController } from "./modules/public.js";
 import { WebController } from "./modules/web.js";
 import { MlClient } from "./common/ml.js";
 
@@ -27,6 +29,8 @@ import { MlClient } from "./common/ml.js";
     EntitiesController,
     SmeController,
     WebController,
+    CampaignsController,
+    PublicController,
   ],
   providers: [
     TokenService,
@@ -38,6 +42,8 @@ import { MlClient } from "./common/ml.js";
     ReportsService,
     BankService,
     SupplierCheckService,
+    CampaignService,
+    PublicCheckService,
     { provide: APP_GUARD, useClass: AuthGuard },
     { provide: APP_INTERCEPTOR, useClass: ResponseContractInterceptor },
     { provide: APP_FILTER, useClass: ErrorFilter },

@@ -340,3 +340,4 @@ export function normaliseSsmNo(raw: string): string {
   if (old) return `${old[1]}-${old[2]}`;
   throw new NormaliseError("ssm_no", `not an SSM registration number: ${raw}`);
 }
+export { detectIdentifiers, defaultRole, type Found } from "./detect.js";

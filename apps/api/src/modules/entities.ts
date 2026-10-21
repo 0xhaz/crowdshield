@@ -21,7 +21,7 @@ import {
 } from "@crowdshield/db";
 import { recomputeWithNeighbours } from "@crowdshield/graph";
 import { Controller, NotFoundException } from "@nestjs/common";
-import { and, desc, eq, gte, inArray, or, sql, type SQL } from "drizzle-orm";
+import { and, desc, eq, gte, inArray, ne, or, sql, type SQL } from "drizzle-orm";
 import { z } from "zod";
 import { AuditService } from "../common/audit.js";
 import { CurrentPrincipal, type Principal, requireUser } from "../common/auth.js";
@@ -54,27 +54,46 @@ export async function entitySummaries(db: Db, where: SQL | undefined, limit: num
   }));
 }
 
-export async function campaignList(db: Db, limit = 20) {
+type CampaignSummary = {
+  summary: { en: string; ms: string };
+  keyPhrases: string[];
+  warning: { en: string; ms: string };
+};
+
+/** Campaigns by spike; detected ones awaiting review first. Dismissed ones only on request. */
+export async function campaignList(db: Db, limit = 20, withDismissed = false) {
   const rows = await db
     .select({
       c: campaign,
       total: sql<number>`(SELECT count(*)::int FROM scam_case sc WHERE sc.campaign_id = "campaign"."id")`,
     })
     .from(campaign)
-    .orderBy(desc(campaign.spikeZ), desc(campaign.lastSeen))
+    .where(withDismissed ? undefined : ne(campaign.status, "dismissed"))
+    .orderBy(
+      desc(sql`${campaign.status} = 'candidate'`),
+      desc(campaign.spikeZ),
+      desc(campaign.lastSeen),
+    )
     .limit(limit);
-  return rows.map(({ c, total }) => ({
-    id: c.id,
-    label: c.label,
-    scamType: c.scamType,
-    firstSeen: c.firstSeen.toISOString(),
-    lastSeen: c.lastSeen.toISOString(),
-    reports24h: c.reports24h,
-    baselineDaily: c.baselineDaily,
-    spikeZ: c.spikeZ,
-    status: c.status,
-    totalCases: total,
-  }));
+  return rows.map(({ c, total }) => {
+    const s = c.summary as CampaignSummary | null;
+    return {
+      id: c.id,
+      label: c.label,
+      scamType: c.scamType,
+      firstSeen: c.firstSeen.toISOString(),
+      lastSeen: c.lastSeen.toISOString(),
+      reports24h: c.reports24h,
+      baselineDaily: c.baselineDaily,
+      spikeZ: c.spikeZ,
+      status: c.status,
+      totalCases: total,
+      origin: c.origin,
+      summary: s?.summary ?? null,
+      keyPhrases: s?.keyPhrases ?? [],
+      warning: s?.warning ?? null,
+    };
+  });
 }
 
 @Controller()

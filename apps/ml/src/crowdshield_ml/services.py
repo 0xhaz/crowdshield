@@ -405,8 +405,17 @@ class Gateway:
     async def case_brief(self, case: dict) -> dict:
         import json as _json
 
+        # Identifiers arrive masked; only free text (narrative, event details) can carry personal data.
+        # Redacting the whole JSON would turn dates and masked numbers into tokens.
+        case = dict(case)
+        if isinstance(case.get("narrative"), str):
+            case["narrative"] = redact(case["narrative"]).text
+        if isinstance(case.get("timeline"), list):
+            case["timeline"] = [
+                {**t, "detail": redact(t["detail"]).text} if isinstance(t.get("detail"), str) else t
+                for t in case["timeline"]
+            ]
         payload = _json.dumps(case, ensure_ascii=False)
-        payload = redact(payload).text if "narrative" in case else payload  # belt and braces
         key = self.cache.key("brief", prompts.BRIEF_V, self.model("brief"), payload)
         if hit := await self.cache.get(key):
             return hit
@@ -436,7 +445,9 @@ class Gateway:
             max_tokens=3000,
             thinking=True,
         )
-        return {**out.model_dump(), "model": self.model("label"), "prompt_version": prompts.LABEL_V}
+        result = out.model_dump()
+        result["key_phrases"] = result["key_phrases"][:6]
+        return {**result, "model": self.model("label"), "prompt_version": prompts.LABEL_V}
 
     # ---------- news: what's happening this week (Tavily + Nemotron) ----------
     NEWS_QUERIES = (

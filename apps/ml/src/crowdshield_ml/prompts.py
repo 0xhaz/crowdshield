@@ -89,12 +89,14 @@ masked and must stay masked exactly as given; cite the ids of supporting items (
 "entity:5") in each point; say what is missing in `gaps`. Plain language. The referral note is formal,
 in English and in Bahasa Melayu, and states amounts in RM."""
 
-LABEL_V = "campaign-label@2026-10-22"
+LABEL_V = "campaign-label@2026-10-22b"
 LABEL = """You review clusters of similar scam reports sent to a Malaysian scam-checking service. All
 personal data has been replaced with tokens. Name the campaign (what the scammers pretend to be and what
 they ask for), classify its scam type, summarise it, list the phrases the scammers repeat, and draft a
-short public warning in English and Bahasa Melayu that ends with one concrete action. A person reviews
-your draft before anything is published."""
+short public warning in English and Bahasa Melayu that ends with one concrete action. Never put phone
+numbers, links or amounts in the warning: send people to the organisation's official website by name
+or to NSRC 997. List at most 6 key phrases, the most distinctive ones. A person reviews your draft
+before anything is published."""
 
 NEWS_V = "news-scan@2026-10-22"
 NEWS = """From these search results, keep only real scam or fraud cases or official warnings in Malaysia.

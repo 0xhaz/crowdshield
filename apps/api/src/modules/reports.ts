@@ -28,6 +28,7 @@ import { Body, IdempotencyKey, Route, UuidParam } from "../common/route.js";
 import { VerdictService } from "../common/verdicts.js";
 import { Config } from "../config.js";
 import { type Db, InjectDb } from "../infra.js";
+import { CampaignService } from "./campaigns.js";
 import { caseSummaries } from "./cases.js";
 
 type Input = z.output<typeof ReportInput>;
@@ -49,6 +50,7 @@ export class ReportsService {
     private readonly config: Config,
     private readonly verdicts: VerdictService,
     private readonly audit: AuditService,
+    private readonly campaigns: CampaignService,
   ) {}
 
   async create(input: Input, p: Principal) {
@@ -164,6 +166,12 @@ export class ReportsService {
     });
 
     await this.verdicts.invalidate(result.recomputed);
+    // The script joins a known campaign by similarity (or seeds a new one); never blocks the report
+    const script = input.scriptText ?? input.narrative;
+    const campaign =
+      !result.duplicateOf && script && script.trim().length >= 30
+        ? await this.campaigns.attachScript(result.caseId, script, input.language)
+        : null;
     const verdicts: Verdict[] = [];
     for (const id of result.entityIds) verdicts.push(await this.verdicts.forEntity(id));
     await this.audit.log(p, result.duplicateOf ? "report_duplicate" : "report_created", null, {
@@ -173,6 +181,7 @@ export class ReportsService {
     return {
       caseId: result.caseId,
       duplicateOf: result.duplicateOf,
+      campaign,
       verdicts,
       callSheet: this.callSheet(input, normalised),
     };

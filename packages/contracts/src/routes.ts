@@ -18,6 +18,8 @@ export interface RouteDef {
 }
 
 const BANK = ["bank_analyst", "bank_supervisor", "admin"] as const;
+/** Bank staff, or the bank's own backend with its partner key (the payee check from the banking app). */
+const BANK_API = [...BANK, "bank_partner"] as const;
 const SUPERVISOR = ["bank_supervisor", "admin"] as const;
 const SME = ["sme_owner", "sme_member", "admin"] as const;
 
@@ -85,7 +87,7 @@ export const routes = {
     method: "post",
     path: "/v1/payee-check",
     summary: "Risk of a payee before a transfer, with the live call signal",
-    auth: BANK,
+    auth: BANK_API,
     body: s.PayeeCheckInput,
     response: s.PayeeCheckResult,
     idempotent: true,
@@ -200,6 +202,68 @@ export const routes = {
     auth: "any",
     body: s.InvestmentCheckInput,
     response: s.WebLeads,
+  }),
+
+  caseBrief: route({
+    method: "post",
+    path: "/v1/cases/:id/brief",
+    summary: "Nemotron Ultra (reasoning) case brief + NSRC/PDRM referral note",
+    auth: BANK,
+    response: s.CaseBrief,
+  }),
+  campaignMatch: route({
+    method: "post",
+    path: "/v1/campaigns/match",
+    summary: "Known scam campaign for a message (embedding similarity)",
+    auth: "any",
+    body: s.CampaignMatchInput,
+    response: s.CampaignMatch,
+  }),
+  detectCampaigns: route({
+    method: "post",
+    path: "/v1/campaigns/detect",
+    summary: "Cluster the novelty pool into new campaign candidates; Nemotron labels them",
+    auth: BANK,
+    response: s.DetectResult,
+  }),
+  reviewCampaign: route({
+    method: "post",
+    path: "/v1/campaigns/:id/review",
+    summary: "Confirm or dismiss a detected campaign",
+    auth: BANK,
+    body: s.CampaignReviewInput,
+    response: s.Campaign,
+  }),
+  backfillScripts: route({
+    method: "post",
+    path: "/v1/campaigns/backfill",
+    summary: "Embed case narratives that have no script yet (demo setup)",
+    auth: "service",
+    response: z.object({ embedded: z.number().int() }),
+  }),
+  publicCheck: route({
+    method: "post",
+    path: "/v1/public/check",
+    summary: "Landing-page check: identifiers in a message, or the scam pattern (rate-limited)",
+    auth: "public",
+    body: s.PublicCheckInput,
+    response: s.PublicCheckResult,
+  }),
+  publicScreenshot: route({
+    method: "post",
+    path: "/v1/public/screenshot",
+    summary:
+      "Landing-page screenshot check: Nemotron VL reads it, then the same check (rate-limited)",
+    auth: "public",
+    body: s.PublicScreenshotInput,
+    response: s.PublicCheckResult,
+  }),
+  news: route({
+    method: "get",
+    path: "/v1/news",
+    summary: "Scams in the news this week (Tavily + Nemotron), with sources",
+    auth: "public",
+    response: s.NewsFeed,
   }),
 
   listCampaigns: route({

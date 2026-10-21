@@ -19,12 +19,12 @@ export class AuditService {
   ) {
     await tx.insert(auditLog).values({
       actor: actorId(p),
-      orgId: p?.kind === "user" ? p.orgId : null,
+      orgId: p?.kind === "user" || p?.kind === "partner" ? p.orgId : null,
       action,
       entityId,
       detail: {
         ...detail,
-        via: p?.kind === "service" ? p.name : p?.kind === "user" ? "user" : "anonymous",
+        via: p?.kind === "service" ? p.name : (p?.kind ?? "anonymous"),
       },
       policyVersion: POLICY_VERSION,
     });

@@ -11,6 +11,8 @@ export class Config {
   readonly corsOrigins: string[];
   readonly mlUrl: string;
   readonly mlKey: string;
+  readonly bankPartnerKey: string | undefined;
+  readonly bankPartnerOrg: string;
   readonly tokenTtlHours = 12;
 
   constructor() {
@@ -29,6 +31,11 @@ export class Config {
     this.corsOrigins = (process.env.WEB_URL ?? "http://localhost:3020").split(",");
     this.mlUrl = process.env.ML_GATEWAY_URL ?? "http://localhost:8020";
     this.mlKey = process.env.ML_API_KEY ?? "";
+    // The banking-app demo calls the payee check as the partner bank's backend
+    this.bankPartnerKey = process.env.BANK_PARTNER_KEY || undefined;
+    if (this.bankPartnerKey && this.bankPartnerKey.length < 24)
+      throw new Error("BANK_PARTNER_KEY must be at least 24 characters");
+    this.bankPartnerOrg = process.env.BANK_PARTNER_ORG ?? "Nusa Digital Bank";
   }
 
   get secrets() {

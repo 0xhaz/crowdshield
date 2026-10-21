@@ -17,6 +17,7 @@ import { AuditService } from "../common/audit.js";
 import {
   CurrentPrincipal,
   type Principal,
+  requireOrg,
   requireUser,
   type UserPrincipal,
 } from "../common/auth.js";
@@ -99,7 +100,8 @@ export class BankService {
     private readonly audit: AuditService,
   ) {}
 
-  async payeeCheck(input: PayeeInput, p: UserPrincipal) {
+  async payeeCheck(input: PayeeInput, p: Principal) {
+    const { orgId } = requireOrg(p);
     if (!["bank_account", "ewallet"].includes(input.payee.type)) {
       throw new BadRequestException("payee must be a bank_account or ewallet");
     }
@@ -144,7 +146,7 @@ export class BankService {
       const [a] = await this.db
         .insert(alert)
         .values({
-          orgId: p.orgId,
+          orgId,
           kind: "payee_check",
           entityId,
           risk: combinedRisk,
@@ -323,8 +325,8 @@ export class BankController {
     @CurrentPrincipal() p: Principal,
     @IdempotencyKey() key?: string,
   ) {
-    const user = requireUser(p);
-    return this.idem.run(`payee:${user.orgId}`, key, () => this.bank.payeeCheck(input, user));
+    const { orgId } = requireOrg(p);
+    return this.idem.run(`payee:${orgId}`, key, () => this.bank.payeeCheck(input, p));
   }
 
   @Route("listAlerts")
