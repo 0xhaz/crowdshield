@@ -2,6 +2,7 @@
 // story-only messages) and object storage for evidence. Everything else goes through the API.
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { createHash, randomUUID } from "node:crypto";
+import type { TraceLike } from "@crowdshield/i18n";
 import type { Media } from "./channel.js";
 
 export interface ScreenshotReading {
@@ -12,6 +13,7 @@ export interface ScreenshotReading {
   impersonating: string | null;
   summary: { en: string; ms: string };
   needs_review: boolean;
+  trace?: TraceLike;
 }
 
 export interface TextClassification {
@@ -19,6 +21,7 @@ export interface TextClassification {
   impersonating: string | null;
   summary: { en: string; ms: string };
   needs_review: boolean;
+  trace?: TraceLike;
 }
 
 export interface Ml {
@@ -45,7 +48,9 @@ export function mlClient(baseUrl: string, key: string): Ml {
       signal: AbortSignal.timeout(timeoutMs),
     });
     if (!res.ok) throw new Error(`ML gateway ${res.status}`);
-    return (await res.json()) as T;
+    const out = (await res.json()) as T & { trace?: { total_ms?: number } & TraceLike };
+    if (out.trace) out.trace.totalMs = out.trace.total_ms ?? 0; // gateway speaks snake_case
+    return out;
   };
   return {
     screenshot: (m) => {

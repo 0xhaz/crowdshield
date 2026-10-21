@@ -109,6 +109,37 @@ export interface SeedSummary {
   demoPassword: string;
 }
 
+// Reports arrive in BM and English (and mixed); varied scripts make campaign matching realistic
+const MACAU_SCRIPTS = [
+  {
+    language: "en",
+    narrative:
+      "Caller claimed to be a PDRM officer; said my IC was linked to money laundering and transferred me to a 'BNM officer' on WhatsApp.",
+  },
+  {
+    language: "ms",
+    narrative:
+      "Pemanggil mengaku pegawai PDRM, kata IC saya terlibat pengubahan wang haram dan sambungkan saya kepada 'pegawai BNM' di WhatsApp yang suruh pindah simpanan ke akaun selamat.",
+  },
+  {
+    language: "mixed",
+    narrative:
+      "Dapat call dari 'polis', dia kata akaun bank saya kena siasat sebab money laundering. Suruh pindah duit ke akaun selamat dan jangan beritahu family.",
+  },
+];
+const LHDN_SCRIPTS = [
+  {
+    language: "en",
+    narrative:
+      "Caller from 'LHDN' said I have a RM 1,280 tax refund; sent a link to 'claim' that asked for online banking login.",
+  },
+  {
+    language: "ms",
+    narrative:
+      "Pemanggil dari 'LHDN' kata saya ada bayaran balik cukai RM 1,280 dan hantar pautan untuk tuntut, pautan itu minta log masuk perbankan dalam talian.",
+  },
+];
+
 export async function seed(
   db: DbOrTx,
   secrets: Secrets,
@@ -286,8 +317,7 @@ export async function seed(
       reporterId,
       reportedAt: ago(r() * 14 * DAY),
       ageBand: pick(["60+", "60+", "40-59", "25-39"]),
-      narrative:
-        "Caller claimed to be a PDRM officer; said my IC was linked to money laundering and transferred me to a 'BNM officer' on WhatsApp.",
+      ...MACAU_SCRIPTS[i % MACAU_SCRIPTS.length]!,
       observations: [
         [p1, "caller"],
         [bnm, "impersonated_official"],
@@ -549,8 +579,7 @@ export async function seed(
       campaign: "lhdn",
       reporterId: await consumer(),
       reportedAt: recent ? ago(r() * 22 * HOUR) : ago((3 + r() * 10) * DAY),
-      narrative:
-        "Caller from 'LHDN' said I have a RM 1,280 tax refund; sent a link to 'claim' that asked for online banking login.",
+      ...LHDN_SCRIPTS[i % LHDN_SCRIPTS.length]!,
       observations: [
         [recent && i % 2 ? p5 : p4, "caller"],
         [u2, "link_sent"],

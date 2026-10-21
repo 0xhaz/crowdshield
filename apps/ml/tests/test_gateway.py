@@ -229,7 +229,9 @@ async def test_case_brief_redacts_free_text_but_keeps_dates_and_masked_ids():
     case = {
         "narrative": "He called from 011-2345 4821 and said pay Maybank 5123 4567 8812",
         "identifiers": [{"id": "entity:1", "masked": "+60 11-***-4821"}],
-        "timeline": [{"id": "event:1", "at": "2026-10-18T06:48:18.764Z", "detail": "IC 680312-10-5524 shown"}],
+        "timeline": [
+            {"id": "event:1", "at": "2026-10-18T06:48:18.764Z", "detail": "IC 680312-10-5524 shown"}
+        ],
         "moneyTrail": [{"id": "hop:1", "at": "2026-10-18T06:48:18.764Z", "amountMyr": 48000}],
     }
     out = await gateway().case_brief(case)

@@ -160,3 +160,39 @@ export function fill(text: Text, vars: Record<string, string | number>): Text {
   const sub = (s: string) => s.replace(/\{(\w+)\}/g, (_, k: string) => String(vars[k] ?? `{${k}}`));
   return { en: sub(text.en), ms: sub(text.ms) };
 }
+
+// ---------- AI trace (which model did what, shown in the bot and the web app) ----------
+const MODEL_NAMES: [RegExp, string][] = [
+  [/ultra/i, "Nemotron 3 Ultra"],
+  [/super-vl|super_vl/i, "Nemotron 3.5 Super VL"],
+  [/super/i, "Nemotron 3 Super"],
+  [/nano/i, "Nemotron 3 Nano"],
+  [/lightning/i, "Nemotron 3.5 Lightning"],
+  [/embedding/i, "Qwen3 Embedding"],
+];
+
+/** "nvidia/Nemotron-3-Ultra-550b-a55b" → "Nemotron 3 Ultra" */
+export const modelLabel = (id: string | undefined) =>
+  MODEL_NAMES.find(([re]) => re.test(id ?? ""))?.[1] ?? id ?? "model";
+
+export interface TraceLike {
+  calls: { kind: string; model?: string; ms: number; reasoning?: boolean }[];
+  totalMs: number;
+  cached: boolean;
+}
+
+/** One line: "Nemotron 3 Ultra (reasoning) · Tavily ×2 · 3.1 s", or "cached" when nothing ran. */
+export function traceSummary(t: TraceLike | null | undefined): string | null {
+  if (!t) return null;
+  if (!t.calls.length) return t.cached ? "cached result" : null;
+  const parts = new Map<string, number>();
+  for (const c of t.calls) {
+    const name =
+      c.kind === "tavily"
+        ? "Tavily web search"
+        : `${modelLabel(c.model)}${c.reasoning ? " (reasoning)" : ""}`;
+    parts.set(name, (parts.get(name) ?? 0) + 1);
+  }
+  const list = [...parts].map(([n, k]) => (k > 1 ? `${n} ×${k}` : n)).join(" · ");
+  return `${list} · ${(t.totalMs / 1000).toFixed(1)} s`;
+}

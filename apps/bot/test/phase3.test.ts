@@ -29,7 +29,7 @@ function setup() {
       id: string,
       args: {
         query?: { value: string };
-        body?: { value?: string; url?: string; name?: string };
+        body?: { value?: string; url?: string; name?: string; text?: string };
       } = {},
     ) {
       calls.push(id);
@@ -71,12 +71,25 @@ function setup() {
             summary: { en: "Fake refund page.", ms: "Halaman palsu." },
           },
         };
+      if (id === "campaignMatch")
+        return {
+          campaign: /polis|police/i.test(String((args.body as { text?: string }).text))
+            ? { id: 1, label: "Fake PDRM/BNM officer calls", reports24h: 12, scamType: null }
+            : null,
+          similarity: 0.8,
+        };
       if (id === "investmentCheck")
         return { query: "q", relevantCount: 0, cached: false, fetchedAt: "", leads: [] };
       if (id === "createReport")
         return {
           caseId: "c1",
           duplicateOf: null,
+          campaign: {
+            id: 1,
+            label: "Fake PDRM/BNM officer calls",
+            reports24h: 13,
+            similarity: 0.8,
+          },
           verdicts: [],
           callSheet: { title: { en: "", ms: "" }, lines: [], reminder: { en: "", ms: "" } },
         };
@@ -97,10 +110,19 @@ function setup() {
       needs_review: false,
     }),
     classify: async (text) => ({
-      scam_type: text.includes("parcel") ? "parcel" : "not_a_scam",
+      scam_type: text.includes("parcel")
+        ? "parcel"
+        : /polis/i.test(text)
+          ? "macau_impersonation"
+          : "not_a_scam",
       impersonating: null,
       summary: { en: "A courier fee message.", ms: "Mesej yuran kurier." },
       needs_review: false,
+      trace: {
+        calls: [{ kind: "model", model: "nvidia/Nemotron-3-Ultra-550b-a55b", ms: 980 }],
+        totalMs: 991,
+        cached: false,
+      },
     }),
   };
   const stored: string[] = [];
@@ -235,5 +257,44 @@ describe("stories and web checks", () => {
     );
     expect(html(out)).toContain("<b>Qorvanta</b>");
     expect(html(out)).toMatch(/That isn't approval/);
+  });
+});
+
+describe("examples, campaigns and the AI trace", () => {
+  it("/start offers one-tap examples that run a real check", async () => {
+    const { deps, calls } = setup();
+    const s = newSession("en");
+    const start = await handle({ kind: "command", name: "start", arg: "" }, s, deps);
+    const data = start.flatMap((m) => m.buttons?.flat() ?? []).map((b) => b.data);
+    expect(data).toEqual(["ex:0", "ex:1", "ex:2", "ex:3", "report:new"]);
+    const out = await handle({ kind: "button", data: "ex:0" }, s, deps);
+    expect(html(out)).toContain("Example: <code>011-2345 4821</code>");
+    expect(calls).toContain("lookup");
+  });
+
+  it("a story names the pattern, the known scam wave and the model that read it", async () => {
+    const { deps } = setup();
+    const s = newSession("en");
+    const out = html(await handle({ kind: "button", data: "ex:3" }, s, deps));
+    expect(out).toMatch(/Known scam wave:<\/b> Fake PDRM\/BNM officer calls\. 12 report/);
+    expect(out).toContain("🤖 Nemotron 3 Ultra · 1.0 s");
+  });
+
+  it("sends the message that started a report as its script, and shows the campaign it joined", async () => {
+    const { deps, bodies, followUps } = setup();
+    const s = newSession("en");
+    const text =
+      "Polis call: pindah ke Public Bank 6471 2093 5518 sekarang, jangan beritahu sesiapa.";
+    await handle({ kind: "text", text }, s, deps);
+    expect((await followUps()).map((m) => m.html).join()).toContain("Known scam wave");
+    await handle({ kind: "button", data: "report:0" }, s, deps);
+    await handle({ kind: "button", data: "rt:macau_impersonation" }, s, deps);
+    await handle({ kind: "button", data: "done" }, s, deps);
+    await handle({ kind: "button", data: "lost:n" }, s, deps);
+    await handle({ kind: "button", data: "skip" }, s, deps);
+    const out = await handle({ kind: "button", data: "consent:y" }, s, deps);
+    expect((bodies.createReport as { scriptText?: string }).scriptText).toBe(text);
+    expect(html(out)).toContain("13 report(s) in the last 24 hours");
+    expect(s.lastText).toBeUndefined();
   });
 });

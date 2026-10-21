@@ -5,7 +5,13 @@ import { ApiError, type ApiClient, type ReportInput, type Verdict } from "@crowd
 import type { IdentifierType } from "@crowdshield/normalise";
 import { randomUUID } from "node:crypto";
 import type { z } from "zod";
-import { SCAM_TYPE_ACTION, SCAM_TYPE_LABEL, type ScamTypeKey } from "@crowdshield/i18n";
+import {
+  SCAM_TYPE_ACTION,
+  SCAM_TYPE_LABEL,
+  type ScamTypeKey,
+  type TraceLike,
+  traceSummary,
+} from "@crowdshield/i18n";
 import type { Button, InEvent, Lang, Media, OutMessage } from "./channel.js";
 import { esc } from "./channel.js";
 import { COPY, REPORT_SCAM_TYPES, STATES, tr } from "./copy.js";
@@ -43,11 +49,15 @@ export interface ReportDraft {
   transferAt?: string;
   txnRef?: string;
   state?: string;
+  /** The message or screenshot text that started this report; the gateway redacts it before storing. */
+  scriptText?: string;
 }
 
 export interface Session {
   lang: Lang;
   lastChecked: Found[];
+  /** The last message (or screenshot text) checked, for the report's scam script. */
+  lastText?: string;
   report?: ReportDraft;
   awaitNsrcCaseId?: string;
   /** Screenshots received since the last report: attached to the next report as evidence. */
@@ -74,6 +84,56 @@ const rows = <T>(xs: T[], n: number) =>
   Array.from({ length: Math.ceil(xs.length / n) }, (_, i) => xs.slice(i * n, i * n + n));
 const reportButton = (s: Session): Button[][] => [[btn(t(s, "btnReportScam"), "report:new")]];
 
+/** /start examples, so a first-time user (or a judge) sees a real result in one tap. */
+export const EXAMPLES = [
+  "011-2345 4821",
+  "Maybank 5123 4567 8812",
+  "https://lhdn-refund-my.com/claim",
+  "Ada orang call mengaku pegawai polis, kata akaun bank saya terlibat pengubahan wang haram dan suruh pindah duit ke akaun selamat. Betul ke?",
+];
+const exampleButtons = (s: Session): Button[][] => [
+  [btn(t(s, "exCaller"), "ex:0"), btn(t(s, "exAccount"), "ex:1")],
+  [btn(t(s, "exLink"), "ex:2"), btn(t(s, "exStory"), "ex:3")],
+  ...reportButton(s),
+];
+const MIN_SCRIPT_CHARS = 30;
+/** Words, not just a forwarded number or link: only scripts are matched to campaigns. */
+const isScript = (text: string) =>
+  text
+    .replace(/\S*(https?:\/\/|www\.|\.[a-z]{2,}\/)\S*/gi, "")
+    .replace(/[\d+()-]/g, "")
+    .trim().length >= MIN_SCRIPT_CHARS;
+
+/** "🤖 Nemotron 3 Ultra · 1.0 s": which model answered, shown under AI-made content. */
+const aiLine = (trace: TraceLike | undefined) => {
+  const line = traceSummary(trace);
+  return line ? `\n<i>🤖 ${esc(line)}</i>` : "";
+};
+
+type Matched = { label: string; reports24h: number } | null;
+const campaignLine = (c: Matched, s: Session) =>
+  c
+    ? t(s, "knownCampaign").replace("{label}", esc(c.label)).replace("{n}", String(c.reports24h))
+    : "";
+
+async function matchCampaign(text: string, deps: Deps): Promise<Matched> {
+  if (!isScript(text)) return null;
+  try {
+    return (await deps.api.call("campaignMatch", { body: { text: text.slice(0, 4000) } })).campaign;
+  } catch {
+    return null;
+  }
+}
+
+/** A message long enough to be a scam script gets a known-campaign check as a follow-up. */
+function scheduleCampaignMatch(text: string, s: Session, deps: Deps) {
+  if (!deps.defer || !isScript(text)) return;
+  deps.defer(async () => {
+    const c = await matchCampaign(text, deps);
+    return c ? [{ html: campaignLine(c, s) }] : [];
+  });
+}
+
 export async function handle(ev: InEvent, s: Session, deps: Deps): Promise<OutMessage[]> {
   const now = deps.now?.() ?? new Date();
 
@@ -81,7 +141,11 @@ export async function handle(ev: InEvent, s: Session, deps: Deps): Promise<OutMe
     switch (ev.name) {
       case "start":
         delete s.report;
-        return [{ html: t(s, "welcome"), buttons: reportButton(s) }];
+        delete s.lastText;
+        return [
+          { html: t(s, "welcome") },
+          { html: t(s, "tryExample"), buttons: exampleButtons(s) },
+        ];
       case "help":
         return [{ html: t(s, "help") }];
       case "lang":
@@ -120,12 +184,14 @@ export async function handle(ev: InEvent, s: Session, deps: Deps): Promise<OutMe
 // ---------- checks ----------
 
 async function check(text: string, s: Session, deps: Deps): Promise<OutMessage[]> {
+  s.lastText = text.slice(0, 4000);
   const found = detectIdentifiers(text);
   if (!found.length) {
     // A story with no number in it ("is this a scam?"): let the model name the pattern
-    if (deps.ml && text.trim().length >= 30) return classifyStory(text, s, deps);
+    if (deps.ml && text.trim().length >= MIN_SCRIPT_CHARS) return classifyStory(text, s, deps);
     return [{ html: t(s, "nothingFound") }];
   }
+  scheduleCampaignMatch(text, s, deps);
   return cardsFor(found, s, deps);
 }
 
@@ -174,9 +240,15 @@ function scheduleWebChecks(found: Found[], verdicts: Verdict[], s: Session, deps
 
 async function classifyStory(text: string, s: Session, deps: Deps): Promise<OutMessage[]> {
   try {
-    const c = await deps.ml!.classify(text);
+    const [c, campaign] = await Promise.all([deps.ml!.classify(text), matchCampaign(text, deps)]);
     if (c.needs_review || c.scam_type === "not_a_scam") return [{ html: t(s, "notAScam") }];
-    return [{ html: patternLine(c.scam_type, c.summary[s.lang], s), buttons: reportButton(s) }];
+    const known = campaign ? `\n\n${campaignLine(campaign, s)}` : "";
+    return [
+      {
+        html: `${patternLine(c.scam_type, c.summary[s.lang], s)}${known}${aiLine(c.trace)}`,
+        buttons: reportButton(s),
+      },
+    ];
   } catch {
     return [{ html: t(s, "nothingFound") }];
   }
@@ -227,6 +299,7 @@ async function screenshot(
   }
   if (read.needs_review) return [{ html: t(s, "readFailed") }];
   const found = detectIdentifiers(read.text);
+  if (!s.report) s.lastText = read.text.slice(0, 4000);
 
   if (s.report?.step === "identifiers") {
     // Reporting: the screenshot's identifiers go into the report
@@ -247,7 +320,8 @@ async function screenshot(
     read.scam_type === "not_a_scam"
       ? esc(read.summary[s.lang])
       : patternLine(read.scam_type, read.summary[s.lang], s);
-  out.push({ html: `${t(s, "iRead")}\n${header}` });
+  out.push({ html: `${t(s, "iRead")}\n${header}${aiLine(read.trace)}` });
+  scheduleCampaignMatch(read.text, s, deps);
   if (!found.length) {
     out.push({
       html: t(s, "noIdsInShot"),
@@ -276,6 +350,14 @@ const lookup = (deps: Deps, f: Pick<Found, "type" | "value">): Promise<Verdict> 
 async function button(data: string, s: Session, deps: Deps, now: Date): Promise<OutMessage[]> {
   const [kind, arg = ""] = data.split(":");
   switch (kind) {
+    case "ex": {
+      const text = EXAMPLES[Number(arg)];
+      if (!text) return [{ html: t(s, "help") }];
+      return [
+        { html: `${t(s, "exampleSent")}: <code>${esc(text)}</code>` },
+        ...(await check(text, s, deps)),
+      ];
+    }
     case "call997":
       return [{ html: t(s, "call997"), buttons: reportButton(s) }];
     case "why": {
@@ -332,6 +414,7 @@ function startReport(s: Session, prefill: Found[]): OutMessage[] {
   s.report = {
     id: randomUUID(),
     step: "scamType",
+    scriptText: s.lastText,
     identifiers: prefill.map((f) => ({
       type: f.type,
       value: f.value,
@@ -489,6 +572,7 @@ async function submit(s: Session, deps: Deps, consent: boolean, now: Date): Prom
     lossMyr: r.lossMyr,
     occurredAt: r.transferAt,
     victimState: r.state,
+    scriptText: r.scriptText,
     shareConsent: consent,
     identifiers: r.identifiers.map(({ type, value, role }) => ({ type, value, role })),
     evidence: s.pendingEvidence ?? [],
@@ -512,6 +596,7 @@ async function submit(s: Session, deps: Deps, consent: boolean, now: Date): Prom
     });
     delete s.report;
     delete s.pendingEvidence;
+    delete s.lastText;
     const out: OutMessage[] = [];
     if (res.duplicateOf) out.push({ html: t(s, "duplicate") });
     out.push({ html: r.lossMyr ? t(s, "thanksLoss") : t(s, "thanksNearMiss") });
@@ -520,6 +605,7 @@ async function submit(s: Session, deps: Deps, consent: boolean, now: Date): Prom
         .map((v) => `• <code>${esc(v.entity.masked)}</code>: ${esc(v.tierLabel[s.lang])}`)
         .join("\n"),
     });
+    if (res.campaign) out.push({ html: campaignLine(res.campaign, s) });
     if (r.lossMyr) {
       out.push(callSheetMessage(res.callSheet, s.lang));
       out.push({ html: t(s, "askNsrc") });

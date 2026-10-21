@@ -9,6 +9,19 @@ export const COPY = {
     en: "🛡️ <b>CrowdShield · Semak dulu</b>\n\nForward me a phone number, bank account, link or a suspicious message and I'll check it against scam reports.\n\nSent money to a scammer? Tap <b>Report a scam</b>: I'll help you report it and prepare your NSRC 997 call.",
     ms: "🛡️ <b>CrowdShield · Semak dulu</b>\n\nHantar nombor telefon, akaun bank, pautan atau mesej yang mencurigakan dan saya akan semak dengan laporan scam.\n\nSudah pindah wang kepada penipu? Tekan <b>Lapor scam</b>: saya akan bantu anda melapor dan sediakan panggilan NSRC 997.",
   },
+  tryExample: {
+    en: "Not sure what to send? Try one of these:",
+    ms: "Tidak pasti apa nak hantar? Cuba salah satu:",
+  },
+  exCaller: { en: "📞 A scam caller", ms: "📞 Pemanggil scam" },
+  exAccount: { en: "🏦 A mule account", ms: "🏦 Akaun keldai" },
+  exLink: { en: "🔗 A phishing link", ms: "🔗 Pautan pancingan" },
+  exStory: { en: "💬 A suspicious call", ms: "💬 Panggilan mencurigakan" },
+  exampleSent: { en: "Example", ms: "Contoh" },
+  knownCampaign: {
+    en: "📣 <b>Known scam wave:</b> {label}. {n} report(s) in the last 24 hours.",
+    ms: "📣 <b>Gelombang scam dikenali:</b> {label}. {n} laporan dalam 24 jam lepas.",
+  },
   help: {
     en: "Send me any number, account (e.g. <code>Maybank 5123 4567 8812</code>), link, message or screenshot.\n\n/report: report a scam\n/invest: check an investment platform\n/lang: Bahasa Melayu / English\n/cancel: stop what we're doing",
     ms: "Hantar nombor, akaun (cth. <code>Maybank 5123 4567 8812</code>), pautan, mesej atau tangkapan skrin.\n\n/report: lapor scam\n/invest: semak platform pelaburan\n/lang: Bahasa Melayu / English\n/cancel: berhenti",
