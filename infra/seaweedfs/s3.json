@@ -1,0 +1,9 @@
+{
+  "identities": [
+    {
+      "name": "crowdshield",
+      "credentials": [{ "accessKey": "crowdshield", "secretKey": "crowdshield-dev-secret" }],
+      "actions": ["Admin", "Read", "Write", "List", "Tagging"]
+    }
+  ]
+}

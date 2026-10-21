@@ -1,0 +1,11 @@
+{
+  "name": "@crowdshield/ml",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "uv run uvicorn crowdshield_ml.app:app --port 8020 --reload --app-dir src",
+    "start": "uv run uvicorn crowdshield_ml.app:app --port 8020 --app-dir src",
+    "lint": "uv run ruff check src tests && uv run ruff format --check src tests",
+    "test": "uv run pytest -q"
+  }
+}

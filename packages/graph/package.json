@@ -1,0 +1,30 @@
+{
+  "name": "@crowdshield/graph",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src test",
+    "test": "vitest run",
+    "seed": "tsx src/seed/run.ts"
+  },
+  "dependencies": {
+    "@crowdshield/db": "workspace:*",
+    "@crowdshield/normalise": "workspace:*",
+    "@crowdshield/scoring": "workspace:*",
+    "drizzle-orm": "^0.45.4"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.15"
+  }
+}

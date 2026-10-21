@@ -1,0 +1,34 @@
+{
+  "name": "@crowdshield/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsc -p tsconfig.build.json && (tsc -p tsconfig.build.json -w --preserveWatchOutput & node --watch dist/main.js)",
+    "start": "node dist/main.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src test",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@crowdshield/contracts": "workspace:*",
+    "@crowdshield/db": "workspace:*",
+    "@crowdshield/graph": "workspace:*",
+    "@crowdshield/i18n": "workspace:*",
+    "@crowdshield/normalise": "workspace:*",
+    "@crowdshield/scoring": "workspace:*",
+    "@nestjs/common": "12.1.3",
+    "@nestjs/core": "12.1.3",
+    "@nestjs/platform-express": "12.1.3",
+    "drizzle-orm": "^0.45.4",
+    "ioredis": "^6.0.0",
+    "jose": "^6.2.12",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6"
+  }
+}

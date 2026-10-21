@@ -1,0 +1,5 @@
+banking-main
+**/drizzle
+pnpm-lock.yaml
+*.md
+*.sql

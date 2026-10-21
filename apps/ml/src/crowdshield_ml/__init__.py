@@ -1,0 +1,1 @@
+"""CrowdShield model gateway."""

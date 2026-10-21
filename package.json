@@ -1,0 +1,37 @@
+{
+  "name": "crowdshield",
+  "private": true,
+  "packageManager": "pnpm@9.12.2",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test --concurrency=1",
+    "format": "prettier --write .",
+    "infra:up": "docker compose up -d --wait postgres redis s3 && docker compose up s3-init",
+    "infra:down": "docker compose down",
+    "db:generate": "pnpm --filter @crowdshield/db generate",
+    "db:migrate": "pnpm --filter @crowdshield/db migrate",
+    "db:reset": "pnpm --filter @crowdshield/db reset",
+    "db:seed": "pnpm --filter @crowdshield/graph seed",
+    "db:fresh": "pnpm db:reset && pnpm db:seed",
+    "demo:start": "pnpm infra:up && pnpm db:migrate && turbo run dev",
+    "demo:reset": "node scripts/demo-reset.mjs",
+    "demo:prewarm": "node scripts/demo-prewarm.mjs",
+    "e2e": "pnpm --filter @crowdshield/web e2e"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^22",
+    "eslint": "^10.13.0",
+    "prettier": "^3.9.10",
+    "turbo": "^2.11.9",
+    "typescript": "5.9.3",
+    "typescript-eslint": "^8.72.0",
+    "vitest": "^5.0.5"
+  }
+}

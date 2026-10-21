@@ -1,0 +1,21 @@
+node_modules
+dist
+.next
+.turbo
+coverage
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+__pycache__
+.venv
+
+# local reference copy of the upstream template (MIT notice kept in apps/web/LICENSE-banking-main)
+banking-main/
+# test and tool output
+test-results/
+playwright-report/
+*.tsbuildinfo
+.pytest_cache/
+.ruff_cache/
