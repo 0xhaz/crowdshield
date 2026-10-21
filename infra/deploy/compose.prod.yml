@@ -53,7 +53,8 @@ services:
     depends_on: { s3: { condition: service_healthy } }
     entrypoint: ["/bin/sh", "-c"]
     command:
-      - printf 's3.bucket.create -name evidence\ns3.bucket.create -name invoices\n' | weed shell -master=s3:9333
+      # idempotent: on a redeploy the buckets exist and bucket.create fails, which must not block the bot
+      - printf 's3.bucket.create -name evidence\ns3.bucket.create -name invoices\n' | weed shell -master=s3:9333 || true
     restart: "no"
 
   migrate:
