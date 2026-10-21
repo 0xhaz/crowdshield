@@ -1,0 +1,19 @@
+# Never send secrets or local state into an image
+.env
+.env.*
+!.env.example
+**/node_modules
+**/dist
+**/.next
+**/.turbo
+**/.venv
+**/__pycache__
+**/.pytest_cache
+**/.ruff_cache
+**/test-results
+**/playwright-report
+**/*.tsbuildinfo
+.git
+banking-main
+infra/deploy/.env.prod
+infra/deploy/seaweedfs-s3.json

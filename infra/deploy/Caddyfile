@@ -1,0 +1,16 @@
+{$DOMAIN} {
+	encode zstd gzip
+	# The API's public routes (landing page check, news, payee check for partners) and everything /v1
+	handle /v1/* {
+		reverse_proxy api:4020
+	}
+	handle {
+		reverse_proxy web:3020
+	}
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+		-Server
+	}
+}

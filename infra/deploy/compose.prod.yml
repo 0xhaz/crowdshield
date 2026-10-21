@@ -1,0 +1,111 @@
+# Public demo: one VM, everything in Docker, Caddy in front with automatic HTTPS.
+# Run from infra/deploy:  docker compose --env-file .env.prod -f compose.prod.yml up -d --build
+# (.env.prod comes from make-env.sh; see docs/DEPLOY.md)
+name: crowdshield-prod # distinct from the dev stack (volumes!)
+
+x-node: &node
+  image: crowdshield-node:latest
+  build: { context: ../.., dockerfile: infra/docker/node.Dockerfile }
+  env_file: .env.prod
+  restart: unless-stopped
+  logging: &logs { driver: json-file, options: { max-size: "10m", max-file: "3" } }
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: crowdshield
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?run make-env.sh}
+      POSTGRES_DB: crowdshield
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ../postgres/init.sql:/docker-entrypoint-initdb.d/00-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U crowdshield -d crowdshield"]
+      interval: 3s
+      retries: 30
+    restart: unless-stopped
+    logging: *logs
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes: [redisdata:/data]
+    healthcheck: { test: ["CMD", "redis-cli", "ping"], interval: 3s, retries: 30 }
+    restart: unless-stopped
+    logging: *logs
+
+  s3:
+    image: chrislusf/seaweedfs:latest
+    command: server -dir=/data -volume.max=20 -master.volumeSizeLimitMB=64 -s3 -s3.port=8333 -s3.config=/etc/seaweedfs/s3.json
+    volumes:
+      - s3data:/data
+      - ./seaweedfs-s3.json:/etc/seaweedfs/s3.json:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:9333/cluster/status"]
+      interval: 3s
+      retries: 40
+    restart: unless-stopped
+    logging: *logs
+
+  s3-init:
+    image: chrislusf/seaweedfs:latest
+    depends_on: { s3: { condition: service_healthy } }
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - printf 's3.bucket.create -name evidence\ns3.bucket.create -name invoices\n' | weed shell -master=s3:9333
+    restart: "no"
+
+  migrate:
+    <<: *node
+    command: ["pnpm", "db:migrate"]
+    depends_on: { postgres: { condition: service_healthy } }
+    restart: "no"
+
+  ml:
+    image: crowdshield-ml:latest
+    build: { context: ../.., dockerfile: infra/docker/ml.Dockerfile }
+    env_file: .env.prod
+    depends_on: { redis: { condition: service_healthy } }
+    restart: unless-stopped
+    logging: *logs
+
+  api:
+    <<: *node
+    command: ["node", "apps/api/dist/main.js"]
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+      redis: { condition: service_healthy }
+      ml: { condition: service_started }
+
+  web:
+    <<: *node
+    working_dir: /app/apps/web
+    command: ["node_modules/.bin/next", "start", "--port", "3020", "--hostname", "0.0.0.0"]
+    depends_on: [api]
+
+  bot:
+    <<: *node
+    command: ["node", "apps/bot/dist/main.js"]
+    depends_on:
+      api: { condition: service_started }
+      s3-init: { condition: service_completed_successfully }
+
+  caddy:
+    image: caddy:2.10-alpine
+    ports: ["80:80", "443:443"]
+    environment: { DOMAIN: "${DOMAIN:?run make-env.sh}" }
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddydata:/data
+      - caddyconfig:/config
+    depends_on: [api, web]
+    restart: unless-stopped
+    logging: *logs
+
+volumes:
+  pgdata:
+  redisdata:
+  s3data:
+  caddydata:
+  caddyconfig:

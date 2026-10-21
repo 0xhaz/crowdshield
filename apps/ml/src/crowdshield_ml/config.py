@@ -4,7 +4,9 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
-ROOT_ENV = Path(__file__).resolve().parents[4] / ".env"
+_HERE = Path(__file__).resolve()
+# repo-root .env in development; in the container there is none (env comes from compose)
+ROOT_ENV = _HERE.parents[4] / ".env" if len(_HERE.parents) > 4 else Path("/nonexistent/.env")
 
 
 def load_root_env(path: Path = ROOT_ENV) -> None:

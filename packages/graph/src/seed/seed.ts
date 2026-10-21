@@ -149,7 +149,7 @@ export async function seed(
   const ago = (ms: number) => new Date(now.getTime() - ms);
   const r = rng(20261030);
   const pick = <T>(xs: readonly T[]) => xs[Math.floor(r() * xs.length)]!;
-  const demoPassword = options.demoPassword ?? "crowdshield-demo";
+  const demoPassword = options.demoPassword || "crowdshield-demo"; // an empty env var means the default
 
   // ---------- reference data ----------
   const sources = new Map((await db.select().from(source)).map((s) => [s.kind, s.id]));

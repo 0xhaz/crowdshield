@@ -11,8 +11,9 @@ const app = await NestFactory.create<NestExpressApplication>(AppModule, {
 });
 const config = app.get(Config);
 app.disable("x-powered-by");
-// Behind Caddy on the same host: req.ip is the client's address (public check rate limits)
-app.set("trust proxy", "loopback");
+// Behind a reverse proxy, req.ip is the client's address (public check rate limits): loopback in
+// local dev (Next rewrites), the Docker network in production (TRUST_PROXY=uniquelocal)
+app.set("trust proxy", process.env.TRUST_PROXY ?? "loopback");
 // Screenshots on the public check arrive as base64; everything else stays at 1 MB
 app.use("/v1/public/screenshot", express.json({ limit: "8mb" }));
 app.useBodyParser("json", { limit: "1mb" });

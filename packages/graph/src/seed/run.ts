@@ -4,7 +4,11 @@ import { seed } from "./seed.js";
 
 loadRootEnv();
 const url = requireEnv("DATABASE_URL");
-if (!["localhost", "127.0.0.1", "::1"].includes(new URL(url).hostname)) {
+// Only local databases, or the public demo VM's own database (DEMO_DATABASE=yes, set by make-env.sh)
+if (
+  !["localhost", "127.0.0.1", "::1"].includes(new URL(url).hostname) &&
+  process.env.DEMO_DATABASE !== "yes"
+) {
   throw new Error("refusing to seed a non-local database");
 }
 const { db, client } = createDb(url, { max: 1 });
