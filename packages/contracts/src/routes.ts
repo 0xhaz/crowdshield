@@ -249,6 +249,14 @@ export const routes = {
     body: s.PublicCheckInput,
     response: s.PublicCheckResult,
   }),
+  publicLookup: route({
+    method: "post",
+    path: "/v1/public/lookup",
+    summary: "Browser extension: verdicts for identifiers found on the page (graph only, no AI; rate-limited)",
+    auth: "public",
+    body: s.PublicLookupInput,
+    response: s.PublicLookupResult,
+  }),
   publicScreenshot: route({
     method: "post",
     path: "/v1/public/screenshot",

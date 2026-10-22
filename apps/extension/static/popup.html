@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>CrowdShield Guard</title>
+    <style>
+      body {
+        width: 320px;
+        margin: 0;
+        font:
+          14px/1.45 system-ui,
+          -apple-system,
+          "Segoe UI",
+          sans-serif;
+        color: #101828;
+        background: #fff;
+      }
+      header {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        padding: 14px 16px;
+        background: linear-gradient(135deg, #08399e, #0b4fd9);
+        color: #fff;
+      }
+      header img {
+        width: 24px;
+        height: 24px;
+      }
+      header b {
+        font-size: 15px;
+      }
+      main {
+        padding: 14px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      button.primary {
+        all: unset;
+        box-sizing: border-box;
+        width: 100%;
+        text-align: center;
+        cursor: pointer;
+        background: #0b4fd9;
+        color: #fff;
+        font-weight: 600;
+        padding: 10px;
+        border-radius: 10px;
+      }
+      button.primary:hover {
+        background: #08399e;
+      }
+      .hint {
+        color: #475467;
+        font-size: 12px;
+      }
+      h2 {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #475467;
+        margin: 0;
+      }
+      label.site {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6px 0;
+        border-bottom: 1px solid #f2f4f7;
+      }
+      input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: #0b4fd9;
+      }
+      details summary {
+        cursor: pointer;
+        color: #475467;
+        font-size: 12px;
+      }
+      input[type="url"] {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 6px 8px;
+        border: 1px solid #d0d5dd;
+        border-radius: 8px;
+        margin-top: 6px;
+      }
+      footer {
+        padding: 10px 16px 14px;
+        color: #475467;
+        font-size: 12px;
+      }
+      kbd {
+        font:
+          12px ui-monospace,
+          monospace;
+        background: #f2f4f7;
+        border-radius: 4px;
+        padding: 1px 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <header><img src="icons/48.png" alt="" /><b>CrowdShield Guard</b></header>
+    <main>
+      <div>
+        <button class="primary" id="snip">Snip an area and check it</button>
+        <p class="hint">
+          Drag over a message, email or chat. Shortcut <kbd id="shortcut">Alt+Shift+S</kbd>. Or
+          select text, right-click, “Check with CrowdShield”.
+        </p>
+      </div>
+      <section>
+        <h2>Warn me inside</h2>
+        <div id="sites"></div>
+        <p class="hint">
+          Numbers, accounts and links are found on your computer; only those are checked. Message
+          text is sent only when you choose “Check with AI”.
+        </p>
+      </section>
+      <details>
+        <summary>Server</summary>
+        <input type="url" id="api" placeholder="https://…" />
+      </details>
+    </main>
+    <footer>Lost money? Call <b>NSRC 997</b> now.</footer>
+    <script src="popup.js"></script>
+  </body>
+</html>

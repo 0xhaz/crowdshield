@@ -14,12 +14,13 @@ Every scam has a moment when it could be stopped, but the signal is split. The v
 
 ## What it does
 
-CrowdShield is one scam graph with four front doors:
+CrowdShield is one scam graph with five front doors:
 
 1. **"Semak dulu" Telegram bot (the public).** Forward a number, account, link, message or screenshot. You get a verdict (confirmed scam, high risk, reported, no reports found) with its reasons and one plain action, in BM or English. Nemotron reads screenshots and names the scam pattern; known scam waves are flagged. If you lost money, the bot walks you through a report and hands you a pre-filled sheet to read from while calling NSRC 997.
 2. **Bank portal (fraud analysts and supervisors).** Payee checks that combine the payee's risk with the customer's **live call signal**, an alert queue with graded interventions, cases with timelines and money trails, an **AI case brief** with a referral note for NSRC/PDRM, and **AI-detected scam campaigns** for a person to confirm.
 3. **The customer's banking app.** Before a DuitNow transfer, the bank's backend calls CrowdShield with its partner key. A transfer to a mule account during a call from a confirmed scam number is paused, and the customer sees one clear warning.
-4. **"Semak supplier" (small businesses).** Upload an invoice. Nemotron reads it; a changed bank account is caught and the payment held; the supplier's official phone number is found on the web for a call-back. Rejecting a fake invoice reports the account, protecting the next business.
+4. **CrowdShield Guard, a Chrome extension.** Most victims only realise after the fact, and saving a screenshot and sending it somewhere is friction. With the extension you press Alt+Shift+S and drag over any message, email or chat; Nemotron reads it and the graph checks every number in it. On WhatsApp Web, Telegram Web and Gmail (each turned on by the user), scam-linked numbers and accounts are highlighted as they appear, and "it's me, new number, please transfer" impersonation messages are flagged before anyone pays. Detection runs on the device; only the identifiers are looked up.
+5. **"Semak supplier" (small businesses).** Upload an invoice. Nemotron reads it; a changed bank account is caught and the payment held; the supplier's official phone number is found on the web for a call-back. Rejecting a fake invoice reports the account, protecting the next business.
 
 Every report, bank confirmation and rejected invoice strengthens the graph for everyone.
 
@@ -34,7 +35,7 @@ Every report, bank confirmation and rejected invoice strengthens the graph for e
 - **Tavily** for live web intelligence (scam reports about an unknown number, link pages, regulator lists, suppliers' official contacts) and for the news feed. Results are shown as cited leads, never as evidence.
 - **Deterministic core.** Scores come from the graph: noisy-OR over independent sources, half-lives, Sybil-resistant reporter weighting, one-hop propagation along co-case and money-flow edges. It is a TypeScript port of our Python reference, checked by a 500-case parity test. No model sits in the payment path; a payee check takes about 5 ms.
 - **Every AI result shows its trace:** model, reasoning on or off, prompt version, time and tokens.
-- **Stack:** NestJS API with one typed contract (Zod) shared by the API, web app and bot; Next.js 15; grammY; FastAPI gateway; Postgres + pgvector; Redis; S3; Docker on AWS with Caddy HTTPS. 129 TypeScript and 12 Python tests run in CI on every push; 9 browser tests run against the live stack.
+- **Stack:** NestJS API with one typed contract (Zod) shared by the API, web app and bot; Next.js 15; grammY; FastAPI gateway; Postgres + pgvector; Redis; S3; Docker on AWS with Caddy HTTPS. 140 TypeScript and 12 Python tests run in CI on every push; 11 browser tests (including the extension in a real Chromium) run against the live stack.
 
 ## Privacy and fairness
 
@@ -59,7 +60,7 @@ Measure before choosing a model; the cheapest fix is often the prompt. Keep mode
 
 ## What's next
 
-WhatsApp (the channel most Malaysians use; the bot's conversation is already channel-agnostic), a pilot with one bank's fraud team using real call-signal consent, NSRC case intake via API, and voice-note transcription when a speech model is available on Token Factory.
+the Chrome Web Store listing, an Android companion that reads incoming SMS and WhatsApp notifications on the device (the same on-device detection as the extension), WhatsApp (the bot's conversation is already channel-agnostic), a pilot with one bank's fraud team using real call-signal consent, NSRC case intake via API, and voice-note transcription when a speech model is available on Token Factory.
 
 ## Built with
 

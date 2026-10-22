@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 
-// sign-in, the customer banking-app demo, and the public API routes proxied for the landing page
-const PUBLIC = ["/sign-in", "/demo/", "/v1/public/", "/v1/news"];
+// sign-in, the banking-app demo, the browser extension, and the public API routes for the landing page
+const PUBLIC = ["/sign-in", "/demo/", "/extension", "/downloads/", "/v1/public/", "/v1/news"];
 const PUBLIC_EXACT = ["/"]; // the landing page
 
 // Cheap gate only: the API verifies the token on every call.

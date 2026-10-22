@@ -42,7 +42,7 @@ export const metadata: Metadata = {
 };
 
 const BOT_URL = "https://t.me/CrowdShieldBot";
-const EXTENSION_URL = "/downloads/crowdshield-guard.zip";
+const EXTENSION_URL = "/extension";
 
 // ---------- content ----------
 
@@ -407,7 +407,7 @@ export default async function Landing() {
                 <h3 className="text-18 font-bold text-gray-900">{p.title}</h3>
                 <p className="text-14 text-gray-600">{p.line}</p>
                 <span className="mt-auto flex items-center gap-1.5 pt-2 text-14 font-semibold text-brand">
-                  {p.href.endsWith(".zip") ? <Download className="size-4" aria-hidden /> : null}
+                  {p.href === EXTENSION_URL ? <Download className="size-4" aria-hidden /> : null}
                   {p.cta}
                   <ArrowRight
                     className="size-4 transition-transform group-hover:translate-x-0.5"

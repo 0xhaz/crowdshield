@@ -743,6 +743,9 @@ export const DetectResult = z.object({
 });
 export const CampaignReviewInput = z.object({ decision: z.enum(["confirm", "dismiss"]) });
 export const PublicCheckInput = z.object({ text: z.string().min(2).max(2000) });
+/** Browser extension: identifiers found on the user's own device; no message text is sent. */
+export const PublicLookupInput = z.object({ identifiers: z.array(IdentifierInput).min(1).max(20) });
+export const PublicLookupResult = z.object({ verdicts: z.array(Verdict) });
 export const PublicScreenshotInput = z.object({
   imageBase64: z
     .string()

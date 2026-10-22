@@ -6,6 +6,7 @@ Built for the Nebius × NVIDIA Global AI Hackathon on **NVIDIA Nemotron** models
 
 - **Live demo:** https://crowdshield.184-197-8-50.sslip.io (try a check on the landing page, no sign-in)
 - **Telegram bot:** [@CrowdShieldBot](https://t.me/CrowdShieldBot) ("Semak dulu"): send `/start` and tap an example
+- **Chrome extension (CrowdShield Guard):** https://crowdshield.184-197-8-50.sslip.io/extension
 - **Customer banking-app demo:** https://crowdshield.184-197-8-50.sslip.io/demo/bank-app
 - **Bank and business portals:** sign in with `analyst@nusabank.demo`, `supervisor@nusabank.demo` or `owner@majuvista.demo`, password `crowdshield-demo`
 
@@ -22,6 +23,7 @@ The signals that would stop a transfer are split across parties: the victim know
 | Who | Where | What they get |
 |---|---|---|
 | The public | Telegram bot, landing page | Forward a number, account, link, message or screenshot: a verdict with its reasons and one action. Lost money? A guided report and a pre-filled sheet for the NSRC 997 call. |
+| Anyone on a laptop | Chrome extension "CrowdShield Guard" | Snip any area of the screen (Alt+Shift+S) to check it, nothing to save or paste. On WhatsApp Web, Telegram Web and Gmail (each opt-in), scam-linked numbers are highlighted and "new number, send money" impersonation messages are flagged before anyone pays. |
 | Bank fraud analyst | Web portal | Payee checks with the customer's live call signal, an alert queue, cases with timelines and money trails, an **AI case brief**, **AI-detected scam campaigns** to confirm. |
 | Bank's app backend | `POST /v1/payee-check` with a partner key | Before a DuitNow transfer: hold, warn or proceed, with a plain BM/EN warning for the customer. |
 | Business owner | Web portal ("Semak supplier") | Upload an invoice: changed bank details are caught and the payment held; the supplier's official contact is found on the web for a call-back. |
@@ -78,6 +80,7 @@ flowchart LR
 
 - **Graph:** identifiers (phones, accounts, e-wallets, links, apps) are entities; reports, bank confirmations and NSRC cases are observations; edges link identifiers used in the same scam or money flow. Scores are precomputed, so a lookup is a cache hit.
 - **Campaigns:** each report's script is redacted, embedded and matched to known campaigns (cosine ≥ 0.72); unmatched scripts are clustered (≥ 0.68, 3+ reports) into candidates that Nemotron labels and a person confirms before the bot warns anyone.
+- **Extension privacy:** the watcher runs only on sites the user turns on; numbers, accounts and links are found on the device with the same detector as the bot, and only those are looked up (graph only, no AI). Message text leaves the browser only on a snip or "Check with AI".
 - **Privacy (PDPA):** identifiers are looked up by keyed hash and stored encrypted; everything is masked on screen; IC, phone and account numbers are redacted before any text model; reporters are never named; appeals and an audit log.
 
 ## Run it locally
@@ -90,7 +93,7 @@ cp .env.example .env        # fill the secrets (openssl rand -hex 32) and your N
 pnpm demo:start             # Postgres+pgvector, Redis, S3, migrations, API :4020, web :3020, ML :8020, bot
 pnpm demo:reset             # synthetic demo data, caches cleared, scripts embedded
 pnpm demo:wave              # a new scam wave → AI-detected campaign to review at /bank/campaigns
-pnpm test                   # 129 TypeScript tests (incl. scoring parity and API end-to-end)
+pnpm test                   # 140 TypeScript tests (incl. scoring parity and API end-to-end)
 cd apps/ml && uv run pytest # ML gateway tests
 pnpm e2e                    # browser tests against the running stack
 ```
@@ -104,6 +107,7 @@ apps/api            NestJS API (/v1), OpenAPI at /v1/openapi.json
 apps/bot            Telegram bot (grammY), channel-agnostic conversation flow
 apps/ml             ML gateway: redaction, Nebius Token Factory, Tavily, evaluation (eval/)
 apps/web            Next.js 15: landing, bank portal, SME portal, banking-app demo
+apps/extension      Chrome extension (MV3): snip-and-check, chat/email watcher; on-device detection
 packages/contracts  API schemas (Zod), route registry, typed client
 packages/db         Drizzle schema and migrations
 packages/graph      entities, edges, score recompute, campaigns, demo seed

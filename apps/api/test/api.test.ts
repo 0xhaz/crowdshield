@@ -672,6 +672,20 @@ describe("public check (landing page, no sign-in)", () => {
     expect(codes).toContain(429);
   });
 
+  it("looks up identifiers found by the browser extension, without any AI call", async () => {
+    const before = mlCalls.length;
+    const r = await anon().call("publicLookup", {
+      body: {
+        identifiers: [
+          { type: "phone", value: "011-2345 4821" },
+          { type: "bank_account", value: "Maybank 5123 4567 8812" },
+        ],
+      },
+    });
+    expect(r.verdicts.map((v) => v.tier)).toEqual(["confirmed", "confirmed"]);
+    expect(mlCalls.length).toBe(before);
+  });
+
   it("serves this week's scam news with sources", async () => {
     const n = await anon().call("news");
     expect(n.items[0]).toMatchObject({ lossMyr: 120000, source: "news.example.my" });

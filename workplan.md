@@ -314,6 +314,9 @@ Judged on four equal criteria (tie-break in this order): **Technological Impleme
 - [x] **Real-world grounding:** Tavily news run ("scams in the news this week", with citations); deck figures replaced with sourced ones. *(Impact)*
 - [x] **Bot quick start:** example buttons on `/start`. *(Design)*
 - [x] **Model routing:** Nemotron 3.5 Lightning (~0.5 s) for fast classification where the evaluation shows it holds up. *(Tech)* Outcome: the evaluation put Ultra first on both accuracy and speed, so Ultra classifies; Lightning/Nano (93%) are configured fallbacks via `ROUTE_<TASK>` (`docs/model-choices.md`).
+- [x] **Landing redesign (diagrams over text):** four-stage flow, interactive scam graph with the demo's scores (47 → 79 → confirmed), classic-vs-CrowdShield timelines; roles/story/access tables removed. *(Design)*
+- [x] **CrowdShield Guard (Chrome extension, MV3):** snip any area (Alt+Shift+S, right-click "check selection"); opt-in watcher on WhatsApp Web, Telegram Web and Gmail with on-device identifier detection, CSS Highlight API badges and an "it's me, new number, send money" heuristic; `POST /v1/public/lookup` (graph only); install page `/extension`; e2e in real Chromium. *(Design, Impact, Idea)*
+- [ ] *(Later)* Chrome Web Store listing; Android companion reading SMS/WhatsApp notifications on the device (NotificationListenerService). Not possible on iOS or for WhatsApp's encrypted chats via any API.
 - [ ] *(Needs the user's Meta setup)* WhatsApp adapter. *(Not possible: voice-note checks; no speech model is listed on Token Factory.)*
 
 ## 4. Schedule (21–30 Oct)

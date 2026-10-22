@@ -31,6 +31,22 @@
       "dependsOn": [
         "^build"
       ]
+    },
+    "@crowdshield/extension#build": {
+      "dependsOn": [
+        "^build"
+      ],
+      "cache": false
+    },
+    "@crowdshield/web#build": {
+      "dependsOn": [
+        "^build",
+        "@crowdshield/extension#build"
+      ],
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**"
+      ]
     }
   },
   "globalPassThroughEnv": [

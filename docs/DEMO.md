@@ -99,6 +99,7 @@ Check:
 - **The victim's banking app (~30 s):** `/demo/bank-app` → **Mule account, on a scam call** → Transfer. "We've paused this transfer", with the BM/EN warning. Then the same alert is in the analyst's queue (Step 3 from the other side).
 - **AI case brief (~30 s):** any case with a money trail → **Write the brief**. Nemotron 3 Ultra with reasoning (~12 s fresh, instant once cached); click an evidence chip to jump to the timeline item; copy the BM referral note.
 - **A new scam wave (~30 s):** before the demo run `pnpm demo:wave` (on the VM: `dc exec -T api node scripts/demo-campaign-wave.mjs`). On **Campaigns**, the KWSP "Account 3 agent" candidate shows Ultra's label, repeated phrases and draft warning; **Confirm campaign**, then forward a similar message to the bot to see "Known scam wave".
+- **No screenshot to save (~30 s):** with CrowdShield Guard installed (`/extension`), press Alt+Shift+S on a chat or email and drag over the scam message; the card shows the pattern, the known wave and each number's verdict. With WhatsApp Web turned on in the popup, a scam account in a chat is highlighted and a "new number, send money" message raises a warning.
 - **Bot first contact:** `/start` shows four example buttons; each runs a real check.
 
 ## Close (~20 s)

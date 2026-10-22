@@ -1,7 +1,12 @@
 // "Try it now" on the landing page: anyone can paste a message or drop a screenshot without signing
 // in. Same deterministic lookups as the bot; Nemotron reads screenshots and names the scam pattern;
 // the script is matched to known campaigns. Nothing is stored, and each IP is rate-limited.
-import type { AiTrace, PublicCheckInput, PublicScreenshotInput } from "@crowdshield/contracts";
+import type {
+  AiTrace,
+  PublicCheckInput,
+  PublicLookupInput,
+  PublicScreenshotInput,
+} from "@crowdshield/contracts";
 import { SCAM_TYPE_ACTION, type ScamTypeKey } from "@crowdshield/i18n";
 import { detectIdentifiers } from "@crowdshield/normalise";
 import {
@@ -33,7 +38,7 @@ type Classified = {
 type Screenshot = Classified & { text: string };
 
 /** Per IP, per 10 minutes; plus a daily ceiling on screenshots across everyone (model cost). */
-const LIMITS = { check: 30, screenshot: 6 } as const;
+const LIMITS = { check: 30, screenshot: 6, lookup: 120 } as const;
 const SCREENSHOTS_PER_DAY = 500;
 const MIN_PATTERN_CHARS = 30;
 const MAX_IMAGE_BYTES = 5_500_000;
@@ -111,6 +116,14 @@ export class PublicCheckService {
     return this.result(verdicts, read, text || null, campaign, performance.now() - started);
   }
 
+  async lookupMany(ids: z.output<typeof PublicLookupInput>["identifiers"]) {
+    // invalid values (a stray digit run that isn't a real number) are skipped, not an error
+    const out = await Promise.all(ids.map((i) => this.verdicts.lookup(i).catch(() => null)));
+    const verdicts = out.filter((v): v is NonNullable<typeof v> => v !== null);
+    await this.audit.log(undefined, "public_lookup", null, { identifiers: ids.length });
+    return { verdicts };
+  }
+
   async news() {
     return this.ml.get<Record<string, unknown>>("/v1/news?days=7", 90_000);
   }
@@ -159,6 +172,12 @@ export class PublicController {
   async check(@Body() input: z.output<typeof PublicCheckInput>, @ClientIp() ip: string) {
     await this.svc.limit("check", ip);
     return this.svc.check(input.text);
+  }
+
+  @Route("publicLookup")
+  async lookup(@Body() input: z.output<typeof PublicLookupInput>, @ClientIp() ip: string) {
+    await this.svc.limit("lookup", ip);
+    return this.svc.lookupMany(input.identifiers);
   }
 
   @Route("publicScreenshot")
