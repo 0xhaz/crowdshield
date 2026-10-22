@@ -2,11 +2,10 @@ import {
   ArrowDown,
   ArrowRight,
   BadgeCheck,
-  Building2,
-  Check,
+  Puzzle,
   CircleAlert,
+  Download,
   FileWarning,
-  Fingerprint,
   HeartCrack,
   KeyRound,
   Landmark,
@@ -19,19 +18,20 @@ import {
   ScrollText,
   Search,
   ShieldAlert,
-  ShieldCheck,
   Smartphone,
   TrendingUp,
   UserCheck,
   Users,
   Wallet,
-  X,
 } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
+import { CompareTimeline } from "@/components/CompareTimeline";
+import { FlowDiagram } from "@/components/FlowDiagram";
 import { NewsSection, NewsSkeleton } from "@/components/NewsSection";
+import { ScamGraph } from "@/components/ScamGraph";
 import { TryIt } from "@/components/TryIt";
 import { getToken } from "@/lib/session";
 
@@ -42,91 +42,9 @@ export const metadata: Metadata = {
 };
 
 const BOT_URL = "https://t.me/CrowdShieldBot";
+const EXTENSION_URL = "/downloads/crowdshield-guard.zip";
 
 // ---------- content ----------
-
-const ROLES = [
-  {
-    icon: Building2,
-    who: "Business owner",
-    portal: "Semak supplier",
-    does: "Checks an invoice or a “we changed bank” email before paying. Holds the payment and calls the supplier back on the number in their own records.",
-    gives:
-      "Fake supplier accounts, phone numbers and look-alike domains, once a change is rejected.",
-    gets: "Scam history on the account, SSM, LHDN TIN and e-invoice, account-name and payment-history checks.",
-  },
-  {
-    icon: Landmark,
-    who: "Bank analyst",
-    portal: "Fraud operations",
-    does: "Runs a payee check before a transfer, sees if the customer is on a call with a flagged number, then holds, calls back, freezes or confirms a mule.",
-    gives: "Bank-confirmed mule accounts and money trails: the strongest evidence in the graph.",
-    gets: "Risk on every payee, with reasons; alerts, cases, timelines and the one-hop graph.",
-  },
-  {
-    icon: ScrollText,
-    who: "Bank supervisor",
-    portal: "Oversight",
-    does: "Reviews every decision in the audit log and rules on appeals from people who say they were wrongly listed.",
-    gives:
-      "Upheld appeals, which cut a listing’s risk tenfold, so recycled numbers and innocent owners recover.",
-    gets: "Everything the analyst sees, plus the audit trail with the policy version of each decision.",
-  },
-] as const;
-
-const STORY = [
-  {
-    who: "Public",
-    icon: MessageCircle,
-    text: "A retiree forwards a screenshot to the bot: a “police inspector” and a “safe account”. She reports it.",
-    result: "The account is now “Be careful”: it’s linked to a confirmed scam caller.",
-  },
-  {
-    who: "Bank analyst",
-    icon: Landmark,
-    text: "Minutes later, another customer tries to pay that account while on a call with the same number.",
-    result: "Combined risk: high. The transfer is held and the analyst confirms the mule.",
-  },
-  {
-    who: "Business owner",
-    icon: Building2,
-    text: "A hardware shop gets an invoice from its usual steel supplier: “we changed bank”. The new account received money from that mule.",
-    result: "Do not pay yet. Callback, reject, and the account is reported back.",
-  },
-  {
-    who: "Bank supervisor",
-    icon: ScrollText,
-    text: "Reviews the decisions in the audit log, and upholds an appeal from someone whose recycled number was reported.",
-    result: "The graph stays accurate and fair for everyone who relies on it.",
-  },
-] as const;
-
-const ACCESS = [
-  [
-    "Sees",
-    "Their own suppliers and checks",
-    "Alerts and cases; money trails; cash-outs from their own bank only",
-    "Everything the analyst sees, plus the audit log and appeals",
-  ],
-  [
-    "Decides",
-    "Pay, hold, release or reject a supplier payment",
-    "Hold, call back, release, freeze, confirm mule, clear",
-    "Uphold or reject appeals; reviews analysts’ decisions",
-  ],
-  [
-    "Adds to the graph",
-    "Rejected fake accounts, phones and domains",
-    "Bank-confirmed mules and outcomes",
-    "Upheld appeals (clearing)",
-  ],
-  [
-    "Never sees",
-    "Other businesses’ data, bank cases",
-    "Raw numbers or accounts, reporter identities, other banks’ cash-outs",
-    "Raw numbers or accounts, reporter identities",
-  ],
-] as const;
 
 const FRAUDS = [
   {
@@ -231,55 +149,6 @@ const FRAUDS = [
   },
 ] as const;
 
-type Cell = { ok: boolean; text: string };
-const COMPARE: [string, Cell, Cell][] = [
-  [
-    "When it helps",
-    { ok: false, text: "After the money is gone" },
-    { ok: true, text: "Before you pay, and during the scam" },
-  ],
-  [
-    "The call and the transfer",
-    { ok: false, text: "Seen separately by the telco and the bank" },
-    { ok: true, text: "Joined at the payee check, with the customer’s consent" },
-  ],
-  [
-    "Who gets warned",
-    { ok: false, text: "Mostly the victim’s own bank, case by case" },
-    { ok: true, text: "Every bank, e-wallet, business and bot user on the network" },
-  ],
-  [
-    "How fast others are warned",
-    { ok: false, text: "Once the case is processed" },
-    { ok: true, text: "On the next check: scores update as reports arrive" },
-  ],
-  [
-    "Near misses (no money lost)",
-    { ok: false, text: "Rarely reported" },
-    { ok: true, text: "Counted: they warn the next person" },
-  ],
-  [
-    "Report quality",
-    { ok: false, text: "From memory, under stress, on the phone" },
-    { ok: true, text: "A pre-filled 997 call sheet: time, amount, account, reference" },
-  ],
-  [
-    "Evidence",
-    { ok: false, text: "Screenshots left on the victim’s phone" },
-    { ok: true, text: "Stored with a hash and attached to the report" },
-  ],
-  [
-    "Supplier invoices",
-    { ok: false, text: "Manual phone calls, if anyone checks" },
-    { ok: true, text: "Registration, tax ID, account name, history and scam checks at once" },
-  ],
-  [
-    "Answer you get",
-    { ok: false, text: "Often none until an investigation" },
-    { ok: true, text: "A verdict in seconds, with reasons and one clear action" },
-  ],
-];
-
 const TIERS = [
   {
     label: "Confirmed scam",
@@ -305,6 +174,39 @@ const TIERS = [
     cls: "border-risk-none-border bg-risk-none-bg text-risk-none",
     icon: Search,
   }, // never a ✓: not "safe"
+] as const;
+
+const TRUST = [
+  { icon: KeyRound, t: "Hashed identifiers" },
+  { icon: Lock, t: "Masked on every screen" },
+  { icon: BadgeCheck, t: "Redacted before AI" },
+  { icon: UserCheck, t: "Reporters never named" },
+  { icon: Scale, t: "Appeals" },
+  { icon: ScrollText, t: "Full audit trail" },
+] as const;
+
+const PROTECT = [
+  {
+    icon: MessageCircle,
+    title: "Telegram bot",
+    line: "Forward a number, link, message or screenshot. Report a scam and get your 997 call sheet.",
+    href: BOT_URL,
+    cta: "Open @CrowdShieldBot",
+  },
+  {
+    icon: Puzzle,
+    title: "Browser extension",
+    line: "Snip any part of the screen to check it, and get warnings inside WhatsApp Web, Telegram Web and Gmail.",
+    href: EXTENSION_URL,
+    cta: "Download for Chrome",
+  },
+  {
+    icon: Landmark,
+    title: "Your bank’s app",
+    line: "Banks call one API before a transfer. A payment to a mule during a scam call is paused.",
+    href: "/demo/bank-app",
+    cta: "See the banking-app demo",
+  },
 ] as const;
 
 // ---------- page ----------
@@ -366,14 +268,17 @@ export default async function Landing() {
             <a href="#try" className="hover:text-brand">
               Try it
             </a>
-            <a href="#roles" className="hover:text-brand">
+            <a href="#how" className="hover:text-brand">
               How it works
             </a>
-            <a href="#frauds" className="hover:text-brand">
-              Common frauds
+            <a href="#graph" className="hover:text-brand">
+              The graph
             </a>
-            <a href="#compare" className="hover:text-brand">
-              Why it’s different
+            <a href="#protect" className="hover:text-brand">
+              Get protected
+            </a>
+            <a href="#frauds" className="hover:text-brand">
+              Scams
             </a>
           </nav>
           <Link href={cta.href} className="btn-primary">
@@ -471,181 +376,94 @@ export default async function Landing() {
           <TryIt />
         </Section>
 
-        {/* ---------- roles ---------- */}
+        {/* ---------- how it works ---------- */}
+        <Section id="how" eyebrow="How it works" title="From scam message to stopped payment">
+          <FlowDiagram />
+        </Section>
+
+        {/* ---------- the graph ---------- */}
         <Section
-          id="roles"
-          eyebrow="How it works"
-          title="One graph, three roles, one shared picture"
-          intro="The business owner, the bank analyst and the bank supervisor each see a different part of a scam. CrowdShield connects them, alongside the public on Telegram, without anyone handing over customer data."
+          id="graph"
+          tone="tint"
+          eyebrow="The scam graph"
+          title="Watch one report protect everyone"
+          intro="Numbers, accounts and links are linked when they appear in the same scam. Risk flows along the links."
         >
-          <div className="grid gap-6 md:grid-cols-3">
-            {ROLES.map((r) => (
-              <article
-                key={r.who}
-                className="flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-6 shadow-chart"
+          <ScamGraph />
+        </Section>
+
+        {/* ---------- get protected ---------- */}
+        <Section id="protect" eyebrow="Get protected" title="Three ways in, one graph behind them">
+          <div className="grid gap-5 md:grid-cols-3">
+            {PROTECT.map((p) => (
+              <a
+                key={p.title}
+                href={p.href}
+                className="group flex flex-col gap-3 rounded-2xl border border-gray-200 bg-white p-6 shadow-chart hover:border-brand"
               >
-                <div className="flex items-center gap-3">
-                  <span className="flex-center size-11 rounded-full bg-brand-light">
-                    <r.icon className="size-5 text-brand" aria-hidden />
-                  </span>
-                  <div>
-                    <h3 className="text-18 font-semibold text-gray-900">{r.who}</h3>
-                    <p className="text-14 text-gray-500">{r.portal}</p>
-                  </div>
-                </div>
-                <p className="text-16 text-gray-700">{r.does}</p>
-                <dl className="flex flex-col gap-3 border-t border-gray-200 pt-4 text-14">
-                  <div>
-                    <dt className="font-semibold text-gray-900">Adds to the graph</dt>
-                    <dd className="text-gray-600">{r.gives}</dd>
-                  </div>
-                  <div>
-                    <dt className="font-semibold text-gray-900">Gets from the graph</dt>
-                    <dd className="text-gray-600">{r.gets}</dd>
-                  </div>
-                </dl>
-              </article>
+                <span className="flex-center size-11 rounded-full bg-blue-25">
+                  <p.icon className="size-5 text-brand" aria-hidden />
+                </span>
+                <h3 className="text-18 font-bold text-gray-900">{p.title}</h3>
+                <p className="text-14 text-gray-600">{p.line}</p>
+                <span className="mt-auto flex items-center gap-1.5 pt-2 text-14 font-semibold text-brand">
+                  {p.href.endsWith(".zip") ? <Download className="size-4" aria-hidden /> : null}
+                  {p.cta}
+                  <ArrowRight
+                    className="size-4 transition-transform group-hover:translate-x-0.5"
+                    aria-hidden
+                  />
+                </span>
+              </a>
             ))}
           </div>
+        </Section>
 
-          {/* the shared-graph hub */}
-          <div className="flex flex-col items-center gap-3 rounded-2xl border border-brand/20 bg-brand-light/50 p-6 text-center sm:flex-row sm:text-left">
-            <span className="flex-center size-14 shrink-0 rounded-full bg-brand">
-              <Fingerprint className="size-7 text-white" aria-hidden />
-            </span>
-            <p className="text-16 text-gray-800">
-              <b>The shared scam graph</b> links phone numbers, accounts, e-wallets, links and apps
-              that appear in the same scams or money trails. Risk flows along those links: an
-              account that receives money from a confirmed mule is flagged too, but a victim’s own
-              account never is.
-            </p>
-          </div>
-
-          {/* one story across roles */}
-          <div className="flex flex-col gap-4">
-            <h3 className="text-20 font-semibold text-gray-900">
-              One mule account, four points of view
-            </h3>
-            <ol className="grid gap-4 lg:grid-cols-4">
-              {STORY.map((s, i) => (
-                <li
-                  key={s.who}
-                  className="relative flex flex-col gap-3 rounded-2xl border border-gray-200 bg-gray-25 p-5"
-                >
-                  <div className="flex items-center gap-2">
-                    <span
-                      className="flex-center size-8 rounded-full bg-brand text-14 font-bold text-white"
-                      aria-hidden
-                    >
-                      {i + 1}
-                    </span>
-                    <s.icon className="size-5 text-brand" aria-hidden />
-                    <span className="text-14 font-semibold text-gray-900">{s.who}</span>
-                  </div>
-                  <p className="text-14 text-gray-700">{s.text}</p>
-                  <p className="mt-auto rounded-lg bg-white p-3 text-14 font-medium text-gray-900">
-                    {s.result}
-                  </p>
-                </li>
-              ))}
-            </ol>
-          </div>
-
-          {/* who sees what */}
-          <div className="flex flex-col gap-4">
-            <h3 className="text-20 font-semibold text-gray-900">Who sees and decides what</h3>
-            <div className="overflow-x-auto rounded-2xl border border-gray-200">
-              <table className="w-full min-w-[720px] text-left text-14">
-                <caption className="sr-only">Access and decisions by role</caption>
-                <thead className="bg-gray-50 text-gray-700">
-                  <tr>
-                    <th scope="col" className="p-4 font-semibold"></th>
-                    <th scope="col" className="p-4 font-semibold">
-                      Business owner
-                    </th>
-                    <th scope="col" className="p-4 font-semibold">
-                      Bank analyst
-                    </th>
-                    <th scope="col" className="p-4 font-semibold">
-                      Bank supervisor
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {ACCESS.map(([row, ...cells]) => (
-                    <tr key={row}>
-                      <th scope="row" className="whitespace-nowrap p-4 font-semibold text-gray-900">
-                        {row}
-                      </th>
-                      {cells.map((c, i) => (
-                        <td key={i} className="p-4 text-gray-700">
-                          {c}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+        {/* ---------- compare ---------- */}
+        <Section
+          id="compare"
+          tone="tint"
+          eyebrow="Why it’s different"
+          title="Classic reporting vs CrowdShield"
+        >
+          <CompareTimeline />
         </Section>
 
         {/* ---------- frauds ---------- */}
         <Section
           id="frauds"
-          tone="tint"
-          eyebrow="Common frauds in Malaysia"
-          title="Know the patterns, spot the red flags"
-          intro="Most losses are transfers the victim makes themselves, coached by someone they trust. These are the patterns CrowdShield is built to catch."
+          eyebrow="Common scams in Malaysia"
+          title="What we catch, and the red flag to watch for"
         >
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {FRAUDS.map((f) => (
               <article
                 key={f.name}
-                className="flex flex-col gap-3 rounded-2xl border border-gray-200 bg-white p-5 shadow-chart"
+                className="flex gap-3 rounded-xl border border-gray-200 bg-white p-4"
+                title={f.how}
               >
-                <div className="flex items-start gap-3">
-                  <span className="flex-center size-10 shrink-0 rounded-full bg-risk-high-bg">
-                    <f.icon className="size-5 text-risk-high" aria-hidden />
-                  </span>
-                  <div>
-                    <h3 className="text-16 font-semibold text-gray-900">{f.name}</h3>
-                    <p className="text-12 text-gray-500" lang="ms">
-                      {f.ms}
-                    </p>
-                  </div>
+                <f.icon className="mt-0.5 size-5 shrink-0 text-brand" aria-hidden />
+                <div className="flex flex-col gap-0.5">
+                  <h3 className="text-14 font-semibold text-gray-900">
+                    {f.name}{" "}
+                    <span lang="ms" className="font-normal text-gray-500">
+                      · {f.ms}
+                    </span>
+                  </h3>
+                  <p className="text-14 text-gray-600">🚩 {f.flags[0]}</p>
                 </div>
-                <p className="text-14 text-gray-700">{f.how}</p>
-                <div>
-                  <p className="text-12 font-semibold uppercase tracking-wide text-gray-500">
-                    Red flags
-                  </p>
-                  <ul className="mt-1 flex flex-col gap-1 text-14 text-gray-800">
-                    {f.flags.map((x) => (
-                      <li key={x} className="flex gap-2">
-                        <CircleAlert
-                          className="mt-0.5 size-4 shrink-0 text-risk-caution"
-                          aria-hidden
-                        />
-                        {x}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <p className="mt-auto flex gap-2 rounded-lg bg-brand-light/60 p-3 text-14 text-gray-900">
-                  <ShieldCheck className="mt-0.5 size-4 shrink-0 text-brand" aria-hidden />
-                  <span>
-                    <b>CrowdShield:</b> {f.cs}
-                  </span>
-                </p>
               </article>
             ))}
           </div>
-          <p className="text-14 text-gray-600">
-            The rule that stops almost all of them:{" "}
-            <b>police, BNM and banks never ask you to transfer money to protect it.</b> When in
-            doubt, hang up and call back on an official number.
-          </p>
+          <div className="flex flex-wrap gap-2" aria-label="Verdicts you will see">
+            {TIERS.map((t) => (
+              <span key={t.label} className={`chip text-14 px-3 py-1.5 ${t.cls}`}>
+                <t.icon className="size-4" aria-hidden />
+                {t.label}
+              </span>
+            ))}
+            <span className="chip text-14 px-3 py-1.5 text-gray-500">Never a “safe” tick</span>
+          </div>
         </Section>
 
         {/* ---------- news ---------- */}
@@ -660,128 +478,20 @@ export default async function Landing() {
           </Suspense>
         </Section>
 
-        {/* ---------- compare ---------- */}
-        <Section
-          id="compare"
-          eyebrow="Why it’s different"
-          title="Classic reporting vs CrowdShield"
-          intro="Calling NSRC 997 and making a police report are still essential after a loss. CrowdShield doesn’t replace them: it gets people there faster with better information, and stops more scams before any money moves."
-        >
-          <div className="overflow-x-auto rounded-2xl border border-gray-200">
-            <table className="w-full min-w-[720px] text-left text-14">
-              <caption className="sr-only">Classic reporting compared with CrowdShield</caption>
-              <thead className="bg-gray-50">
-                <tr>
-                  <th scope="col" className="w-[24%] p-4 font-semibold text-gray-700"></th>
-                  <th scope="col" className="w-[38%] p-4 font-semibold text-gray-700">
-                    Classic reporting
-                  </th>
-                  <th scope="col" className="w-[38%] p-4 font-semibold text-brand">
-                    With CrowdShield
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {COMPARE.map(([row, before, after]) => (
-                  <tr key={row}>
-                    <th scope="row" className="p-4 font-semibold text-gray-900">
-                      {row}
-                    </th>
-                    <td className="p-4 text-gray-700">
-                      <span className="flex gap-2">
-                        <X
-                          className="mt-0.5 size-4 shrink-0 text-gray-400"
-                          aria-label="Limitation"
-                        />
-                        {before.text}
-                      </span>
-                    </td>
-                    <td className="bg-brand-light/30 p-4 text-gray-900">
-                      <span className="flex gap-2">
-                        <Check
-                          className="mt-0.5 size-4 shrink-0 text-success-700"
-                          aria-label="With CrowdShield"
-                        />
-                        {after.text}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="flex flex-col gap-3">
-            <h3 className="text-20 font-semibold text-gray-900">Clear answers, never “safe”</h3>
-            <div className="flex flex-wrap gap-3">
-              {TIERS.map((t) => (
-                <span key={t.label} className={`chip text-14 px-3 py-1.5 ${t.cls}`}>
-                  <t.icon className="size-4" aria-hidden />
-                  {t.label} · <span lang="ms">{t.ms}</span>
-                </span>
-              ))}
-              <span className="chip text-14 border-risk-info-border bg-risk-info-bg px-3 py-1.5 text-risk-info">
-                <PhoneCall className="size-4" aria-hidden />
-                Official number, may be spoofed
-              </span>
-            </div>
-            <p className="text-14 text-gray-600">
-              Every verdict shows its reasons and one action. An unknown number gets “No reports
-              found”, with a reminder of the rules, never a green light.
-            </p>
-          </div>
-        </Section>
-
         {/* ---------- trust ---------- */}
-        <Section
-          id="trust"
-          tone="tint"
-          eyebrow="Trust by design"
-          title="Built for PDPA, and fair to the people listed"
+        <section
+          className="border-y border-gray-200 bg-gray-25 py-10"
+          aria-label="Privacy and fairness"
         >
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              {
-                icon: KeyRound,
-                t: "Hashed identifiers",
-                d: "Numbers and accounts are looked up by keyed hash; raw values stay encrypted.",
-              },
-              {
-                icon: Lock,
-                t: "Masked everywhere",
-                d: "+60 11-***-4821 in every screen and message. No public blacklist.",
-              },
-              {
-                icon: BadgeCheck,
-                t: "Redacted before AI",
-                d: "IC numbers, phones and accounts are removed from text before any AI model sees it.",
-              },
-              {
-                icon: UserCheck,
-                t: "Reporters never named",
-                d: "Verdicts show evidence counts and sources, never who reported.",
-              },
-              {
-                icon: Scale,
-                t: "Appeals",
-                d: "Wrongly listed? A supervisor reviews it; an upheld appeal clears the score.",
-              },
-              {
-                icon: ScrollText,
-                t: "Audit trail",
-                d: "Every lookup and decision is logged with the policy in force.",
-              },
-            ].map((x) => (
-              <div key={x.t} className="flex gap-4 rounded-2xl border border-gray-200 bg-white p-5">
-                <x.icon className="size-6 shrink-0 text-brand" aria-hidden />
-                <div>
-                  <h3 className="text-16 font-semibold text-gray-900">{x.t}</h3>
-                  <p className="text-14 text-gray-600">{x.d}</p>
-                </div>
-              </div>
+          <ul className="mx-auto flex max-w-6xl flex-wrap justify-center gap-x-8 gap-y-4 px-4 sm:px-6">
+            {TRUST.map((x) => (
+              <li key={x.t} className="flex items-center gap-2 text-14 font-medium text-gray-700">
+                <x.icon className="size-5 text-brand" aria-hidden />
+                {x.t}
+              </li>
             ))}
-          </div>
-        </Section>
+          </ul>
+        </section>
 
         {/* ---------- CTA ---------- */}
         <section className="bg-brand-dark-gradient py-16 text-white sm:py-20">
