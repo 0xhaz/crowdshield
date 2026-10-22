@@ -431,3 +431,31 @@
     opacity: 1;
   }
 }
+
+/* Compare timelines: the line draws dot to dot, each dot lights up when the line reaches it */
+@keyframes timeline-grow-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes timeline-grow-y {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+@keyframes timeline-dot {
+  60% {
+    background-color: var(--on);
+    transform: scale(1.6);
+  }
+  100% {
+    background-color: var(--on);
+    transform: scale(1);
+  }
+}
