@@ -12,7 +12,7 @@ For the Devpost submission video. Screen recording with voice-over; the phone is
 | 1:50–2:15 | Bank portal: Alerts → the alert → Confirm mule; then the case → **Write the brief** | "The analyst sees the same transfer in the queue, confirms the mule, and every bank and every bot user is protected. For the referral, Nemotron 3 Ultra reasons over the timeline and money trail and writes a brief where every point links to its evidence, plus a referral note in English and Malay." |
 | 2:15–2:35 | Campaigns page: the KWSP candidate → **Confirm campaign** | "New scams appear every week. Three reports of a fake KWSP agent, in two languages, matched no known campaign. CrowdShield grouped them by meaning, and Ultra named the campaign and drafted a warning. Once the analyst confirms it, the bot warns the public." |
 | 2:35–2:50 | SME portal: upload `bec-invoice.pdf` | "Businesses get the same protection: the vision model reads the invoice, the changed bank account is caught, and the supplier's real phone number is found on the web for a call-back." |
-| 2:50–3:00 | README model table / eval table | "Every model choice was measured on our own Malaysian test set. Nemotron does the reading; the graph makes the decisions. Check first, then pay." |
+| 2:50–3:00 | README model table / eval table | "Every model choice was measured on our own Malaysian test set. Nemotron does the reading; the graph makes the decisions. User will have confident to check first as precautioned and then transfer the payment." |
 
 ## Before recording
 
