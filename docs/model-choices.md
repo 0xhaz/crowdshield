@@ -24,7 +24,8 @@ Routing lives in `apps/ml/src/crowdshield_ml/config.py` and can be overridden pe
 1. **The prompt mattered more than the model.** Our first classify prompt defined only 5 of the 12 scam types. Super scored **68%**, mislabelling investment scams as "job tasks" and love scams as "parcels". With every type defined in one line each, the same model scored **100%**.
 2. **Strict schema decoding stays on.** Relaxing enums to free strings (validated afterwards) produced invalid nested values in 40 of 41 answers. With good definitions, strict decoding is accurate and always parses.
 3. **Reasoning doesn't help classification.** Super with reasoning was as accurate as without, but 2.5× slower; Ultra with reasoning slipped to 98%. We turn reasoning off for interactive tasks (`chat_template_kwargs.enable_thinking=false`, measured 0.7–0.9 s vs ~2.3 s per call) and on only where the task needs it.
-4. **Bigger can be faster.** Ultra (550B MoE, ~55B active) returned faster than Super and Lightning on Token Factory in our runs, so it handles the interactive text tasks. Lightning and Nano scored 93%: good fallbacks if cost becomes the constraint.
+4. **Long structured outputs need a little temperature.** With strict JSON decoding at temperature 0, Ultra's case brief sometimes ran away (blank lines until the token limit) on 2 of 3 fresh cases, and a temperature-0 retry repeated it. Starting long free-text tasks (brief, campaign labels) at 0.3 fixed it: 4 of 4 fresh briefs first time, 7–11 s. Classification stays at 0.
+5. **Bigger can be faster.** Ultra (550B MoE, ~55B active) returned faster than Super and Lightning on Token Factory in our runs, so it handles the interactive text tasks. Lightning and Nano scored 93%: good fallbacks if cost becomes the constraint.
 
 ## Privacy and safety choices around the models
 
