@@ -120,6 +120,31 @@ def mentions(text: str, terms: list[str]) -> bool:
     return False
 
 
+_ID = r"(?:entity|hop|event|cashout|referral|evidence):\d+"
+_ID_GROUP = re.compile(rf"\s*\((?:{_ID})(?:\s*,\s*{_ID})*\)")
+_ID_BARE = re.compile(rf"\b{_ID}\b")
+
+
+def strip_ids(brief: dict) -> dict:
+    """Internal citation ids belong in each point's evidence list, never in text people read."""
+
+    def clean(text: str) -> str:
+        return re.sub(r"\s{2,}", " ", _ID_BARE.sub("", _ID_GROUP.sub("", text))).replace(" .", ".").strip()
+
+    def walk(v, key=""):
+        if key == "evidence":
+            return v
+        if isinstance(v, str):
+            return clean(v) if "\n" not in v else "\n".join(clean(line) for line in v.split("\n"))
+        if isinstance(v, list):
+            return [walk(x) for x in v]
+        if isinstance(v, dict):
+            return {k: walk(x, k) for k, x in v.items()}
+        return v
+
+    return walk(brief)
+
+
 class Gateway:
     def __init__(self, llm: NebiusClient, tavily: TavilyClient, cache: Cache, models: Models):
         self.llm, self.tavily, self.cache, self.models = llm, tavily, cache, models
@@ -429,7 +454,11 @@ class Gateway:
             thinking=True,
             temperature=0.3,  # long free text: temperature 0 tends to run away under strict decoding
         )
-        result = {**out.model_dump(), "model": self.model("brief"), "prompt_version": prompts.BRIEF_V}
+        result = {
+            **strip_ids(out.model_dump()),
+            "model": self.model("brief"),
+            "prompt_version": prompts.BRIEF_V,
+        }
         await self.cache.set(key, result)
         return result
 

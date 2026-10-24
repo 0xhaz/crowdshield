@@ -80,16 +80,36 @@ CONTACT = """From this company web page, extract the company's own contact phone
 address as printed (null if absent), and say whether the page is the company's own official website
 (not a directory, marketplace or social media page)."""
 
-BRIEF_V = "case-brief@2026-10-24"
+BRIEF_V = "case-brief@2026-10-24f"
 BRIEF = """You are a senior fraud investigator at a Malaysian bank. From the case data provided (a JSON
-object with a narrative, a timeline of events, a money trail, cash-outs, identifiers with risk scores
+object with a narrative, a timeline of events, a money trail, cash-outs, identifiers with verdicts
 and referrals), write a case brief for the fraud team and a referral note for NSRC / PDRM CCID.
-Rules: use ONLY facts in the case data; never invent names, numbers, amounts or dates; identifiers are
-masked and must stay masked exactly as given; cite the ids of supporting items (e.g. "event:2", "hop:1",
-"entity:5") in each point's evidence list, not in its text; times are Malaysia time (MYT) as given;
-say what is missing in `gaps`. Plain language. Be concise: at most 5 points
-per section and 5 gaps, one sentence each. The referral note is formal,
-in English and in Bahasa Melayu, and states amounts in RM."""
+
+Rules:
+- Use ONLY facts in the case data; never invent names, numbers, amounts, dates or what evidence
+  shows. Identifiers are masked and must stay masked exactly as given. Times are Malaysia time (MYT).
+- Cite the ids of supporting items ("event:2", "hop:1", "entity:5") in each point's evidence list,
+  not in its text. Use each identifier's verdict wording as given.
+- An identifier with role impersonated_official is a real official number the scammers spoofed or
+  quoted; it is never a suspect and never "not used by scammers". Never recommend blocking,
+  freezing or reporting it: the action is for telcos/MCMC to block calls that spoof it.
+- red_flags are suspicious facts in the data. Anything unknown or not in the data goes in gaps,
+  phrased as "not in the case data", never as a fact about what was or wasn't done.
+- Recommend actions for the right body: PDRM CCID investigates, takes statements and obtains
+  account and call records (it can freeze proceeds under AMLA); NSRC 997 coordinates urgent freezes
+  with banks; the receiving bank freezes and reports its mule accounts; the Securities Commission
+  regulates crypto exchanges (KYC and wallet records via PDRM); MCMC regulates telcos and online
+  platforms (blocking numbers, taking down sites), not banks or exchanges.
+- The victim's gender is not in the data: write "the victim" and "the victim's son", never he or she.
+- Plain language. Be concise: at most 5 points per section and 5 gaps, one sentence each.
+- The referral note is formal, in English and in Bahasa Melayu, from `preparedBy`, dated `today`,
+  with no placeholders like [Name], quoting the NSRC
+  reference and police report number if given, with amounts in RM and masked identifiers, and no
+  internal ids (no "entity:", "hop:" or "event:" in the note).
+- Use the verdict and scam type labels exactly as given (en in English, ms in Bahasa Melayu).
+- Bahasa Melayu terms: money laundering = pengubahan wang haram; mule account = akaun keldai;
+  spoofed number = nombor yang dipalsukan; freeze = bekukan; cash-out = pengeluaran tunai;
+  take down = turunkan; scam = penipuan; victim = mangsa."""
 
 LABEL_V = "campaign-label@2026-10-22c"
 LABEL = (

@@ -9,10 +9,12 @@ import {
   incidentEvent,
   leReferral,
   observation,
+  org,
   scamCase,
   source,
 } from "@crowdshield/db";
 import type { DbOrTx } from "@crowdshield/graph";
+import { SCAM_TYPE_LABEL, TIER_LABEL } from "@crowdshield/i18n";
 import { Controller, NotFoundException } from "@nestjs/common";
 import { and, desc, eq, inArray, isNotNull, sql, type SQL } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
@@ -135,9 +137,13 @@ export class CasesController {
   @Route("caseBrief")
   async brief(@UuidParam() id: string, @CurrentPrincipal() p: Principal) {
     const d = await caseDetail(this.db, id, p);
+    const [o] = await this.db
+      .select({ name: org.name })
+      .from(org)
+      .where(eq(org.id, requireUser(p).orgId));
     const out = await this.ml.post<Record<string, unknown>>(
       "/v1/brief",
-      { case: briefInput(d) },
+      { case: briefInput(d, o?.name ?? null) },
       180_000,
     );
     await this.audit.log(p, "case_brief", null, { caseId: id });
@@ -241,7 +247,7 @@ export async function caseDetail(db: Db, id: string, p: Principal) {
  * What Nemotron sees for a case brief: masked identifiers and redacted text only, every item with
  * an id ("event:2", "hop:1", "entity:5") that the brief must cite.
  */
-export function briefInput(d: Awaited<ReturnType<typeof caseDetail>>) {
+export function briefInput(d: Awaited<ReturnType<typeof caseDetail>>, preparedBy: string | null) {
   // Malaysia time, as the victim and the bank would say it (the model otherwise quotes UTC)
   const myt = (iso: string | null) =>
     iso &&
@@ -251,8 +257,15 @@ export function briefInput(d: Awaited<ReturnType<typeof caseDetail>>) {
       timeStyle: "short",
     })} MYT`;
   return {
+    // date only: the gateway caches briefs by payload, so a time here would defeat the cache
+    today: new Date().toLocaleDateString("en-GB", {
+      timeZone: "Asia/Kuala_Lumpur",
+      dateStyle: "medium",
+    }),
+    preparedBy, // the analyst's bank, which sends the referral
     case: {
       scamType: d.scamType,
+      scamTypeLabel: d.scamType ? SCAM_TYPE_LABEL[d.scamType] : null, // { en, ms }
       reportedAt: myt(d.reportedAt),
       occurredAt: myt(d.occurredAt),
       lossMyr: d.lossMyr,
@@ -262,8 +275,9 @@ export function briefInput(d: Awaited<ReturnType<typeof caseDetail>>) {
       victimState: d.victimState,
       victimAgeBand: d.victimAgeBand,
       campaign: d.campaign?.label ?? null,
-      nsrcRef: d.nsrcRef ? "provided" : null,
-      policeReport: d.policeReportNo ? "provided" : null,
+      // case references, not personal data: the referral note has to quote them
+      nsrcRef: d.nsrcRef,
+      policeReportNo: d.policeReportNo,
     },
     narrative: d.narrative,
     identifiers: d.entities.map((e) => ({
@@ -272,8 +286,12 @@ export function briefInput(d: Awaited<ReturnType<typeof caseDetail>>) {
       masked: e.masked,
       role: e.role,
       risk: e.risk,
-      tier: e.tier,
-      official: e.protected,
+      verdict: e.tier ? TIER_LABEL[e.tier as keyof typeof TIER_LABEL] : null, // { en, ms }
+      // without this, a model reads "official" as "not involved"
+      note:
+        e.role === "impersonated_official"
+          ? "A real official number (e.g. BNM or PDRM) that the scammers impersonated, by spoofing it on caller ID or quoting it (the case data doesn't say which). It is not the scammers' line and not a suspect."
+          : undefined,
     })),
     timeline: d.timeline.map((t, i) => ({
       id: `event:${i + 1}`,
@@ -304,6 +322,10 @@ export function briefInput(d: Awaited<ReturnType<typeof caseDetail>>) {
       sentAt: myt(r.sentAt),
       recoveredMyr: r.recoveredMyr,
     })),
-    evidence: d.evidence.map((e, i) => ({ id: `evidence:${i + 1}`, kind: e.kind })),
+    evidence: d.evidence.map((e, i) => ({
+      id: `evidence:${i + 1}`,
+      kind: e.kind,
+      note: "Attached by the reporter; its contents are not described in the case data.",
+    })),
   };
 }

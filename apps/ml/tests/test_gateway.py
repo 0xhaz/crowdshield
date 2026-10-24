@@ -254,3 +254,21 @@ async def test_retry_after_runaway_json_samples_differently():
     assert out["headline"]["en"] == "Mule paid"
     temps = [json.loads(c.request.content)["temperature"] for c in route.calls]
     assert temps[0] == 0.3 and temps[1] > temps[0]  # briefs start warm; the retry samples more
+
+
+def test_strip_ids_keeps_evidence_lists_and_line_breaks():
+    from crowdshield_ml.services import strip_ids
+
+    b = strip_ids(
+        {
+            "gaps": ["Victim's BSN account (entity:7) not in the case data."],
+            "money_trail": [{"text": "RM 48,000 to MBB ****8812 (entity:3, hop:1).", "evidence": ["hop:1"]}],
+            "referral": {
+                "en": "1. Call from +60 11-***-4821 (entity:1).\n2. Paid hop:1 at 16:00.",
+                "ms": "x",
+            },
+        }
+    )
+    assert b["gaps"] == ["Victim's BSN account not in the case data."]
+    assert b["money_trail"][0] == {"text": "RM 48,000 to MBB ****8812.", "evidence": ["hop:1"]}
+    assert b["referral"]["en"] == "1. Call from +60 11-***-4821.\n2. Paid at 16:00."

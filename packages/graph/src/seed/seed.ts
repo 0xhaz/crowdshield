@@ -235,6 +235,7 @@ export async function seed(
     scamType: ScamType;
     campaign?: string;
     reportedAt: Date;
+    occurredAt?: Date;
     verification?: string;
     reporterId?: string;
     orgId?: string;
@@ -258,7 +259,7 @@ export async function seed(
         scamType: c.scamType,
         campaignId: c.campaign ? campaigns.get(c.campaign) : undefined,
         lossMyr: c.lossMyr?.toFixed(2),
-        occurredAt: new Date(c.reportedAt.getTime() - 2 * HOUR),
+        occurredAt: c.occurredAt ?? new Date(c.reportedAt.getTime() - 2 * HOUR),
         reportedAt: c.reportedAt,
         language: c.language ?? pick(["ms", "ms", "en", "zh", "mixed"]),
         narrativeRedacted: c.narrative,
@@ -338,7 +339,8 @@ export async function seed(
     scamType: "macau_impersonation",
     campaign: "macau",
     reporterId: agencyReporter!.id,
-    reportedAt: lossAt,
+    reportedAt: lossAt, // the son's NSRC 997 call (the timeline's last event)
+    occurredAt: new Date(lossAt.getTime() - 6 * HOUR), // first contact
     lossMyr: 48000,
     nearMiss: false,
     nsrcRef: "NSRC-2026-10-118274",
@@ -394,7 +396,7 @@ export async function seed(
     },
     {
       caseId: nsrcCase,
-      at: t(-1),
+      at: t(0),
       channel: "other",
       kind: "report",
       detailRedacted: "Victim's son called NSRC 997.",
