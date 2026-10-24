@@ -32,10 +32,73 @@ Every report, bank confirmation and rejected invoice strengthens the graph for e
   - **Nemotron 3 Super** sorts this week's scam news.
   - **Qwen3-Embedding-8B** embeds scam scripts into pgvector for campaign matching and detection.
 - **Model choices are measured, not guessed.** We built a 41-message gold set (four languages, 12 scam types plus normal messages) and evaluated Lightning, Nano, Super and Ultra, with reasoning on and off. Defining every scam type in the prompt took accuracy from 68% to 100%; strict JSON-schema decoding stayed on (relaxing it broke 40 of 41 outputs); reasoning didn't help classification, so it is only on where the task needs it. Ultra was the most accurate and the fastest, so it handles interactive text.
-- **Tavily** for live web intelligence (scam reports about an unknown number, link pages, regulator lists, suppliers' official contacts) and for the news feed. Results are shown as cited leads, never as evidence.
+- **Tavily** for live web intelligence: what the scam graph hasn't seen yet (see "How we use Tavily" below).
 - **Deterministic core.** Scores come from the graph: noisy-OR over independent sources, half-lives, Sybil-resistant reporter weighting, one-hop propagation along co-case and money-flow edges. It is a TypeScript port of our Python reference, checked by a 500-case parity test. No model sits in the payment path; a payee check takes about 5 ms.
 - **Every AI result shows its trace:** model, reasoning on or off, prompt version, time and tokens.
 - **Stack:** NestJS API with one typed contract (Zod) shared by the API, web app and bot; Next.js 15; grammY; FastAPI gateway; Postgres + pgvector; Redis; S3; Docker on AWS with Caddy HTTPS. 140 TypeScript and 12 Python tests run in CI on every push; 11 browser tests (including the extension in a real Chromium) run against the live stack.
+
+## How we use Tavily
+
+A brand-new scam number, link or company has no reports in our graph yet. Tavily is how CrowdShield still says something useful on day one. Tavily finds and fetches; Nemotron reads and judges; the graph decides.
+
+| When | Tavily | Nemotron | What the user gets |
+|---|---|---|---|
+| A number, account or link has **no reports** in the graph | **Search** for it in its local formats (`"011-23454821" OR "01123454821"` + scam words) | Keeps only results that really mention it as a scam | A follow-up with cited links, marked "leads, not confirmation" |
+| Someone forwards a **link** | **Extract**: Tavily opens the page, so the user's phone never does | Does it impersonate a brand? Ask for a login, OTP or card? Offer an APK? | "Looks like a fake LHDN page. Don't open it." |
+| **`/invest <platform>`** | **Search** restricted to the regulators' sites (`sc.com.my`, `bnm.gov.my`) plus a **news** search | Keeps results about that platform | Regulator alert-list and news hits, never "this is safe" |
+| A business checks a **supplier** | **Search** and **extract** the company's contact page | Takes the phone number only if the page names the company | "Call the supplier back on 03-…, from their own website" |
+| The landing page's **scam news** | **News search**, last 7 days, BM and English | Keeps real Malaysian cases, removes duplicates, extracts loss and state | "Scams in the Malaysian news", every item linked to its source |
+
+Guard rails:
+
+- Web results are **leads with citations, never evidence**: they don't change a risk score.
+- A lead counts only if the page actually mentions the identifier.
+- Official bank and government domains are never flagged as impersonations.
+- Only the identifier or a public company name is sent to Tavily, never the user's message.
+- Results are cached (24 h, news 6 h).
+- If Tavily is slow or down, the graph's answer still arrives instantly; only the follow-up is missing.
+
+### Example in Telegram
+
+The bot answers from the graph in under a second, then sends what the web says a few seconds later. Synthetic identifiers; the web results here are illustrative.
+
+```
+You:   Ada orang WhatsApp saya dari 013-888 2741, tawar kerja part-time.
+       Dia hantar link ni: lhdn-refund-my.com/claim
+
+Bot:   🔍 NO REPORTS FOUND · Tiada laporan
+       +60 13-***-2741
+       What to do: No reports found, but that doesn't mean it is safe.
+       Police and BNM never ask you to transfer money.
+       [🚩 Report this] [📞 Call 997] [❓ Why this result?]
+
+Bot:   ⚠️ HIGH RISK · Risiko tinggi
+       lhdn-refund-my.com/…
+       14 report(s) from the public
+       Campaign: Fake LHDN tax refund call + link, Oct 2026
+       What to do: Don't open the link or enter your banking login or OTP.
+
+       … a few seconds later (Tavily + Nemotron) …
+
+Bot:   🌐 Web check +60 13-***-2741: found 2 mention(s) online.
+       These are leads, not confirmation:
+       • "Beware 013-888 2741, part-time job, asked for a deposit" (forum)
+       • "Senarai nombor scam kerja sambilan" (community list)
+
+Bot:   🔗 Link check (we opened it safely, so you don't have to)
+       lhdn-refund-my.com/…
+       ⚠️ Looks like a fake LHDN page.
+       It asks for a login, OTP or card details.
+       Don't open it.
+
+You:   /invest Zentrova Capital
+
+Bot:   📈 Investment check: Zentrova Capital
+       nothing found on the SC / BNM alert lists or in the news. That isn't
+       approval: check that the company is licensed on sc.com.my before investing.
+```
+
+The number nobody had reported now comes with two cited warnings from the web, the link is checked without the user opening it, and an unknown investment platform is never called safe.
 
 ## Privacy and fairness
 
