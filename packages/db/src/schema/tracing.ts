@@ -5,6 +5,7 @@ import {
   bigserial,
   check,
   index,
+  uniqueIndex,
   integer,
   numeric,
   pgTable,
@@ -101,6 +102,9 @@ export const fundHop = pgTable(
   (t) => [
     check("fund_hop_rail_check", sql`${t.rail} IN (${inList(PAYMENT_RAILS)})`),
     index("fund_hop_case_id_hop_no_idx").on(t.caseId, t.hopNo),
+    // one hop per transaction per case: the sending and the receiving bank share the DuitNow/IBG
+    // reference, so both can report their side without counting the transfer twice
+    uniqueIndex("fund_hop_case_id_txn_ref_key").on(t.caseId, t.txnRef).where(sql`${t.txnRef} IS NOT NULL`),
   ],
 );
 

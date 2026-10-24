@@ -204,7 +204,7 @@ Each action appears under **History** and in the audit log.
 
 ---
 
-3. *(Money trail from the bank's own trace)* Under **Money trail**, open **Add a transfer your bank traced**: from `HLB ****3365`, to **Bank Islam** `1201 7788 4410`, RM 9,000, frozen RM 4,000 → **Add to the money trail**. Expect: "BIMB ****4410 is now “Be careful” · 50", the new hop with **Frozen RM 4,000.00**, and an alert sent to the other bank/e-wallet in the network. Look the account up in the bot: "Received money a member bank traced from 1 scam case(s)". *Say:* banks trace and freeze among themselves through NSRC and the National Fraud Portal; CrowdShield takes the outcome and warns everyone else who might pay that account.
+3. *(Money trail from the bank's own trace)* Under **Money trail**, open **Add a transfer your bank traced**: from `HLB ****3365`, to **Bank Islam** `1201 7788 4410`, RM 9,000, frozen RM 4,000, reference `DN2026102500099001` → **Add to the money trail**. Expect: "BIMB ****4410 is now “Be careful” · 50", the new hop with **Frozen RM 4,000.00**, and an alert sent to the other bank/e-wallet in the network. Look the account up in the bot: "Received money a member bank traced from 1 scam case(s)". Submit it again with frozen RM 6,500 (as the receiving bank would): "Already in the trail (the other bank reported it too): frozen amount updated", still one hop. *Say:* banks trace and freeze among themselves through NSRC and the National Fraud Portal; CrowdShield takes the outcome and warns everyone else who might pay that account. Both banks can report their side; the shared DuitNow reference counts it once.
 
 ## 3. Bank supervisor (web)
 

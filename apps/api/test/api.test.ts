@@ -756,7 +756,84 @@ describe("money trail from partner banks", () => {
 
     // a retry with the same transaction reference is not recorded twice
     const again = await partner().call("addMoneyTrail", { params: { id: caseId }, body });
-    expect(again).toMatchObject({ hopsAdded: 0, hopsSkipped: 1 });
+    expect(again).toMatchObject({ hopsAdded: 0, hopsUpdated: 0, hopsSkipped: 1, cashoutsAdded: 0 });
+  });
+
+  it("the bank on the other side reporting the same transfer updates the freeze instead of adding a hop", async () => {
+    const analyst = await as("analyst@nusabank.demo");
+    const before = (await analyst.call("getCase", { params: { id: caseId } })).moneyTrail.length;
+    // same DuitNow reference, reported later with more money frozen
+    const r = await analyst.call("addMoneyTrail", {
+      params: { id: caseId },
+      body: {
+        hops: [
+          {
+            hopNo: 3,
+            from: { entityId: muleId },
+            to: { type: "bank_account", value: "Bank Islam 1201 7788 4410" },
+            amountMyr: 9000,
+            at: new Date(Date.now() - 3_600_000).toISOString(),
+            txnRef: "DN2026102500099001",
+            frozenMyr: 6500,
+          },
+        ],
+      },
+    });
+    expect(r).toMatchObject({ hopsAdded: 0, hopsUpdated: 1, alertsRaised: 0 });
+    const after = await analyst.call("getCase", { params: { id: caseId } });
+    expect(after.moneyTrail.length).toBe(before);
+    expect(after.moneyTrail.find((h) => h.to?.masked === "BIMB ****4410")!.frozenMyr).toBe(6500);
+
+    // without a reference: same accounts and amount within 10 minutes is the same transfer
+    const at = new Date(Date.now() - 600_000).toISOString();
+    const noRef = {
+      hops: [
+        {
+          hopNo: 3,
+          from: { entityId: muleId },
+          to: { type: "bank_account" as const, value: "RHB 2120 4455 0912" },
+          amountMyr: 1200,
+          at,
+        },
+      ],
+    };
+    expect(
+      (await partner().call("addMoneyTrail", { params: { id: caseId }, body: noRef })).hopsAdded,
+    ).toBe(1);
+    const shifted = structuredClone(noRef);
+    shifted.hops[0]!.at = new Date(Date.parse(at) + 240_000).toISOString();
+    expect(
+      await partner().call("addMoneyTrail", { params: { id: caseId }, body: shifted }),
+    ).toMatchObject({
+      hopsAdded: 0,
+      hopsSkipped: 1,
+    });
+  });
+
+  it("two banks reporting the same transfer at the same moment still make one hop", async () => {
+    const analyst = await as("analyst@nusabank.demo");
+    const hop = (frozenMyr: number) => ({
+      hops: [
+        {
+          hopNo: 4,
+          from: { type: "bank_account" as const, value: "Bank Islam 1201 7788 4410" },
+          to: { type: "bank_account" as const, value: "AmBank 8810 2233 4455" },
+          amountMyr: 3000,
+          at: new Date().toISOString(),
+          txnRef: "IBG2026102500777001",
+          frozenMyr,
+        },
+      ],
+    });
+    const [a, b] = await Promise.all([
+      partner().call("addMoneyTrail", { params: { id: caseId }, body: hop(0) }),
+      analyst.call("addMoneyTrail", { params: { id: caseId }, body: hop(1500) }),
+    ]);
+    expect(a.hopsAdded + b.hopsAdded).toBe(1);
+    const trail = (await analyst.call("getCase", { params: { id: caseId } })).moneyTrail;
+    const same = trail.filter((h) => h.to?.masked === "AMB ****4455");
+    expect(same).toHaveLength(1);
+    expect(same[0]!.frozenMyr).toBe(1500); // the larger freeze wins, whichever arrived first
   });
 
   it("risk flows down the trail only, never back to the account that sent the money", async () => {

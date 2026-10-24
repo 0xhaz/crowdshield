@@ -122,9 +122,12 @@ export function TraceHopForm({
           </label>
         </div>
         <label className="flex flex-col gap-1.5 sm:col-span-2">
-          <span className="label">Transaction reference (optional; a repeat is ignored)</span>
+          <span className="label">
+            Transaction reference (DuitNow / IBG; the other bank sees the same one)
+          </span>
           <input
             name="txnRef"
+            required
             className="input-class h-10 px-3 font-mono text-14"
             placeholder="DN2026102500099001"
           />
@@ -147,7 +150,9 @@ export function TraceHopForm({
                       ? `; alert sent to ${state.result.alertsRaised} other bank${state.result.alertsRaised > 1 ? "s" : ""} and e-wallet${state.result.alertsRaised > 1 ? "s" : ""}`
                       : ""
                   }.`
-                : "Already recorded (same transaction reference)."}
+                : state.result.hopsUpdated
+                  ? "Already in the trail (the other bank reported it too): frozen amount updated."
+                  : "Already in the trail: nothing new to add."}
             </p>
           )}
         </div>

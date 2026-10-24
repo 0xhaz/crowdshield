@@ -16,7 +16,7 @@ import {
 } from "@crowdshield/db";
 import { type DbOrTx, recomputeWithNeighbours, upsertEdge, upsertEntity } from "@crowdshield/graph";
 import { BadRequestException, Controller, Injectable, NotFoundException } from "@nestjs/common";
-import { and, eq, inArray, ne, sql } from "drizzle-orm";
+import { and, eq, inArray, isNull, ne, sql } from "drizzle-orm";
 import type { z } from "zod";
 import { AuditService } from "../common/audit.js";
 import { CurrentPrincipal, type Principal, requireOrg } from "../common/auth.js";
@@ -36,6 +36,9 @@ const TRACE_SOURCE = {
   name: "Member bank trace: received scam money",
   baseWeight: 0.25,
 };
+
+/** Without a transaction reference, the same two accounts and amount this close together are one transfer. */
+const SAME_TRANSFER_SECONDS = 600;
 
 /** Tiers worth telling the other banks about. */
 const ALERT_TIERS = new Set(["reported", "caution", "high", "confirmed"]);
@@ -84,38 +87,72 @@ export class MoneyTrailService {
       const touched = new Set<number>();
       const received = new Map<number, { amount: number; from: number; rail?: string }>();
       let hopsAdded = 0;
+      let hopsUpdated = 0;
       let hopsSkipped = 0;
 
-      const known = new Set(
-        (await tx.select({ ref: fundHop.txnRef }).from(fundHop).where(eq(fundHop.caseId, caseId)))
-          .map((r) => r.ref)
-          .filter(Boolean),
-      );
-
       for (const h of input.hops) {
-        if (h.txnRef && known.has(h.txnRef)) {
-          hopsSkipped++;
-          continue;
-        }
         const at = new Date(h.at);
         const from = await this.resolve(tx, h.from, at);
         const to = h.to ? await this.resolve(tx, h.to, at) : null;
         if (to === from) throw new BadRequestException("A hop can't go from an account to itself");
-        await tx.insert(fundHop).values({
-          caseId,
-          hopNo: h.hopNo,
-          fromEntity: from,
-          toEntity: to,
-          amountMyr: h.amountMyr.toFixed(2),
-          at,
-          rail: h.rail,
-          txnRef: h.txnRef,
-          senderBank: h.senderBank,
-          receiverBank: h.receiverBank,
-          frozenMyr: h.frozenMyr.toFixed(2),
-          reportedByOrg: orgId,
-        });
-        if (h.txnRef) known.add(h.txnRef);
+
+        // The same transfer reported again, by this bank or by the bank on the other side
+        const [same] = await tx
+          .select({ id: fundHop.id, frozen: fundHop.frozenMyr })
+          .from(fundHop)
+          .where(
+            and(
+              eq(fundHop.caseId, caseId),
+              h.txnRef
+                ? eq(fundHop.txnRef, h.txnRef)
+                : and(
+                    eq(fundHop.fromEntity, from),
+                    to === null ? isNull(fundHop.toEntity) : eq(fundHop.toEntity, to),
+                    eq(fundHop.amountMyr, h.amountMyr.toFixed(2)),
+                    sql`abs(extract(epoch from ${fundHop.at} - ${at.toISOString()}::timestamptz)) <= ${SAME_TRANSFER_SECONDS}`,
+                  ),
+            ),
+          )
+          .limit(1);
+        if (same) {
+          // freezes often come after the first report: keep the larger frozen amount
+          if (h.frozenMyr > Number(same.frozen)) {
+            await tx
+              .update(fundHop)
+              .set({ frozenMyr: h.frozenMyr.toFixed(2) })
+              .where(eq(fundHop.id, same.id));
+            hopsUpdated++;
+          } else hopsSkipped++;
+          continue;
+        }
+
+        const inserted = await tx
+          .insert(fundHop)
+          .values({
+            caseId,
+            hopNo: h.hopNo,
+            fromEntity: from,
+            toEntity: to,
+            amountMyr: h.amountMyr.toFixed(2),
+            at,
+            rail: h.rail,
+            txnRef: h.txnRef,
+            senderBank: h.senderBank,
+            receiverBank: h.receiverBank,
+            frozenMyr: h.frozenMyr.toFixed(2),
+            reportedByOrg: orgId,
+          })
+          // the other bank may be reporting the same transaction at this very moment
+          .onConflictDoUpdate({
+            target: [fundHop.caseId, fundHop.txnRef],
+            targetWhere: sql`${fundHop.txnRef} IS NOT NULL`,
+            set: { frozenMyr: sql`greatest(${fundHop.frozenMyr}, excluded.frozen_myr)` },
+          })
+          .returning({ new: sql<boolean>`xmax = 0` });
+        if (!inserted[0]?.new) {
+          hopsUpdated++;
+          continue;
+        }
         hopsAdded++;
         touched.add(from);
         if (to !== null) {
@@ -143,11 +180,27 @@ export class MoneyTrailService {
         }
       }
 
+      let cashoutsAdded = 0;
       for (const co of input.cashouts) {
         const at = new Date(co.at);
+        const from = await this.resolve(tx, co.from, at);
+        const [same] = await tx
+          .select({ id: cashoutEvent.id })
+          .from(cashoutEvent)
+          .where(
+            and(
+              eq(cashoutEvent.caseId, caseId),
+              eq(cashoutEvent.entityId, from),
+              eq(cashoutEvent.method, co.method),
+              sql`abs(extract(epoch from ${cashoutEvent.at} - ${at.toISOString()}::timestamptz)) <= ${SAME_TRANSFER_SECONDS}`,
+            ),
+          )
+          .limit(1);
+        if (same) continue;
+        cashoutsAdded++;
         await tx.insert(cashoutEvent).values({
           caseId,
-          entityId: await this.resolve(tx, co.from, at),
+          entityId: from,
           at,
           method: co.method,
           locationRef: co.locationRef,
@@ -160,7 +213,14 @@ export class MoneyTrailService {
       const recomputed = new Set<number>();
       for (const id of touched)
         for (const r of (await recomputeWithNeighbours(tx, id)).recomputed) recomputed.add(r);
-      return { hopsAdded, hopsSkipped, received, recomputed: [...recomputed] };
+      return {
+        hopsAdded,
+        hopsUpdated,
+        hopsSkipped,
+        cashoutsAdded,
+        received,
+        recomputed: [...recomputed],
+      };
     });
 
     await this.verdicts.invalidate(result.recomputed);
@@ -194,13 +254,15 @@ export class MoneyTrailService {
     await this.audit.log(p, "money_trail_added", null, {
       caseId,
       hops: result.hopsAdded,
-      cashouts: input.cashouts.length,
+      cashouts: result.cashoutsAdded,
+      updated: result.hopsUpdated,
       alerts: rows.length,
     });
     return {
       hopsAdded: result.hopsAdded,
+      hopsUpdated: result.hopsUpdated,
       hopsSkipped: result.hopsSkipped,
-      cashoutsAdded: input.cashouts.length,
+      cashoutsAdded: result.cashoutsAdded,
       traced,
       alertsRaised: rows.length,
     };

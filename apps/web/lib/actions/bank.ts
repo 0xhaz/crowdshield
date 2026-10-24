@@ -153,6 +153,11 @@ export async function addTracedHop(_: TrailState, f: FormData): Promise<TrailSta
       error: "Enter the account that received it, in full (your bank sees it in the trace).",
     };
   if (!Number.isFinite(amount) || amount <= 0) return { error: "Enter the amount." };
+  if (!str(f, "txnRef"))
+    return {
+      error:
+        "Enter the transaction reference: it's how a transfer reported by both banks is counted once.",
+    };
   if (!Number.isFinite(frozen) || frozen < 0 || frozen > amount)
     return { error: "The frozen amount can't be more than the amount." };
   const at = str(f, "at");

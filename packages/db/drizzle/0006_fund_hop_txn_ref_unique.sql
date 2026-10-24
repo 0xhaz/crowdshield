@@ -1,0 +1,2 @@
+-- One hop per transaction reference per case: sending and receiving banks may both report a transfer.
+CREATE UNIQUE INDEX "fund_hop_case_id_txn_ref_key" ON "fund_hop" USING btree ("case_id","txn_ref") WHERE "fund_hop"."txn_ref" IS NOT NULL;

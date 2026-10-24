@@ -43,6 +43,13 @@
       "when": 1792859962821,
       "tag": "0005_bank_trace",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792860721736,
+      "tag": "0006_fund_hop_txn_ref_unique",
+      "breakpoints": true
     }
   ]
 }

@@ -59,10 +59,24 @@ test("an analyst records a transfer their bank traced; the receiving account is 
   await page.getByLabel("Account number").fill("1201 7788 4410");
   await page.getByLabel("Amount (RM)").fill("9000");
   await page.getByLabel("Frozen (RM)").fill("4000");
+  await page.getByLabel(/Transaction reference/).fill("DN2026102500099001");
   await page.getByRole("button", { name: "Add to the money trail" }).click();
   await expect(page.getByRole("status")).toContainText(
     /BIMB \*\*\*\*4410 is now “(Be careful|High risk|Reported)/,
   );
   await expect(page.getByText("BIMB ****4410").first()).toBeVisible();
   await expect(page.getByText("Frozen RM 4,000.00")).toBeVisible();
+
+  // the receiving bank reports the same transfer later, with more frozen: one hop, freeze updated
+  // (the form stays open after a submit)
+  await page.getByLabel("From account").selectOption({ label: "HLB ****3365" });
+  await page.getByLabel("To bank").selectOption("Bank Islam");
+  await page.getByLabel("Account number").fill("1201 7788 4410");
+  await page.getByLabel("Amount (RM)").fill("9000");
+  await page.getByLabel("Frozen (RM)").fill("6500");
+  await page.getByLabel(/Transaction reference/).fill("DN2026102500099001");
+  await page.getByRole("button", { name: "Add to the money trail" }).click();
+  await expect(page.getByRole("status")).toContainText("frozen amount updated");
+  await expect(page.getByText("Frozen RM 6,500.00")).toBeVisible();
+  await expect(page.locator("li[id^=hop-]", { hasText: "BIMB ****4410" })).toHaveCount(1);
 });

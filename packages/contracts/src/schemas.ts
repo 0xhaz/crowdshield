@@ -759,7 +759,11 @@ export const MoneyTrailInput = z
   .refine((v) => v.hops.length + v.cashouts.length > 0, "Send at least one hop or cash-out");
 export const MoneyTrailResult = z.object({
   hopsAdded: z.number().int(),
-  hopsSkipped: z.number().int().describe("Already recorded (same transaction reference)"),
+  hopsUpdated: z
+    .number()
+    .int()
+    .describe("Already recorded (same transaction, e.g. reported by the other bank): frozen amount updated"),
+  hopsSkipped: z.number().int().describe("Already recorded, nothing new"),
   cashoutsAdded: z.number().int(),
   traced: z.array(Verdict).describe("Accounts that received money, with their updated verdicts"),
   alertsRaised: z
