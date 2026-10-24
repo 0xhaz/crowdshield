@@ -3,9 +3,23 @@ import { DEFAULT_API, type Msg, WATCH_SITES } from "./shared.js";
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 
-$("snip").addEventListener("click", () => {
-  void chrome.runtime.sendMessage({ type: "snip-start" } satisfies Msg);
-  window.close();
+// Start the snip from here (the popup holds the activeTab grant) and only close once the overlay
+// is up: closing first could drop the request while the service worker is asleep.
+$("snip").addEventListener("click", async () => {
+  // ?tab=<id> lets the browser tests open this page in a tab of its own and aim it at another
+  const pinned = Number(new URLSearchParams(location.search).get("tab"));
+  const [tab] = pinned
+    ? [await chrome.tabs.get(pinned)]
+    : await chrome.tabs.query({ active: true, currentWindow: true });
+  try {
+    if (tab?.id === undefined) throw new Error("no tab");
+    await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ["inpage.js"] });
+    await chrome.tabs.sendMessage(tab.id, { type: "snip-start" } satisfies Msg);
+    window.close();
+  } catch {
+    // chrome:// pages, the new tab page, the Web Store and PDFs can't be scripted
+    $("snip-error").hidden = false;
+  }
 });
 
 void chrome.commands.getAll().then((cmds) => {

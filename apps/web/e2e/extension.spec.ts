@@ -80,3 +80,18 @@ test("snip: drag over a screenshot and Nemotron reads it", async () => {
   await expect(panel(page)).toContainText(/AI: (Nemotron 3\.5 Super VL|cached result)/);
   await page.screenshot({ path: test.info().outputPath("snip.png") });
 });
+
+test("the toolbar popup's Snip button puts the selection overlay on the page", async () => {
+  const page = await ctx.newPage();
+  await page.goto("https://example.test/chat");
+  const { id, tabId } = await sw.evaluate(async () => ({
+    id: chrome.runtime.id,
+    tabId: (await chrome.tabs.query({ url: "https://example.test/*" })).at(-1)!.id!,
+  }));
+  const popup = await ctx.newPage();
+  await popup.goto(`chrome-extension://${id}/popup.html?tab=${tabId}`);
+  await popup.getByRole("button", { name: "Snip an area and check it" }).click();
+  await expect(page.getByText("Drag over the message to check")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.getByText("Drag over the message to check")).toBeHidden();
+});
