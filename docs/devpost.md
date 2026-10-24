@@ -123,7 +123,31 @@ Measure before choosing a model; the cheapest fix is often the prompt. Keep mode
 
 ## What's next
 
-the Chrome Web Store listing, bank codes per member bank (each bank reports only its own side of a money trail, and alerts go straight to the bank holding a traced account), an Android companion that reads incoming SMS and WhatsApp notifications on the device (the same on-device detection as the extension), WhatsApp (the bot's conversation is already channel-agnostic), a pilot with one bank's fraud team using real call-signal consent, NSRC case intake via API, and voice-note transcription when a speech model is available on Token Factory.
+**Integrating with real banks.** In production CrowdShield advises and the bank decides: it returns a score, reasons and a recommended action, and the bank's own fraud engine makes the call, as banks already do with other third-party risk signals. We see three ways in, from most to least trust required:
+
+1. **Live API** (what the demo shows): the bank's backend calls the payee check before releasing a transfer.
+2. **Through PayNet's National Fraud Portal:** CrowdShield's signals reach banks through infrastructure they already trust. This is the most realistic path in Malaysia.
+3. **Data feed:** the bank downloads risky identifiers and scores them inside its own systems, so no customer data leaves the bank.
+
+For a pilot, that means:
+
+- hosting in Malaysia (the demo runs in AWS us-east-1);
+- per-bank credentials with mutual TLS;
+- ISO 27001 or SOC 2 and independent penetration tests;
+- a strict timeout, so a slow check never blocks a payment;
+- each bank reporting only its own side of a money trail, with alerts going straight to the bank holding a traced account;
+- a legal review of banking secrecy and outsourcing rules with the bank and Bank Negara Malaysia.
+
+On iPhones, a banking app can tell that a call is active but not who is calling, so the caller's identity would come from victims' reports or a telco partnership.
+
+**More ways in for the public:**
+
+- the Chrome Web Store listing for the extension;
+- WhatsApp (the bot's conversation is already channel-agnostic);
+- an Android companion that checks incoming SMS and WhatsApp notifications on the device, with the same on-device detection as the extension;
+- voice-note transcription when a speech model is available on Token Factory.
+
+**Partners:** a pilot with one bank's fraud team using real call-signal consent, and case intake from NSRC via API.
 
 ## Built with
 
