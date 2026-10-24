@@ -10,7 +10,7 @@ CrowdShield uses NVIDIA Nemotron models on Nebius Token Factory for what models 
 | Read a scam screenshot (verbatim transcript + classification) | Nemotron 3.5 Super VL | off | The vision model; keeps phone and account digits exact |
 | Read an invoice PDF or image (supplier, SSM, TIN, bank, amount) | Nemotron 3.5 Super VL | off | PDF pages rendered with PyMuPDF; strict schema for every field |
 | Judge web search results, inspect link pages, find official contacts | Nemotron 3 Ultra 550B | off | Interactive: follow-up messages in the bot |
-| **Case brief** for the fraud team + NSRC/PDRM referral note (BM/EN) | Nemotron 3 Ultra 550B | **on** | Long, multi-source reasoning over the timeline, money trail and evidence; must cite evidence ids |
+| **Case brief** for the fraud team + NSRC/PDRM referral note (Malay and English) | Nemotron 3 Ultra 550B | **on** | Long, multi-source reasoning over the timeline, money trail and evidence; must cite evidence ids |
 | **Label a new scam campaign** + draft a public warning | Nemotron 3 Ultra 550B | **on** | Abstracting many reports into one pattern; a person approves the warning |
 | News scan ("scams in the news this week") | Nemotron 3 Super 120B | off | Batch, not latency-sensitive |
 | Similarity of scam scripts (campaign matching and detection) | Qwen3-Embedding-8B (1024 dims) | n/a | Multilingual embeddings into pgvector (HNSW) |
@@ -19,7 +19,7 @@ Routing lives in `apps/ml/src/crowdshield_ml/config.py` and can be overridden pe
 
 ## What we measured (`docs/model-eval.md`)
 
-41 hand-labelled messages: Bahasa Melayu, English, Manglish and Chinese, 12 scam types plus normal messages.
+41 hand-labelled messages in Malay, English, mixed Malay-English and Chinese, 12 scam types plus normal messages.
 
 1. **The prompt mattered more than the model.** Our first classify prompt defined only 5 of the 12 scam types. Super scored **68%**, mislabelling investment scams as "job tasks" and love scams as "parcels". With every type defined in one line each, the same model scored **100%**.
 2. **Strict schema decoding stays on.** Relaxing enums to free strings (validated afterwards) produced invalid nested values in 40 of 41 answers. With good definitions, strict decoding is accurate and always parses.
