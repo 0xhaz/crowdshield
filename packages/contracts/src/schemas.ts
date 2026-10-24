@@ -35,6 +35,7 @@ export const SourceKind = z.enum([
   "pdrm_semakmule",
   "nsrc_case",
   "bank_confirmed",
+  "bank_trace",
   "regulator_alert",
   "threat_feed",
   "user_report_verified",
@@ -51,6 +52,7 @@ export const EntityRole = z.enum([
   "profile_used",
   "wallet_used",
   "impersonated_official",
+  "traced_recipient",
 ]);
 export const Tier = z.enum([
   "no_known_risk",
@@ -224,7 +226,8 @@ export const ReportInput = z.object({
   victimState: z.string().max(40).optional(),
   victimAgeBand: AgeBand.optional(),
   identifiers: z
-    .array(IdentifierInput.extend({ role: EntityRole }))
+    // traced_recipient comes only from banks' money trails, never from a report
+    .array(IdentifierInput.extend({ role: EntityRole.exclude(["traced_recipient"]) }))
     .min(1)
     .max(20),
   evidence: z
@@ -706,6 +709,64 @@ export const UrlCheckResult = z.object({
   trace: AiTrace.optional(),
 });
 export const InvestmentCheckInput = z.object({ name: z.string().min(2).max(200) });
+
+// ---------- Money trail from partner banks (traced via NSRC / the National Fraud Portal) ----------
+/** An account already in the case (as the analyst sees it, masked) or one the bank traced. */
+const TracedAccount = z.union([
+  z.object({ entityId: z.number().int().positive() }),
+  IdentifierInput.extend({ type: z.enum(["bank_account", "ewallet"]) }),
+]);
+export const MoneyTrailInput = z
+  .object({
+    hops: z
+      .array(
+        z.object({
+          hopNo: z.number().int().min(1).max(20).describe("1 = victim to first mule"),
+          from: TracedAccount,
+          to: TracedAccount.nullable().describe("null when the money left to an unknown account"),
+          amountMyr: Money.positive(),
+          at: Timestamp,
+          rail: PaymentRail.optional(),
+          txnRef: z.string().max(60).optional().describe("Used to ignore a hop already recorded"),
+          senderBank: z.string().max(20).optional(),
+          receiverBank: z.string().max(20).optional(),
+          frozenMyr: Money.default(0),
+        }),
+      )
+      .max(50)
+      .default([]),
+    cashouts: z
+      .array(
+        z.object({
+          from: TracedAccount,
+          at: Timestamp,
+          method: z.enum([
+            "atm",
+            "branch",
+            "crypto_exchange",
+            "money_changer",
+            "merchant",
+            "overseas_transfer",
+          ]),
+          locationRef: z.string().max(120).optional(),
+          state: z.string().max(40).optional(),
+          amountMyr: Money.optional(),
+        }),
+      )
+      .max(50)
+      .default([]),
+  })
+  .refine((v) => v.hops.length + v.cashouts.length > 0, "Send at least one hop or cash-out");
+export const MoneyTrailResult = z.object({
+  hopsAdded: z.number().int(),
+  hopsSkipped: z.number().int().describe("Already recorded (same transaction reference)"),
+  cashoutsAdded: z.number().int(),
+  traced: z.array(Verdict).describe("Accounts that received money, with their updated verdicts"),
+  alertsRaised: z
+    .number()
+    .int()
+    .describe("Alerts sent to other banks and e-wallets in the network"),
+});
 
 // ---------- Phase 7: case brief, campaign detection, public check, news ----------
 const BriefPoint = z.object({ text: z.string(), evidence: z.array(z.string()) });

@@ -204,6 +204,16 @@ export const routes = {
     response: s.WebLeads,
   }),
 
+  addMoneyTrail: route({
+    method: "post",
+    path: "/v1/cases/:id/money-trail",
+    summary:
+      "Partner bank adds traced hops, frozen amounts and cash-outs (from NSRC / the National Fraud Portal)",
+    auth: BANK_API,
+    body: s.MoneyTrailInput,
+    response: s.MoneyTrailResult,
+    idempotent: true,
+  }),
   caseBrief: route({
     method: "post",
     path: "/v1/cases/:id/brief",
@@ -252,7 +262,8 @@ export const routes = {
   publicLookup: route({
     method: "post",
     path: "/v1/public/lookup",
-    summary: "Browser extension: verdicts for identifiers found on the page (graph only, no AI; rate-limited)",
+    summary:
+      "Browser extension: verdicts for identifiers found on the page (graph only, no AI; rate-limited)",
     auth: "public",
     body: s.PublicLookupInput,
     response: s.PublicLookupResult,

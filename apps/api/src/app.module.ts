@@ -15,6 +15,7 @@ import { EntitiesController } from "./modules/entities.js";
 import { GraphActions } from "./modules/graph-actions.js";
 import { ReportsController, ReportsService } from "./modules/reports.js";
 import { SmeController, SupplierCheckService } from "./modules/sme/sme.js";
+import { MoneyTrailController, MoneyTrailService } from "./modules/money-trail.js";
 import { PublicCheckService, PublicController } from "./modules/public.js";
 import { WebController } from "./modules/web.js";
 import { MlClient } from "./common/ml.js";
@@ -31,6 +32,7 @@ import { MlClient } from "./common/ml.js";
     WebController,
     CampaignsController,
     PublicController,
+    MoneyTrailController,
   ],
   providers: [
     TokenService,
@@ -44,6 +46,7 @@ import { MlClient } from "./common/ml.js";
     SupplierCheckService,
     CampaignService,
     PublicCheckService,
+    MoneyTrailService,
     { provide: APP_GUARD, useClass: AuthGuard },
     { provide: APP_INTERCEPTOR, useClass: ResponseContractInterceptor },
     { provide: APP_FILTER, useClass: ErrorFilter },

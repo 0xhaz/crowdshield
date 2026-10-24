@@ -46,3 +46,23 @@ test("case detail shows the timeline and money trail; entity detail shows the gr
     page.getByRole("img", { name: "Links between this entity and others" }),
   ).toBeVisible();
 });
+
+test("an analyst records a transfer their bank traced; the receiving account is flagged at once", async ({
+  page,
+}) => {
+  await signIn(page, "analyst@nusabank.demo");
+  await page.goto("/bank/cases?withLoss=1&scamType=macau_impersonation");
+  await page.getByRole("link", { name: /Oct/ }).first().click();
+  await page.getByText("Add a transfer your bank traced").click();
+  await page.getByLabel("From account").selectOption({ label: "HLB ****3365" });
+  await page.getByLabel("To bank").selectOption("Bank Islam");
+  await page.getByLabel("Account number").fill("1201 7788 4410");
+  await page.getByLabel("Amount (RM)").fill("9000");
+  await page.getByLabel("Frozen (RM)").fill("4000");
+  await page.getByRole("button", { name: "Add to the money trail" }).click();
+  await expect(page.getByRole("status")).toContainText(
+    /BIMB \*\*\*\*4410 is now “(Be careful|High risk|Reported)/,
+  );
+  await expect(page.getByText("BIMB ****4410").first()).toBeVisible();
+  await expect(page.getByText("Frozen RM 4,000.00")).toBeVisible();
+});

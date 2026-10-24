@@ -2,6 +2,7 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { CaseBriefPanel } from "@/components/CaseBriefPanel";
 import { HeaderBox } from "@/components/HeaderBox";
+import { TraceHopForm } from "@/components/TraceHopForm";
 import { RiskBadge } from "@/components/RiskBadge";
 import { api } from "@/lib/api";
 import { scamLabel, sourceLabel } from "@/lib/risk";
@@ -111,6 +112,20 @@ export default async function CaseDetail({ params }: { params: Promise<{ id: str
                 ))}
               </ul>
             )}
+            <TraceHopForm
+              caseId={c.id}
+              nextHop={Math.max(1, ...c.moneyTrail.map((h) => h.hopNo)) + 1}
+              accounts={[
+                ...new Map(
+                  [
+                    ...c.entities.filter((e) => e.type === "bank_account" || e.type === "ewallet"),
+                    ...c.moneyTrail.flatMap((h) => (h.to ? [h.from, h.to] : [h.from])),
+                  ]
+                    .filter((e) => e.id !== null)
+                    .map((e) => [e.id!, { id: e.id!, masked: e.masked }]),
+                ).values(),
+              ]}
+            />
             {c.cashouts.length > 0 && (
               <div className="rounded-lg bg-risk-critical-bg p-3 text-14 text-risk-critical">
                 <p className="font-semibold">

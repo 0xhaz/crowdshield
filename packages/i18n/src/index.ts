@@ -113,6 +113,10 @@ export const SCAM_TYPE_ACTION: Partial<Record<ScamTypeKey, Text>> = {
 export const SOURCE_LINE = {
   pdrm_semakmule: { en: "Listed by PDRM Semak Mule", ms: "Disenaraikan oleh PDRM Semak Mule" },
   bank_confirmed: { en: "Confirmed by a member bank", ms: "Disahkan oleh bank ahli" },
+  bank_trace: {
+    en: "Received money a member bank traced from {n} scam case(s)",
+    ms: "Menerima wang yang dijejak oleh bank ahli daripada {n} kes penipuan",
+  },
   nsrc_case: { en: "{n} NSRC (997) case(s)", ms: "{n} kes NSRC (997)" },
   regulator_alert: { en: "On the BNM / SC alert list", ms: "Dalam senarai amaran BNM / SC" },
   threat_feed: {

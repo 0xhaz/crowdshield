@@ -18,7 +18,11 @@ export default async function AlertDetail({ params }: { params: Promise<{ id: st
     <section className="page">
       <HeaderBox
         title={`Alert · ${a.entity.masked}`}
-        subtext={`Payee check ${formatDateTime(a.createdAt)} · ${formatMyr(a.amountMyr)} via ${a.rail?.toUpperCase() ?? "transfer"}`}
+        subtext={
+          a.kind === "mule_pattern"
+            ? `Money trail ${formatDateTime(a.createdAt)} · received ${formatMyr(a.amountMyr)} from a scam case, traced by another bank`
+            : `Payee check ${formatDateTime(a.createdAt)} · ${formatMyr(a.amountMyr)} via ${a.rail?.toUpperCase() ?? "transfer"}`
+        }
         actions={
           <div className="flex items-center gap-2">
             <RiskBadge tier={a.tier} risk={a.risk} size="md" />

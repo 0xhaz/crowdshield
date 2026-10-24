@@ -25,7 +25,7 @@ The signals that would stop a transfer are split across parties: the victim know
 | The public | Telegram bot, landing page | Forward a number, account, link, message or screenshot: a verdict with its reasons and one action. Lost money? A guided report and a pre-filled sheet for the NSRC 997 call. |
 | Anyone on a laptop | Chrome extension "CrowdShield Guard" | Snip any area of the screen (Alt+Shift+S) to check it, nothing to save or paste. On WhatsApp Web, Telegram Web and Gmail (each opt-in), scam-linked numbers are highlighted and "new number, send money" impersonation messages are flagged before anyone pays. |
 | Bank fraud analyst | Web portal | Payee checks with the customer's live call signal, an alert queue, cases with timelines and money trails, an **AI case brief**, **AI-detected scam campaigns** to confirm. |
-| Bank's app backend | `POST /v1/payee-check` with a partner key | Before a DuitNow transfer: hold, warn or proceed, with a plain BM/EN warning for the customer. |
+| Bank's app backend | `POST /v1/payee-check` and `POST /v1/cases/:id/money-trail` with a partner key | Before a DuitNow transfer: hold, warn or proceed, with a plain BM/EN warning for the customer. After a scam: the hops, freezes and cash-outs the bank traced (through NSRC / the National Fraud Portal), so every receiving account is flagged across the network. |
 | Business owner | Web portal ("Semak supplier") | Upload an invoice: changed bank details are caught and the payment held; the supplier's official contact is found on the web for a call-back. |
 
 ## How AI is used

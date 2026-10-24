@@ -46,6 +46,7 @@ export const sourceKind = pgEnum("source_kind", [
   "pdrm_semakmule",
   "nsrc_case",
   "bank_confirmed",
+  "bank_trace", // a member bank traced scam money into the account (via NSRC / the National Fraud Portal)
   "regulator_alert",
   "threat_feed",
   "user_report_verified",
@@ -63,6 +64,7 @@ export const entityRole = pgEnum("entity_role", [
   "profile_used",
   "wallet_used",
   "impersonated_official",
+  "traced_recipient", // received money traced from the case by a bank, downstream of the victim's payee
 ]);
 
 export const RISK_TIERS = [

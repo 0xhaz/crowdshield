@@ -691,3 +691,117 @@ describe("public check (landing page, no sign-in)", () => {
     expect(n.items[0]).toMatchObject({ lossMyr: 120000, source: "news.example.my" });
   });
 });
+
+describe("money trail from partner banks", () => {
+  const partner = () => createClient({ baseUrl: BASE, apiKey: PARTNER_KEY });
+  let caseId = "";
+  let muleId = 0;
+
+  it("adds a traced hop, a freeze and a cash-out; the new account is flagged and other banks alerted", async () => {
+    const analyst = await as("analyst@nusabank.demo");
+    const { items } = await analyst.call("listCases", {
+      query: { withLoss: true, scamType: "macau_impersonation" } as never,
+    });
+    const c = items.find((x) => x.nsrcRef === "NSRC-2026-10-118274")!;
+    caseId = c.id;
+    const detail = await analyst.call("getCase", { params: { id: caseId } });
+    // the analyst only sees masked accounts: refer to known ones by id, new ones in full
+    const hlb = detail.moneyTrail.find((h) => h.to?.masked === "HLB ****3365")!.to!;
+    muleId = hlb.id!;
+    const fresh = await analyst.call("lookup", {
+      query: { type: "bank_account", value: "Bank Islam 1201 7788 4410" },
+    });
+    expect(fresh.tier).toBe("no_known_risk");
+
+    const body = {
+      hops: [
+        {
+          hopNo: 3,
+          from: { entityId: hlb.id! },
+          to: { type: "bank_account" as const, value: "Bank Islam 1201 7788 4410" },
+          amountMyr: 9000,
+          at: new Date(Date.now() - 3_600_000).toISOString(),
+          rail: "duitnow" as const,
+          txnRef: "DN2026102500099001",
+          senderBank: "HLB",
+          receiverBank: "BIMB",
+          frozenMyr: 4000,
+        },
+      ],
+      cashouts: [
+        {
+          from: { type: "bank_account" as const, value: "Bank Islam 1201 7788 4410" },
+          at: new Date(Date.now() - 1_800_000).toISOString(),
+          method: "atm" as const,
+          locationRef: "ATM BIMB-KL-0412",
+          state: "Kuala Lumpur",
+          amountMyr: 5000,
+        },
+      ],
+    };
+    const r = await partner().call("addMoneyTrail", {
+      params: { id: caseId },
+      body,
+      idempotencyKey: "trail-test-0001",
+    });
+    expect(r).toMatchObject({ hopsAdded: 1, hopsSkipped: 0, cashoutsAdded: 1 });
+    expect(r.traced[0]!.entity.masked).toBe("BIMB ****4410");
+    expect(r.traced[0]!.tier).not.toBe("no_known_risk"); // received money from a scam-linked account
+    expect(r.alertsRaised).toBeGreaterThanOrEqual(1); // the e-wallet in the network hears about it
+
+    const after = await analyst.call("getCase", { params: { id: caseId } });
+    expect(after.moneyTrail.map((h) => h.to?.masked)).toContain("BIMB ****4410");
+    expect(after.moneyTrail.find((h) => h.to?.masked === "BIMB ****4410")!.frozenMyr).toBe(4000);
+    expect(after.cashouts.map((x) => x.locationRef)).toContain("ATM BIMB-KL-0412");
+
+    // a retry with the same transaction reference is not recorded twice
+    const again = await partner().call("addMoneyTrail", { params: { id: caseId }, body });
+    expect(again).toMatchObject({ hopsAdded: 0, hopsSkipped: 1 });
+  });
+
+  it("risk flows down the trail only, never back to the account that sent the money", async () => {
+    const analyst = await as("analyst@nusabank.demo");
+    const before = (await analyst.call("getEntity", { params: { id: muleId } })).verdict.risk;
+    await partner().call("addMoneyTrail", {
+      params: { id: caseId },
+      body: {
+        hops: [
+          {
+            hopNo: 3,
+            from: { type: "bank_account", value: "Maybank 5144 0912 7730" },
+            to: { entityId: muleId },
+            amountMyr: 100,
+            at: new Date().toISOString(),
+          },
+        ],
+      },
+    });
+    const clean = await analyst.call("lookup", {
+      query: { type: "bank_account", value: "Maybank 5144 0912 7730" },
+    });
+    expect(clean.tier).toBe("no_known_risk"); // paying a mule doesn't make you one
+    expect(
+      (await analyst.call("getEntity", { params: { id: muleId } })).verdict.risk,
+    ).toBeGreaterThanOrEqual(before);
+  });
+
+  it("only banks can add a money trail, and only to a real case", async () => {
+    const sme = await as("owner@majuvista.demo");
+    const body = { hops: [], cashouts: [] } as never;
+    expect(await status(sme.call("addMoneyTrail", { params: { id: caseId }, body }))).toBe(403);
+    expect(await status(bot().call("addMoneyTrail", { params: { id: caseId }, body }))).toBe(403);
+    expect(
+      await status(
+        partner().call("addMoneyTrail", {
+          params: { id: "00000000-0000-0000-0000-000000000000" },
+          body: {
+            cashouts: [{ from: { entityId: muleId }, at: new Date().toISOString(), method: "atm" }],
+          },
+        }),
+      ),
+    ).toBe(404);
+    expect(await status(partner().call("addMoneyTrail", { params: { id: caseId }, body }))).toBe(
+      400,
+    );
+  });
+});

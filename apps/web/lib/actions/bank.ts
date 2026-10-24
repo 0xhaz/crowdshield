@@ -1,6 +1,11 @@
 "use server";
 
-import type { CaseBrief, DetectResult, PayeeCheckResult } from "@crowdshield/contracts";
+import type {
+  CaseBrief,
+  DetectResult,
+  MoneyTrailResult,
+  PayeeCheckResult,
+} from "@crowdshield/contracts";
 import { revalidatePath } from "next/cache";
 import type { z } from "zod";
 import { api, errorMessage } from "../api";
@@ -128,6 +133,50 @@ export async function detectCampaigns(): Promise<DetectState> {
   try {
     const result = await (await api()).call("detectCampaigns");
     revalidatePath("/bank/campaigns");
+    return { result };
+  } catch (e) {
+    return { error: errorMessage(e) };
+  }
+}
+
+export type TrailState = { error?: string; result?: z.infer<typeof MoneyTrailResult> };
+
+/** A transfer the analyst's bank traced (via NSRC / the National Fraud Portal) from an account in the case. */
+export async function addTracedHop(_: TrailState, f: FormData): Promise<TrailState> {
+  const caseId = str(f, "caseId")!;
+  const amount = Number(str(f, "amount")?.replace(/[,\s]|rm/gi, ""));
+  const frozen = Number(str(f, "frozen")?.replace(/[,\s]|rm/gi, "") || 0);
+  const account = str(f, "account");
+  if (!str(f, "from")) return { error: "Choose the account the money left." };
+  if (!account)
+    return {
+      error: "Enter the account that received it, in full (your bank sees it in the trace).",
+    };
+  if (!Number.isFinite(amount) || amount <= 0) return { error: "Enter the amount." };
+  if (!Number.isFinite(frozen) || frozen < 0 || frozen > amount)
+    return { error: "The frozen amount can't be more than the amount." };
+  const at = str(f, "at");
+  try {
+    const result = await (
+      await api()
+    ).call("addMoneyTrail", {
+      params: { id: caseId },
+      body: {
+        hops: [
+          {
+            hopNo: Number(str(f, "hopNo") ?? 2),
+            from: { entityId: Number(str(f, "from")) },
+            to: { type: "bank_account", value: `${str(f, "bank") ?? ""} ${account}`.trim() },
+            amountMyr: amount,
+            at: at ? new Date(`${at}:00+08:00`).toISOString() : new Date().toISOString(),
+            rail: (str(f, "rail") ?? "duitnow") as "duitnow",
+            txnRef: str(f, "txnRef"),
+            frozenMyr: frozen,
+          },
+        ],
+      },
+    });
+    revalidatePath(`/bank/cases/${caseId}`);
     return { result };
   } catch (e) {
     return { error: errorMessage(e) };
