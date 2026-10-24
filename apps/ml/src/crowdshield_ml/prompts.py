@@ -80,7 +80,7 @@ CONTACT = """From this company web page, extract the company's own contact phone
 address as printed (null if absent), and say whether the page is the company's own official website
 (not a directory, marketplace or social media page)."""
 
-BRIEF_V = "case-brief@2026-10-22c"
+BRIEF_V = "case-brief@2026-10-24"
 BRIEF = """You are a senior fraud investigator at a Malaysian bank. From the case data provided (a JSON
 object with a narrative, a timeline of events, a money trail, cash-outs, identifiers with risk scores
 and referrals), write a case brief for the fraud team and a referral note for NSRC / PDRM CCID.

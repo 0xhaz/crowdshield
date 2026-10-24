@@ -427,6 +427,7 @@ class Gateway:
             prompt_version=prompts.BRIEF_V,
             max_tokens=12000,  # reasoning tokens count too; 6000 truncated long cases
             thinking=True,
+            temperature=0.3,  # long free text: temperature 0 tends to run away under strict decoding
         )
         result = {**out.model_dump(), "model": self.model("brief"), "prompt_version": prompts.BRIEF_V}
         await self.cache.set(key, result)
@@ -444,6 +445,7 @@ class Gateway:
             prompt_version=prompts.LABEL_V,
             max_tokens=3000,
             thinking=True,
+            temperature=0.3,  # long free text: temperature 0 tends to run away under strict decoding
         )
         result = out.model_dump()
         result["key_phrases"] = result["key_phrases"][:6]

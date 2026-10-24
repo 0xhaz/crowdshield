@@ -253,4 +253,4 @@ async def test_retry_after_runaway_json_samples_differently():
     out = await gateway().case_brief({"narrative": "A short story", "timeline": []})
     assert out["headline"]["en"] == "Mule paid"
     temps = [json.loads(c.request.content)["temperature"] for c in route.calls]
-    assert temps[0] == 0 and temps[1] > 0
+    assert temps[0] == 0.3 and temps[1] > temps[0]  # briefs start warm; the retry samples more

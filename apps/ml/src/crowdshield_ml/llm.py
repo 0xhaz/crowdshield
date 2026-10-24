@@ -82,6 +82,7 @@ class NebiusClient:
         max_tokens: int = 1200,
         thinking: bool = False,
         strict_enums: bool = True,
+        temperature: float = 0.0,
     ) -> T:
         schema = schema_model.model_json_schema()
         if not strict_enums:
@@ -90,7 +91,6 @@ class NebiusClient:
             schema = relax_enums(schema)
         body = {
             "model": model,
-            "temperature": 0,
             "max_tokens": max_tokens,
             "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
             "response_format": {
@@ -101,9 +101,9 @@ class NebiusClient:
         }
         last: Exception | None = None
         for attempt in range(2):
-            # A retry at temperature 0 repeats the same output. Strict decoding occasionally runs away
-            # (blank lines until max_tokens, seen on long case briefs), so the retry samples a little.
-            body["temperature"] = 0 if attempt == 0 else 0.4
+            # Strict decoding of long free text sometimes runs away at temperature 0 (blank lines until
+            # max_tokens, seen on case briefs), and a temperature-0 retry repeats it: retries sample more.
+            body["temperature"] = temperature if attempt == 0 else max(0.4, temperature + 0.3)
             started = time.perf_counter()
             try:
                 r = await self.client.post(
