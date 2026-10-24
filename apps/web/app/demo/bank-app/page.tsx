@@ -19,9 +19,10 @@ export default function BankAppPage() {
           </Link>
           <h1 className="text-30 font-bold text-gray-900">Inside the customer’s banking app</h1>
           <p className="text-16 text-gray-700">
-            Before a DuitNow transfer leaves, the bank’s backend asks CrowdShield about the payee,
-            together with one signal only the phone has: is the customer on a call right now, and
-            with whom.
+            This is the bank’s own app, not a CrowdShield app. The customer pays as usual and never
+            sees CrowdShield: when they tap Transfer, the bank’s backend asks CrowdShield about the
+            payee, together with one signal only the phone has: is the customer on a call right now,
+            and with whom.
           </p>
           <ol className="flex list-decimal flex-col gap-2 pl-5 text-14 text-gray-700">
             <li>
@@ -34,8 +35,8 @@ export default function BankAppPage() {
               confirmed scam number becomes “hold and call back”.
             </li>
             <li>
-              The customer sees one plain warning in BM and English; the bank’s fraud team gets the
-              alert in its queue.
+              The customer sees one plain warning in Malay and English; the bank’s fraud team gets
+              the alert in its queue.
             </li>
           </ol>
           <p className="text-12 text-gray-500">
