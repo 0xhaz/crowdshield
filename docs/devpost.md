@@ -60,7 +60,7 @@ Measure before choosing a model; the cheapest fix is often the prompt. Keep mode
 
 ## What's next
 
-the Chrome Web Store listing, an Android companion that reads incoming SMS and WhatsApp notifications on the device (the same on-device detection as the extension), WhatsApp (the bot's conversation is already channel-agnostic), a pilot with one bank's fraud team using real call-signal consent, NSRC case intake via API, and voice-note transcription when a speech model is available on Token Factory.
+the Chrome Web Store listing, bank codes per member bank (each bank reports only its own side of a money trail, and alerts go straight to the bank holding a traced account), an Android companion that reads incoming SMS and WhatsApp notifications on the device (the same on-device detection as the extension), WhatsApp (the bot's conversation is already channel-agnostic), a pilot with one bank's fraud team using real call-signal consent, NSRC case intake via API, and voice-note transcription when a speech model is available on Token Factory.
 
 ## Built with
 
