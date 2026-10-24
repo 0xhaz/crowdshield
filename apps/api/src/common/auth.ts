@@ -98,17 +98,14 @@ export class AuthGuard implements CanActivate {
     throw new ForbiddenException("Your role can't use this endpoint");
   }
 
-  private partnerOrgId?: string;
+  /** Looked up per request (one indexed query): a cached id would go stale when the demo is re-seeded. */
   private async partnerOrg(): Promise<string> {
-    if (!this.partnerOrgId) {
-      const [o] = await this.db
-        .select({ id: org.id })
-        .from(org)
-        .where(eq(org.name, this.config.bankPartnerOrg));
-      if (!o) throw new UnauthorizedException("Partner bank is not set up");
-      this.partnerOrgId = o.id;
-    }
-    return this.partnerOrgId;
+    const [o] = await this.db
+      .select({ id: org.id })
+      .from(org)
+      .where(eq(org.name, this.config.bankPartnerOrg));
+    if (!o) throw new UnauthorizedException("Partner bank is not set up");
+    return o.id;
   }
 
   private async authenticate(req: Request): Promise<Principal | undefined> {

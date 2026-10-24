@@ -180,7 +180,7 @@ Scenarios marked **⚠ changes data** affect later scenarios; their dependencies
 Each action appears under **History** and in the audit log.
 
 **B7. Investigate a case**
-1. **Cases** → chips **Fake police / BNM officer** and **With money lost** → open the row with `NSRC-2026-10-118274`.
+1. **Cases** → tap **Fake police / BNM officer** in the first chip row, then **With money lost** in the second row. One case is left: an NSRC case, RM 48,000, with the blue `NSRC-2026-10-118274` chip in the Source column. Open it (click the date). Under **All** it sits lower down, below the recent public reports.
 2. Expect:
    - the victim's narrative;
    - a **Timeline** of 5 steps: first contact call 14 min → transfer to "BNM officer" on WhatsApp video → pressure → DuitNow RM 48,000 → son calls 997;

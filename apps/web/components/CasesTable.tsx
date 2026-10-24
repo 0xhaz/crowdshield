@@ -41,7 +41,6 @@ export function CasesTable({ cases }: { cases: z.infer<typeof CaseSummary>[] }) 
               >
                 {formatDateTime(c.reportedAt)}
               </Link>
-              {c.nsrcRef && <p className="text-12 text-gray-500">{c.nsrcRef}</p>}
             </TableCell>
             <TableCell className="px-2">
               {scamLabel(c.scamType)}
@@ -57,6 +56,11 @@ export function CasesTable({ cases }: { cases: z.infer<typeof CaseSummary>[] }) 
             <TableCell className="px-2">
               {sourceLabel(c.source)}
               <p className="text-12 text-gray-500">{titleCase(c.verification)}</p>
+              {c.nsrcRef && (
+                <span className="chip mt-1 whitespace-nowrap border-risk-info-border bg-risk-info-bg font-mono text-[11px] text-risk-info">
+                  {c.nsrcRef}
+                </span>
+              )}
             </TableCell>
             <TableCell className="whitespace-nowrap px-2 tabular-nums">
               {c.nearMiss ? <span className="text-gray-500">Near miss</span> : formatMyr(c.lossMyr)}
