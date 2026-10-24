@@ -241,3 +241,16 @@ async def test_case_brief_redacts_free_text_but_keeps_dates_and_masked_ids():
     assert "2026-10-18T06:48:18.764Z" in sent and "+60 11-***-4821" in sent
     assert out["model"] == "ultra-model" and out["headline"]["en"] == "Mule paid"
     assert json.loads(route.calls[0].request.content)["chat_template_kwargs"] == {"enable_thinking": True}
+
+
+@respx.mock
+async def test_retry_after_runaway_json_samples_differently():
+    runaway = httpx.Response(
+        200,
+        json={"choices": [{"message": {"content": '{"headline": {"en": "x"' + "\n" * 500}}], "usage": {}},
+    )
+    route = respx.post(f"{NEBIUS}/chat/completions").mock(side_effect=[runaway, llm_reply(BRIEF)])
+    out = await gateway().case_brief({"narrative": "A short story", "timeline": []})
+    assert out["headline"]["en"] == "Mule paid"
+    temps = [json.loads(c.request.content)["temperature"] for c in route.calls]
+    assert temps[0] == 0 and temps[1] > 0

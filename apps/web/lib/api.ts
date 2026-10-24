@@ -48,5 +48,7 @@ export function errorMessage(e: unknown): string {
       return issues.map((i) => `${(i.path ?? []).join(".")}: ${i.message}`).join("; ");
     return e.body.message ?? e.message;
   }
+  // fetch() itself failed: the API is unreachable (e.g. restarting during a deploy)
+  if (e instanceof TypeError) return "Couldn’t reach CrowdShield just now. Please try again in a moment.";
   return "Something went wrong. Please try again.";
 }

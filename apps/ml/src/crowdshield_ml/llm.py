@@ -101,6 +101,9 @@ class NebiusClient:
         }
         last: Exception | None = None
         for attempt in range(2):
+            # A retry at temperature 0 repeats the same output. Strict decoding occasionally runs away
+            # (blank lines until max_tokens, seen on long case briefs), so the retry samples a little.
+            body["temperature"] = 0 if attempt == 0 else 0.4
             started = time.perf_counter()
             try:
                 r = await self.client.post(
