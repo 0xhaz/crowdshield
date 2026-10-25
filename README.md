@@ -1,5 +1,7 @@
 # CrowdShield
 
+![CrowdShield: stop scam payments before the money moves](docs/assets/devpost-thumbnail.png)
+
 **Scam intelligence for Malaysia.** One shared scam graph that the public, banks, e-wallets and small businesses all feed and all use. The bank sees the transfer; the crowd saw the call. CrowdShield puts the two together before the money moves.
 
 Built for the Nebius × NVIDIA Global AI Hackathon on **NVIDIA Nemotron** models served by **Nebius Token Factory**.
