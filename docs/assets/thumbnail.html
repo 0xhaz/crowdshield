@@ -1,0 +1,68 @@
+<!doctype html>
+<!-- Devpost thumbnail, 3:2 (1500x1000). Rendered to devpost-thumbnail.png with a headless browser screenshot. -->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500..800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * { box-sizing: border-box; margin: 0; }
+      body { width: 1500px; height: 1000px; overflow: hidden; font-family: "DM Sans", system-ui, sans-serif; }
+      .card {
+        position: relative; width: 1500px; height: 1000px; padding: 90px 100px;
+        background: radial-gradient(circle at 85% 15%, #2f6df0 0%, transparent 45%),
+          linear-gradient(135deg, #062c7a 0%, #08399e 45%, #0b4fd9 100%);
+        color: #fff; display: flex; flex-direction: column; justify-content: space-between;
+      }
+      .brand { display: flex; align-items: center; gap: 28px; }
+      .brand svg { width: 120px; height: 120px; filter: drop-shadow(0 8px 20px rgba(0,0,0,.25)); }
+      .brand h1 { font-size: 112px; font-weight: 800; letter-spacing: -3px; }
+      .tag { font-size: 64px; font-weight: 700; line-height: 1.12; letter-spacing: -1px; max-width: 1300px; }
+      .tag span { color: #ffd166; }
+      .flow { display: flex; align-items: center; gap: 26px; }
+      .node {
+        background: #fff; color: #101828; border-radius: 22px; padding: 22px 30px;
+        font-size: 36px; font-weight: 700; display: flex; align-items: center; gap: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,.25);
+      }
+      .node small { display: block; font-size: 24px; font-weight: 600; }
+      .dot { width: 22px; height: 22px; border-radius: 50%; flex: none; }
+      .red small { color: #b42318; } .red .dot { background: #d92d20; }
+      .orange small { color: #b93815; } .orange .dot { background: #ec4a0a; }
+      .arrow { font-size: 56px; font-weight: 800; color: #9cc0ff; }
+      .paused {
+        background: #ffd166; color: #3d2a00; border-radius: 999px; padding: 22px 36px;
+        font-size: 38px; font-weight: 800; box-shadow: 0 10px 30px rgba(0,0,0,.25);
+      }
+      .foot { font-size: 30px; font-weight: 600; color: #cfe0ff; }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="brand">
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <path d="M32 3 8 12v18c0 15 10.2 26.6 24 31 13.8-4.4 24-16 24-31V12L32 3Z" fill="#fff" />
+          <g fill="#0B4FD9">
+            <circle cx="22" cy="20" r="3" /><circle cx="32" cy="18" r="3" /><circle cx="42" cy="20" r="3" />
+            <circle cx="18" cy="29" r="3" /><circle cx="27" cy="28" r="3" /><circle cx="37" cy="28" r="3" />
+            <circle cx="46" cy="29" r="3" /><circle cx="21" cy="38" r="3" /><circle cx="32" cy="37" r="3" />
+            <circle cx="43" cy="38" r="3" /><circle cx="26" cy="46" r="3" /><circle cx="38" cy="46" r="3" />
+            <circle cx="32" cy="53" r="2.6" />
+          </g>
+        </svg>
+        <h1>CrowdShield</h1>
+      </div>
+      <p class="tag">Stop scam payments<br /><span>before the money moves.</span></p>
+      <div class="flow">
+        <div class="node red"><i class="dot"></i><div>Scam call<small>Confirmed scam</small></div></div>
+        <div class="arrow">+</div>
+        <div class="node orange"><i class="dot"></i><div>Mule account<small>High risk</small></div></div>
+        <div class="arrow">→</div>
+        <div class="paused">⏸ Transfer paused</div>
+      </div>
+      <p class="foot">Shared scam graph for Malaysia · NVIDIA Nemotron on Nebius Token Factory</p>
+    </div>
+  </body>
+</html>
