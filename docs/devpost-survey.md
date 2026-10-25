@@ -104,3 +104,17 @@ Most valuable:
 - **A Nemotron speech model** for transcribing scam voice notes and calls.
 - **Smaller vision variants** with the same digit-exact reading, for cheaper screenshot checks at scale.
 - **Published guidance** on reasoning budgets and structured output, drawn from the kinds of issues we hit.
+
+## Which AI tools have you leveraged while working on this project?
+
+**To build it:**
+- **Claude Code (Anthropic)** as a pair-programming agent across the project: planning from our design documents, writing and refactoring the TypeScript and Python code, tests (unit, API end-to-end, browser), the model evaluation harness, debugging, Docker and AWS deployment, and the documentation, diagrams, pitch deck and this write-up. We reviewed and directed every change.
+
+**Inside the product:**
+- **NVIDIA Nemotron on Nebius Token Factory:**
+  - Nemotron 3 Ultra classifies messages, judges web results, writes case briefs and labels campaigns.
+  - Nemotron 3.5 Super VL reads screenshots and invoices.
+  - Nemotron 3 Super filters the scam news.
+  - Lightning and Nano are configured fallbacks.
+- **Qwen3-Embedding-8B** (on Token Factory) for scam-script similarity in pgvector.
+- **Tavily** for live web search, page extraction and news.
