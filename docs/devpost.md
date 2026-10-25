@@ -1,6 +1,8 @@
 # CrowdShield: Devpost submission
 
-**Tagline:** The bank sees the transfer. The crowd saw the call. CrowdShield stops the scam payment before the money moves.
+**Elevator pitch (173/200):** The bank sees the transfer. The crowd saw the call. CrowdShield joins them in one scam graph, with NVIDIA Nemotron, to stop scam payments in Malaysia before the money moves.
+
+**Thumbnail:** [`docs/assets/devpost-thumbnail.png`](assets/devpost-thumbnail.png) (1500 × 1000, 3:2)
 
 **Try it:** https://crowdshield.184-197-8-50.sslip.io · Telegram [@CrowdShieldBot](https://t.me/CrowdShieldBot) · banking-app demo at `/demo/bank-app` · portal logins `analyst@nusabank.demo` / `owner@majuvista.demo`, password `crowdshield-demo` (synthetic data only)
 
@@ -17,8 +19,8 @@ Every scam has a moment when it could be stopped, but the signal is split. The v
 CrowdShield is one scam graph with five front doors:
 
 1. **Telegram bot (the public).** Forward a number, account, link, message or screenshot. You get a verdict (confirmed scam, high risk, reported, no reports found) with its reasons and one plain action, in Malay or English. Nemotron reads screenshots and names the scam pattern; known scam waves are flagged. If you lost money, the bot walks you through a report and hands you a pre-filled sheet to read from while calling NSRC 997.
-2. **Bank portal (fraud analysts and supervisors).** Payee checks that combine the payee's risk with the customer's **live call signal**, an alert queue with graded interventions, cases with timelines and money trails, an **AI case brief** with a referral note for NSRC/PDRM, and **AI-detected scam campaigns** for a person to confirm.
-3. **The customer's banking app.** Before a DuitNow transfer, the bank's backend calls CrowdShield with its partner key. A transfer to a mule account during a call from a confirmed scam number is paused, and the customer sees one clear warning.
+2. **Bank portal (fraud analysts and supervisors).** Payee checks that combine the payee's risk with the customer's **live call signal**, an alert queue with graded interventions, cases with timelines and money trails, an **AI case brief** with a referral note for NSRC/PDRM, **AI-detected scam campaigns** for a person to confirm, and a place to record the transfers their bank traced through NSRC, so every account the money reached is flagged across the network.
+3. **The customer's banking app.** Before a DuitNow transfer, the bank's backend calls CrowdShield with its partner key. A transfer to a mule account during a call from a confirmed scam number is paused, and the customer sees one clear warning. After a scam, the same partner key lets the bank send the hops, freezes and cash-outs it traced.
 4. **CrowdShield Guard, a Chrome extension.** Most victims only realise after the fact, and saving a screenshot and sending it somewhere is friction. With the extension you press Alt+Shift+S and drag over any message, email or chat; Nemotron reads it and the graph checks every number in it. On WhatsApp Web, Telegram Web and Gmail (each turned on by the user), scam-linked numbers and accounts are highlighted as they appear, and "it's me, new number, please transfer" impersonation messages are flagged before anyone pays. Detection runs on the device; only the identifiers are looked up.
 5. **Supplier check (small businesses).** Upload an invoice. Nemotron reads it; a changed bank account is caught and the payment held; the supplier's official phone number is found on the web for a call-back. Rejecting a fake invoice reports the account, protecting the next business.
 
@@ -35,7 +37,7 @@ Every report, bank confirmation and rejected invoice strengthens the graph for e
 - **Tavily** for live web intelligence: what the scam graph hasn't seen yet (see "How we use Tavily" below).
 - **Deterministic core.** Scores come from the graph: noisy-OR over independent sources, half-lives, Sybil-resistant reporter weighting, one-hop propagation along co-case and money-flow edges. It is a TypeScript port of our Python reference, checked by a 500-case parity test. No model sits in the payment path; a payee check takes about 5 ms.
 - **Every AI result shows its trace:** model, reasoning on or off, prompt version, time and tokens.
-- **Stack:** NestJS API with one typed contract (Zod) shared by the API, web app and bot; Next.js 15; grammY; FastAPI gateway; Postgres + pgvector; Redis; S3; Docker on AWS with Caddy HTTPS. 140 TypeScript and 12 Python tests run in CI on every push; 11 browser tests (including the extension in a real Chromium) run against the live stack.
+- **Stack:** NestJS API with one typed contract (Zod) shared by the API, web app and bot; Next.js 15; grammY; FastAPI gateway; Postgres + pgvector; Redis; S3; Docker on AWS with Caddy HTTPS. 145 TypeScript and 14 Python tests run in CI on every push; 13 browser tests (including the extension in a real Chromium) run against the live stack.
 
 ## How we use Tavily
 
@@ -109,7 +111,9 @@ Identifiers are looked up by keyed hash and stored encrypted; everything on scre
 - **Wrong labels came from the prompt, not the model.** Every model made the same mistakes until we found that the prompt defined only 5 of the 12 scam types.
 - **Cross-language campaign matching.** Malay and English reports of the same scam score around 0.72 similarity; we calibrated thresholds on real embeddings (same scam 0.65–0.80, different scams 0.26–0.66) and require 3+ distinct reports before proposing a campaign.
 - **Web search false positives.** Names in our demo data first matched real businesses, so every name is coined and checked. A lead counts only if the page actually mentions the identifier, and official domains are never flagged.
-- **Reasoning budgets.** Reasoning tokens count against the output limit; long case briefs were cut off until we raised the budget and asked for concise points.
+- **Reasoning budgets and runaway output.** Reasoning tokens count against the output limit, so long case briefs were cut off until we raised the budget. Then, under strict JSON decoding at temperature 0, Ultra sometimes wrote blank lines until it ran out of tokens, and a temperature-0 retry repeated it. Starting long outputs at temperature 0.3 fixed it: 4 of 4 fresh briefs first time.
+- **Keeping the case brief honest.** Early briefs said the impersonated BNM number was "not used by scammers", invented what a screenshot showed, and asked the wrong agency to trace crypto. We fixed the input (explicit notes on what each item means), the rules (unknowns go to "gaps", which agency does what) and the output (internal ids stripped), and checked every line against the case data.
+- **The same transfer, reported twice.** The sending and receiving banks can both report a hop. The shared DuitNow reference makes it one hop, enforced by the database even when both arrive at the same moment, and a later report can only raise the frozen amount.
 
 ## Accomplishments
 
