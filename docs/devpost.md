@@ -6,63 +6,65 @@
 
 **Try it:** https://crowdshield.184-197-8-50.sslip.io · Telegram [@CrowdShieldBot](https://t.me/CrowdShieldBot) · banking-app demo at `/demo/bank-app` · portal logins `analyst@nusabank.demo` / `owner@majuvista.demo`, password `crowdshield-demo` (synthetic data only)
 
----
-
 ## Inspiration
 
-From January to November 2025, Malaysian police recorded 67,735 online crime cases with losses over RM2.7 billion. Scam calls were the biggest category. The national scam hotline, NSRC 997, saved about RM34.5 million in 2025. Most money is never recovered once it has left the victim's account.
+From January to November 2025, Malaysian police recorded 67,735 online crime cases with losses over RM2.7 billion. Scam calls were the biggest category. The national scam hotline, NSRC 997, saved about RM34.5 million in 2025. Once money leaves the victim's account, most of it is never recovered.
 
-Every scam has a moment when it could be stopped, but the signal is split. The victim knows a "police officer" is on the phone. The bank knows a large DuitNow transfer is going to an account opened nine days ago. The business knows its supplier never changed banks. Nobody sees all of it. We built the shared picture.
+Every scam has a moment when it could be stopped, but the signals are split between people who never talk to each other. The victim knows a "police officer" is on the phone. The bank knows a large DuitNow transfer is going to an account opened nine days ago. The business knows its supplier never changed banks. We built one place where those signals meet.
 
 ## What it does
 
-CrowdShield is one scam graph with five front doors:
+CrowdShield is one scam graph with five ways in. Each report, bank confirmation and rejected invoice goes back into the graph, so the next check anywhere benefits from it.
 
-1. **Telegram bot (the public).** Forward a number, account, link, message or screenshot. You get a verdict (confirmed scam, high risk, reported, no reports found) with its reasons and one plain action, in Malay or English. Nemotron reads screenshots and names the scam pattern; known scam waves are flagged. If you lost money, the bot walks you through a report and hands you a pre-filled sheet to read from while calling NSRC 997.
-2. **Bank portal (fraud analysts and supervisors).** Payee checks that combine the payee's risk with the customer's **live call signal**, an alert queue with graded interventions, cases with timelines and money trails, an **AI case brief** with a referral note for NSRC/PDRM, **AI-detected scam campaigns** for a person to confirm, and a place to record the transfers their bank traced through NSRC, so every account the money reached is flagged across the network.
-3. **The customer's banking app.** Before a DuitNow transfer, the bank's backend calls CrowdShield with its partner key. A transfer to a mule account during a call from a confirmed scam number is paused, and the customer sees one clear warning. After a scam, the same partner key lets the bank send the hops, freezes and cash-outs it traced.
-4. **CrowdShield Guard, a Chrome extension.** Most victims only realise after the fact, and saving a screenshot and sending it somewhere is friction. With the extension you press Alt+Shift+S and drag over any message, email or chat; Nemotron reads it and the graph checks every number in it. On WhatsApp Web, Telegram Web and Gmail (each turned on by the user), scam-linked numbers and accounts are highlighted as they appear, and "it's me, new number, please transfer" impersonation messages are flagged before anyone pays. Detection runs on the device; only the identifiers are looked up.
-5. **Supplier check (small businesses).** Upload an invoice. Nemotron reads it; a changed bank account is caught and the payment held; the supplier's official phone number is found on the web for a call-back. Rejecting a fake invoice reports the account, protecting the next business.
-
-Every report, bank confirmation and rejected invoice strengthens the graph for everyone.
+1. Telegram bot, for the public. Forward a number, account, link, message or screenshot and you get a verdict (confirmed scam, high risk, reported, or no reports found) with its reasons and one plain action, in Malay or English. Nemotron reads screenshots and names the scam pattern, and the bot says when a message belongs to a known scam wave. If you lost money, the bot walks you through a report and gives you a pre-filled sheet to read from while you call NSRC 997.
+2. Bank portal, for fraud analysts and supervisors. Payee checks combine the payee's risk with the customer's live call signal. Analysts work an alert queue with graded interventions, read cases with timelines and money trails, generate an AI case brief with a referral note for NSRC and PDRM, and confirm scam campaigns the AI has detected. They can also record transfers their bank traced through NSRC, and every account the money reached is then flagged across the network.
+3. The customer's banking app. Before a DuitNow transfer, the bank's backend calls CrowdShield with its partner key. A transfer to a mule account during a call from a confirmed scam number is paused, and the customer sees one clear warning. After a scam, the bank uses the same key to send the hops, freezes and cash-outs it traced.
+4. CrowdShield Guard, a Chrome extension. Most victims only realise after the fact, and saving a screenshot to send somewhere is one more step they rarely take. With the extension you press Alt+Shift+S and drag over any message, email or chat; Nemotron reads it and the graph checks every number in it. On WhatsApp Web, Telegram Web and Gmail, each turned on by the user, scam-linked numbers and accounts are highlighted as they appear, and "it's me, new number, please transfer" messages are flagged before anyone pays. Detection runs on the device, and only the identifiers are looked up.
+5. Supplier check, for small businesses. Upload an invoice and Nemotron reads it. A changed bank account is caught, the payment is held, and the supplier's official phone number is found on the web so the owner can call back. Rejecting a fake invoice reports the account to the graph.
 
 ## How we built it
 
-- **NVIDIA Nemotron on Nebius Token Factory** for every model task:
-  - **Nemotron 3 Ultra** classifies forwarded messages in Malay, English, mixed Malay-English and Chinese, judges web search results and link pages, and, with **reasoning on**, writes case briefs and labels new scam campaigns.
-  - **Nemotron 3.5 Super VL** reads scam screenshots and invoice PDFs verbatim (digits and account numbers exact).
-  - **Nemotron 3 Super** sorts this week's scam news.
-  - **Qwen3-Embedding-8B** embeds scam scripts into pgvector for campaign matching and detection.
-- **Model choices are measured, not guessed.** We built a 41-message gold set (four languages, 12 scam types plus normal messages) and evaluated Lightning, Nano, Super and Ultra, with reasoning on and off. Defining every scam type in the prompt took accuracy from 68% to 100%; strict JSON-schema decoding stayed on (relaxing it broke 40 of 41 outputs); reasoning didn't help classification, so it is only on where the task needs it. Ultra was the most accurate and the fastest, so it handles interactive text.
-- **Tavily** for live web intelligence: what the scam graph hasn't seen yet (see "How we use Tavily" below).
-- **Deterministic core.** Scores come from the graph: noisy-OR over independent sources, half-lives, Sybil-resistant reporter weighting, one-hop propagation along co-case and money-flow edges. It is a TypeScript port of our Python reference, checked by a 500-case parity test. No model sits in the payment path; a payee check takes about 5 ms.
-- **Every AI result shows its trace:** model, reasoning on or off, prompt version, time and tokens.
-- **Stack:** NestJS API with one typed contract (Zod) shared by the API, web app and bot; Next.js 15; grammY; FastAPI gateway; Postgres + pgvector; Redis; S3; Docker on AWS with Caddy HTTPS. 145 TypeScript and 14 Python tests run in CI on every push; 13 browser tests (including the extension in a real Chromium) run against the live stack.
+Every model task runs on NVIDIA Nemotron through Nebius Token Factory:
+
+- Nemotron 3 Ultra classifies forwarded messages in Malay, English, mixed Malay-English and Chinese, judges web search results and link pages, and, with reasoning on, writes case briefs and labels new scam campaigns.
+- Nemotron 3.5 Super VL reads scam screenshots and invoice PDFs verbatim, with digits and account numbers exact.
+- Nemotron 3 Super sorts this week's scam news.
+- Qwen3-Embedding-8B embeds scam scripts into pgvector for campaign matching and detection.
+
+We picked models by testing them. Our gold set has 41 messages in four languages, covering 12 scam types plus normal messages, and we ran Lightning, Nano, Super and Ultra on it with reasoning on and off. Defining every scam type in the prompt took accuracy from 68% to 100%. We kept strict JSON-schema decoding on, because relaxing it broke 40 of 41 outputs. Reasoning didn't improve classification, so we only turn it on where a task needs it. Ultra was both the most accurate and the fastest, so it handles interactive text.
+
+Tavily provides live web intelligence for anything the graph hasn't seen yet (see "How we use Tavily" below).
+
+Scores come from the graph, not from a model: noisy-OR over independent sources, half-lives, Sybil-resistant reporter weighting, and one-hop propagation along co-case and money-flow edges. The scoring code is a TypeScript port of our Python reference, checked by a 500-case parity test. No model sits in the payment path, and a payee check takes about 5 ms.
+
+Every AI result shows its trace: model, reasoning on or off, prompt version, time and tokens.
+
+The stack is a NestJS API with one typed contract (Zod) shared by the API, web app and bot; Next.js 15; grammY; a FastAPI gateway; Postgres with pgvector; Redis; S3; and Docker on AWS behind Caddy HTTPS. CI runs 145 TypeScript and 14 Python tests on every push, and 13 browser tests, including the extension in a real Chromium, run against the live stack.
 
 ## How we use Tavily
 
-A brand-new scam number, link or company has no reports in our graph yet. Tavily is how CrowdShield still says something useful on day one. Tavily finds and fetches; Nemotron reads and judges; the graph decides.
+A brand-new scam number, link or company has no reports in our graph yet. Tavily lets CrowdShield still say something useful about it on day one. Tavily searches and fetches pages, Nemotron judges what comes back, and the graph keeps making the risk decisions.
 
 | When | Tavily | Nemotron | What the user gets |
 |---|---|---|---|
-| A number, account or link has **no reports** in the graph | **Search** for it in its local formats (`"011-23454821" OR "01123454821"` + scam words) | Keeps only results that really mention it as a scam | A follow-up with cited links, marked "leads, not confirmation" |
-| Someone forwards a **link** | **Extract**: Tavily opens the page, so the user's phone never does | Does it impersonate a brand? Ask for a login, OTP or card? Offer an APK? | "Looks like a fake LHDN page. Don't open it." |
-| **`/invest <platform>`** | **Search** restricted to the regulators' sites (`sc.com.my`, `bnm.gov.my`) plus a **news** search | Keeps results about that platform | Regulator alert-list and news hits, never "this is safe" |
-| A business checks a **supplier** | **Search** and **extract** the company's contact page | Takes the phone number only if the page names the company | "Call the supplier back on 03-…, from their own website" |
-| The landing page's **scam news** | **News search**, last 7 days, in Malay and English | Keeps real Malaysian cases, removes duplicates, extracts loss and state | "Scams in the Malaysian news", every item linked to its source |
+| A number, account or link has no reports in the graph | Searches for it in its local formats (`"011-23454821" OR "01123454821"` + scam words) | Keeps only results that really mention it as a scam | A follow-up with cited links, marked "leads, not confirmation" |
+| Someone forwards a link | Extract: Tavily opens the page, so the user's phone never does | Checks whether it impersonates a brand, asks for a login, OTP or card, or offers an APK | "Looks like a fake LHDN page. Don't open it." |
+| `/invest <platform>` | Searches the regulators' sites (`sc.com.my`, `bnm.gov.my`) plus a news search | Keeps results about that platform | Regulator alert-list and news hits; an unknown platform is never called safe |
+| A business checks a supplier | Searches for and extracts the company's contact page | Takes the phone number only if the page names the company | "Call the supplier back on 03-…, from their own website" |
+| The landing page's scam news | News search over the last 7 days, in Malay and English | Keeps real Malaysian cases, removes duplicates, extracts loss and state | "Scams in the Malaysian news", each item linked to its source |
 
 Guard rails:
 
-- Web results are **leads with citations, never evidence**: they don't change a risk score.
+- Web results are shown as cited leads and don't change a risk score.
 - A lead counts only if the page actually mentions the identifier.
 - Official bank and government domains are never flagged as impersonations.
 - Only the identifier or a public company name is sent to Tavily, never the user's message.
-- Results are cached (24 h, news 6 h).
-- If Tavily is slow or down, the graph's answer still arrives instantly; only the follow-up is missing.
+- Results are cached for 24 hours (news for 6).
+- If Tavily is slow or down, the graph's answer still arrives instantly and only the follow-up is missing.
 
 ### Example in Telegram
 
-The bot answers from the graph in under a second, then sends what the web says a few seconds later. Synthetic identifiers; the web results here are illustrative.
+The bot answers from the graph in under a second, then sends what the web says a few seconds later. The identifiers are synthetic and the web results are illustrative.
 
 ```
 You:   Someone WhatsApped me from 013-888 2741 offering a part-time job.
@@ -100,40 +102,38 @@ Bot:   📈 Investment check: Zentrova Capital
        approval: check that the company is licensed on sc.com.my before investing.
 ```
 
-The number nobody had reported now comes with two cited warnings from the web, the link is checked without the user opening it, and an unknown investment platform is never called safe.
-
 ## Privacy and fairness
 
-Identifiers are looked up by keyed hash and stored encrypted; everything on screen is masked (`+60 11-***-4821`). IC, phone and account numbers are redacted before any text model sees them. Reporters are never named. An unknown number gets "no reports found", never a green tick. Listed owners can appeal; a supervisor decides; an upheld appeal clears the score. Official numbers (PDRM, BNM, banks) are protected and shown as "may be spoofed". Every lookup and decision is audited.
+Identifiers are looked up by keyed hash and stored encrypted, and everything on screen is masked (`+60 11-***-4821`). IC, phone and account numbers are redacted before any text model sees them. Reporters are never named. An unknown number gets "no reports found", never a green tick. Listed owners can appeal to a supervisor, and an upheld appeal clears the score. Official numbers (PDRM, BNM, banks) are protected and shown as "may be spoofed". Every lookup and decision goes into the audit log.
 
 ## Challenges
 
-- **Wrong labels came from the prompt, not the model.** Every model made the same mistakes until we found that the prompt defined only 5 of the 12 scam types.
-- **Cross-language campaign matching.** Malay and English reports of the same scam score around 0.72 similarity; we calibrated thresholds on real embeddings (same scam 0.65–0.80, different scams 0.26–0.66) and require 3+ distinct reports before proposing a campaign.
-- **Web search false positives.** Names in our demo data first matched real businesses, so every name is coined and checked. A lead counts only if the page actually mentions the identifier, and official domains are never flagged.
-- **Reasoning budgets and runaway output.** Reasoning tokens count against the output limit, so long case briefs were cut off until we raised the budget. Then, under strict JSON decoding at temperature 0, Ultra sometimes wrote blank lines until it ran out of tokens, and a temperature-0 retry repeated it. Starting long outputs at temperature 0.3 fixed it: 4 of 4 fresh briefs first time.
-- **Keeping the case brief honest.** Early briefs said the impersonated BNM number was "not used by scammers", invented what a screenshot showed, and asked the wrong agency to trace crypto. We fixed the input (explicit notes on what each item means), the rules (unknowns go to "gaps", which agency does what) and the output (internal ids stripped), and checked every line against the case data.
-- **The same transfer, reported twice.** The sending and receiving banks can both report a hop. The shared DuitNow reference makes it one hop, enforced by the database even when both arrive at the same moment, and a later report can only raise the frozen amount.
+- Every model made the same classification mistakes. The cause turned out to be our prompt, which defined only 5 of the 12 scam types.
+- Matching campaigns across languages was hard: Malay and English reports of the same scam score around 0.72 similarity. We calibrated thresholds on real embeddings (same scam 0.65 to 0.80, different scams 0.26 to 0.66) and require 3 or more distinct reports before proposing a campaign.
+- Web search produced false positives. Names in our first demo data matched real businesses, so we replaced every name with a coined one and checked it. A lead now counts only if the page mentions the identifier, and official domains are never flagged.
+- Reasoning tokens count against the output limit, so long case briefs were cut off until we raised the budget. Then, under strict JSON decoding at temperature 0, Ultra sometimes wrote blank lines until it ran out of tokens, and a retry at temperature 0 did the same. Starting long outputs at temperature 0.3 fixed it: 4 of 4 fresh briefs came back first time.
+- Early case briefs said the impersonated BNM number was "not used by scammers", invented what a screenshot showed, and asked the wrong agency to trace crypto. We fixed the input (explicit notes on what each item means), the rules (unknowns go to "gaps", and which agency does what) and the output (internal ids stripped), then checked every line against the case data.
+- The sending and receiving banks can both report the same transfer. The shared DuitNow reference makes it one hop, the database enforces this even when both reports arrive at the same moment, and a later report can only raise the frozen amount.
 
 ## Accomplishments
 
 - A transfer to a mule account during a live scam call is paused in about 5 ms, with no model in the path.
-- A new scam wave (fake "KWSP Account 3 agents") is detected from three reports in two languages and labelled by Nemotron Ultra with a summary, repeated phrases and a draft warning; the bot warns the public once an analyst confirms it.
+- A new scam wave (fake "KWSP Account 3 agents") is detected from three reports in two languages and labelled by Nemotron Ultra with a summary, repeated phrases and a draft warning. The bot warns the public once an analyst confirms it.
 - An Ultra case brief turns a timeline and money trail into a cited brief and a bilingual referral note in about 12 seconds.
 
 ## What we learned
 
-Measure before choosing a model; the cheapest fix is often the prompt. Keep models where they are strong (reading, classifying, drafting) and keep decisions in code that can be explained and audited.
+Test models before choosing one, because the cheapest fix is often in the prompt. Use models for reading, classifying and drafting, and keep decisions in code that can be explained and audited.
 
 ## What's next
 
-**Integrating with real banks.** In production CrowdShield advises and the bank decides: it returns a score, reasons and a recommended action, and the bank's own fraud engine makes the call, as banks already do with other third-party risk signals. We see three ways in, from most to least trust required:
+In production, CrowdShield would advise and the bank would decide. It returns a score, reasons and a recommended action, and the bank's own fraud engine makes the call, as banks already do with other third-party risk signals. We see three ways to connect, from most to least trust required:
 
-1. **Live API** (what the demo shows): the bank's backend calls the payee check before releasing a transfer.
-2. **Through PayNet's National Fraud Portal:** CrowdShield's signals reach banks through infrastructure they already trust. This is the most realistic path in Malaysia.
-3. **Data feed:** the bank downloads risky identifiers and scores them inside its own systems, so no customer data leaves the bank.
+1. A live API, as in the demo: the bank's backend calls the payee check before releasing a transfer.
+2. Through PayNet's National Fraud Portal, so CrowdShield's signals reach banks through infrastructure they already trust. This is the most realistic path in Malaysia.
+3. A data feed: the bank downloads risky identifiers and scores them inside its own systems, so no customer data leaves the bank.
 
-For a pilot, that means:
+A pilot would need:
 
 - hosting in Malaysia (the demo runs in AWS us-east-1);
 - per-bank credentials with mutual TLS;
@@ -142,16 +142,16 @@ For a pilot, that means:
 - each bank reporting only its own side of a money trail, with alerts going straight to the bank holding a traced account;
 - a legal review of banking secrecy and outsourcing rules with the bank and Bank Negara Malaysia.
 
-On iPhones, a banking app can tell that a call is active but not who is calling, so the caller's identity would come from victims' reports or a telco partnership.
+On iPhones, a banking app can tell that a call is active but not who is calling, so the caller's identity would have to come from victims' reports or a telco partnership.
 
-**More ways in for the public:**
+For the public, we want to add:
 
-- the Chrome Web Store listing for the extension;
-- WhatsApp (the bot's conversation is already channel-agnostic);
-- an Android companion that checks incoming SMS and WhatsApp notifications on the device, with the same on-device detection as the extension;
-- voice-note transcription when a speech model is available on Token Factory.
+- a Chrome Web Store listing for the extension;
+- WhatsApp (the bot's conversation logic is already channel-agnostic);
+- an Android companion that checks incoming SMS and WhatsApp notifications on the device, using the same on-device detection as the extension;
+- voice-note transcription once a speech model is available on Token Factory.
 
-**Partners:** a pilot with one bank's fraud team using real call-signal consent, and case intake from NSRC via API.
+We'd also like to run a pilot with one bank's fraud team using real call-signal consent, and take case intake from NSRC via API.
 
 ## Built with
 
