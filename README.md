@@ -2,31 +2,31 @@
 
 ![CrowdShield: stop scam payments before the money moves](docs/assets/devpost-thumbnail.png)
 
-**Scam intelligence for Malaysia.** One shared scam graph that the public, banks, e-wallets and small businesses all feed and all use. The bank sees the transfer; the crowd saw the call. CrowdShield puts the two together before the money moves.
+CrowdShield is a shared scam graph for Malaysia. The public, banks, e-wallets and small businesses add what they see to it and check against it. The bank sees the transfer and the crowd saw the call; CrowdShield joins the two before the money moves.
 
-Built for the Nebius × NVIDIA Global AI Hackathon on **NVIDIA Nemotron** models served by **Nebius Token Factory**.
+We built it for the Nebius × NVIDIA Global AI Hackathon, using NVIDIA Nemotron models served by Nebius Token Factory.
 
-- **Live demo:** https://crowdshield.184-197-8-50.sslip.io (try a check on the landing page, no sign-in)
-- **Telegram bot:** [@CrowdShieldBot](https://t.me/CrowdShieldBot): send `/start` and tap an example
-- **Chrome extension (CrowdShield Guard):** https://crowdshield.184-197-8-50.sslip.io/extension
-- **Customer banking-app demo:** https://crowdshield.184-197-8-50.sslip.io/demo/bank-app
-- **Bank and business portals:** sign in with `analyst@nusabank.demo`, `supervisor@nusabank.demo` or `owner@majuvista.demo`, password `crowdshield-demo`
+- Live demo: https://crowdshield.184-197-8-50.sslip.io (the landing page has a check you can try without signing in)
+- Telegram bot: [@CrowdShieldBot](https://t.me/CrowdShieldBot). Send `/start` and tap an example.
+- Chrome extension (CrowdShield Guard): https://crowdshield.184-197-8-50.sslip.io/extension
+- Customer banking-app demo: https://crowdshield.184-197-8-50.sslip.io/demo/bank-app
+- Bank and business portals: sign in with `analyst@nusabank.demo`, `supervisor@nusabank.demo` or `owner@majuvista.demo`, password `crowdshield-demo`
 
 All data is synthetic: people, companies, apps, numbers and accounts are invented.
 
 ## Why
 
-From January to November 2025, Malaysian police logged **67,735 online crime cases with losses over RM2.7 billion**; scam calls were the largest category (28,698 cases). NSRC 997 saved about **RM34.5 million** in 2025. Once money has moved, little comes back. ([sources](docs/sources.md))
+From January to November 2025, Malaysian police logged 67,735 online crime cases with losses over RM2.7 billion. Scam calls were the largest category, with 28,698 cases. NSRC 997 saved about RM34.5 million in 2025. Once money has moved, little of it comes back. ([sources](docs/sources.md))
 
-The signals that would stop a transfer are split across parties: the victim knows who is calling, the bank knows where the money is going, the business knows its supplier's real account. CrowdShield joins them in one graph, with privacy built in.
+The signals that would stop a transfer are split between parties. The victim knows who is calling, the bank knows where the money is going, and the business knows its supplier's real account. CrowdShield joins them in one graph, while keeping identifiers hashed, masked and out of the AI models (see Privacy below).
 
 ## What it does
 
 | Who | Where | What they get |
 |---|---|---|
 | The public | Telegram bot, landing page | Forward a number, account, link, message or screenshot: a verdict with its reasons and one action. Lost money? A guided report and a pre-filled sheet for the NSRC 997 call. |
-| Anyone on a laptop | Chrome extension "CrowdShield Guard" | Snip any area of the screen (Alt+Shift+S) to check it, nothing to save or paste. On WhatsApp Web, Telegram Web and Gmail (each opt-in), scam-linked numbers are highlighted and "new number, send money" impersonation messages are flagged before anyone pays. |
-| Bank fraud analyst | Web portal | Payee checks with the customer's live call signal, an alert queue, cases with timelines and money trails, an **AI case brief**, **AI-detected scam campaigns** to confirm. |
+| Anyone on a laptop | Chrome extension "CrowdShield Guard" | Snip any area of the screen (Alt+Shift+S) to check it, without saving or pasting a screenshot. On WhatsApp Web, Telegram Web and Gmail (each opt-in), scam-linked numbers are highlighted and "new number, send money" impersonation messages are flagged before anyone pays. |
+| Bank fraud analyst | Web portal | Payee checks with the customer's live call signal, an alert queue, cases with timelines and money trails, an AI case brief, and scam campaigns the AI detected, to confirm or dismiss. |
 | Bank's app backend | `POST /v1/payee-check` and `POST /v1/cases/:id/money-trail` with a partner key | Before a DuitNow transfer: hold, warn or proceed, with a plain warning for the customer in Malay and English. After a scam: the hops, freezes and cash-outs the bank traced (through NSRC / the National Fraud Portal), so every receiving account is flagged across the network. |
 | Business owner | Web portal (supplier check) | Upload an invoice: changed bank details are caught and the payment held; the supplier's official contact is found on the web for a call-back. |
 
@@ -34,7 +34,7 @@ The signals that would stop a transfer are split across parties: the victim know
 
 ### The big picture
 
-Everyone who checks also feeds the graph, so every report, bank confirmation and rejected invoice protects the next person.
+The same people who check against the graph also add to it.
 
 ```mermaid
 flowchart LR
@@ -56,7 +56,7 @@ flowchart LR
 
 ### One scam, end to end
 
-The demo story: a report about one call protects a second victim minutes later, and then everyone.
+This is the demo story. One victim's report about a call protects a second victim minutes later, and the bank's confirmation then warns every other bank and bot user.
 
 ```mermaid
 sequenceDiagram
@@ -115,7 +115,7 @@ flowchart LR
   ML --> TAV
 ```
 
-### The payee check: no AI in the payment path
+### The payee check
 
 ```mermaid
 sequenceDiagram
@@ -136,11 +136,11 @@ sequenceDiagram
   end
 ```
 
-About 5 ms at p95. The bank's fraud engine stays in charge; CrowdShield advises.
+No AI model runs in this path, and the check takes about 5 ms at p95. CrowdShield advises and the bank's fraud engine decides.
 
 ### How a risk score is computed
 
-Deterministic and explainable; the TypeScript code is parity-tested against the Python reference (`scoring.py`) on 500 random cases.
+Scoring is deterministic and every score comes with its reasons. The TypeScript code is parity-tested against the Python reference (`scoring.py`) on 500 random cases.
 
 ```mermaid
 flowchart TD
@@ -173,7 +173,7 @@ flowchart LR
   H -- dismiss --> X["Cases released"]
 ```
 
-### Every AI request: privacy first, always traced
+### The path of an AI request
 
 ```mermaid
 flowchart LR
@@ -295,21 +295,21 @@ Details: [docs/DEPLOY.md](docs/DEPLOY.md).
 
 ## How AI is used
 
-Models read, classify, search and draft. **Decisions stay deterministic:** risk scores come from the evidence graph (noisy-OR with one-hop propagation, parity-tested against `scoring.py`), and **no model sits in the payment path** (payee check p95 ≈ 5 ms).
+Models read, classify, search and draft. Risk scores come from the evidence graph (noisy-OR with one-hop propagation, parity-tested against `scoring.py`), and no model sits in the payment path (payee check p95 ≈ 5 ms).
 
 | Task | Model (Nebius Token Factory) |
 |---|---|
 | Name the scam in a forwarded message (Malay, English, mixed Malay-English, Chinese) | NVIDIA Nemotron 3 Ultra 550B |
 | Read scam screenshots and invoices (PDF/image) | NVIDIA Nemotron 3.5 Super VL |
-| **Case brief** for the fraud team + NSRC/PDRM referral note, citing evidence | Nemotron 3 Ultra, **reasoning on** |
-| **Label new scam campaigns** and draft the public warning | Nemotron 3 Ultra, reasoning on |
+| Case brief for the fraud team + NSRC/PDRM referral note, citing evidence | Nemotron 3 Ultra, reasoning on |
+| Label new scam campaigns and draft the public warning | Nemotron 3 Ultra, reasoning on |
 | Judge web search results and link pages; find a supplier's official contact | Nemotron 3 Ultra + Tavily |
 | This week's scam news | Nemotron 3 Super + Tavily |
 | Script similarity for campaign matching and detection | Qwen3-Embedding-8B → pgvector |
 
-The routing comes from an evaluation on 41 hand-labelled messages ([docs/model-eval.md](docs/model-eval.md)): defining all 12 scam types took Super from 68% to 100%; Ultra was both the most accurate and the fastest; reasoning didn't help classification, so it is on only for the brief and campaign labels. Details: [docs/model-choices.md](docs/model-choices.md).
+We chose this routing from an evaluation on 41 hand-labelled messages ([docs/model-eval.md](docs/model-eval.md)). Defining all 12 scam types took Super from 68% to 100%. Ultra was both the most accurate and the fastest. Reasoning didn't help classification, so it is on only for the brief and the campaign labels. More detail is in [docs/model-choices.md](docs/model-choices.md).
 
-Every AI-made result shows an **AI trace** (model, reasoning, prompt version, time, tokens) in the web app and the bot.
+Every AI-made result shows an AI trace (model, reasoning, prompt version, time, tokens) in the web app and the bot.
 
 ## Run it locally
 
