@@ -280,6 +280,9 @@ export default async function Landing() {
             <a href="#frauds" className="hover:text-brand">
               Scams
             </a>
+            <Link href={EXTENSION_URL} className="hover:text-brand">
+              Chrome extension
+            </Link>
           </nav>
           <Link href={cta.href} className="btn-primary">
             {cta.label}
@@ -311,6 +314,12 @@ export default async function Landing() {
                 >
                   <MessageCircle className="size-4" aria-hidden /> Check a number on Telegram
                 </a>
+                <Link
+                  href={EXTENSION_URL}
+                  className="inline-flex items-center gap-2 rounded-lg bg-white/15 px-5 py-3 text-14 font-semibold text-white ring-1 ring-white/40 hover:bg-white/25"
+                >
+                  <Puzzle className="size-4" aria-hidden /> Get the Chrome extension
+                </Link>
                 <Link
                   href={cta.href}
                   className="inline-flex items-center gap-2 rounded-lg border border-white/40 px-5 py-3 text-14 font-semibold text-white hover:bg-white/10"
@@ -497,9 +506,10 @@ export default async function Landing() {
         <section className="bg-brand-dark-gradient py-16 text-white sm:py-20">
           <div className="mx-auto flex max-w-6xl flex-col items-start gap-6 px-4 sm:px-6 md:flex-row md:items-center md:justify-between">
             <div className="flex flex-col gap-2">
-              <h2 className="text-30 sm:text-36 font-bold">Semak dulu. Check first.</h2>
+              <h2 className="text-30 sm:text-36 font-bold">Check first, then pay.</h2>
               <p className="text-16 text-white/85">
-                Forward anything suspicious to the bot, or sign in to the bank and business portals.
+                Forward anything suspicious to the bot, snip it with the Chrome extension, or sign
+                in to the bank and business portals.
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
@@ -509,6 +519,12 @@ export default async function Landing() {
               >
                 <MessageCircle className="size-4" aria-hidden /> @CrowdShieldBot
               </a>
+              <Link
+                href={EXTENSION_URL}
+                className="inline-flex items-center gap-2 rounded-lg bg-white/15 px-5 py-3 text-14 font-semibold text-white ring-1 ring-white/40 hover:bg-white/25"
+              >
+                <Puzzle className="size-4" aria-hidden /> Chrome extension
+              </Link>
               <Link
                 href={cta.href}
                 className="inline-flex items-center gap-2 rounded-lg border border-white/40 px-5 py-3 text-14 font-semibold text-white hover:bg-white/10"
