@@ -301,8 +301,8 @@ export default async function Landing() {
               </h1>
               <p className="text-18 text-white/85">
                 CrowdShield is one shared scam graph for the public, banks, e-wallets and
-                businesses. Every report, every bank confirmation and every rejected fake invoice
-                protects the next person.
+                businesses. Reports, bank confirmations and rejected fake invoices all go into it,
+                so each one helps protect the next person.
               </p>
               <div className="flex flex-wrap gap-3">
                 <a
@@ -393,7 +393,7 @@ export default async function Landing() {
         </Section>
 
         {/* ---------- get protected ---------- */}
-        <Section id="protect" eyebrow="Get protected" title="Three ways in, one graph behind them">
+        <Section id="protect" eyebrow="Get protected" title="Three ways to check before you pay">
           <div className="grid gap-5 md:grid-cols-3">
             {PROTECT.map((p) => (
               <a

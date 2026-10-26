@@ -116,7 +116,7 @@ const STEPS: Step[] = [
   },
   {
     caption:
-      "A shop gets a “we changed bank” invoice to CIMB ****6677. Semak supplier: hold, and call the supplier back.",
+      "A shop gets a “we changed bank” invoice to CIMB ****6677. The supplier check says hold, and call the supplier back.",
     nodes: {
       reports: REPORTS,
       caller: CALLER,
