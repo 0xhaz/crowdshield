@@ -12,7 +12,7 @@ CrowdShield uses NVIDIA Nemotron models on Nebius Token Factory for what models 
 | Judge web search results, inspect link pages, find official contacts | Nemotron 3 Ultra 550B | off | Interactive: follow-up messages in the bot |
 | **Case brief** for the fraud team + NSRC/PDRM referral note (Malay and English) | Nemotron 3 Ultra 550B | **on** | Long, multi-source reasoning over the timeline, money trail and evidence; must cite evidence ids |
 | **Label a new scam campaign** + draft a public warning | Nemotron 3 Ultra 550B | **on** | Abstracting many reports into one pattern; a person approves the warning |
-| News scan ("scams in the news this week") | Nemotron 3 Super 120B | off | Batch, not latency-sensitive |
+| News scan ("scams in the news this week") | Nemotron 3 Ultra 550B | off | Super returned an empty list for every batch with the final prompt (28 Oct); Ultra judged all 20 results |
 | Similarity of scam scripts (campaign matching and detection) | Qwen3-Embedding-8B (1024 dims) | n/a | Multilingual embeddings into pgvector (HNSW) |
 
 Routing lives in `apps/ml/src/crowdshield_ml/config.py` and can be overridden per task (`ROUTE_CLASSIFY=super` …). Every response carries an **AI trace** (model, prompt version, time, tokens, reasoning on/off, cache hit), and the web app and bot show it.

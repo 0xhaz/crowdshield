@@ -272,3 +272,24 @@ def test_strip_ids_keeps_evidence_lists_and_line_breaks():
     assert b["gaps"] == ["Victim's BSN account not in the case data."]
     assert b["money_trail"][0] == {"text": "RM 48,000 to MBB ****8812.", "evidence": ["hop:1"]}
     assert b["referral"]["en"] == "1. Call from +60 11-***-4821.\n2. Paid at 16:00."
+
+
+@respx.mock
+async def test_empty_news_is_cached_briefly():
+    respx.post("https://api.tavily.com/search").mock(
+        return_value=httpx.Response(
+            200, json={"results": [{"url": "https://news.my/a", "title": "A", "content": "x"}]}
+        )
+    )
+    respx.post(f"{NEBIUS}/chat/completions").mock(return_value=llm_reply({"items": []}))
+    g = gateway()
+    ttls = []
+    real_set = g.cache.set
+
+    async def spy(key, value, ttl=0):
+        ttls.append(ttl)
+        await real_set(key, value, ttl)
+
+    g.cache.set = spy
+    out = await g.news(7)
+    assert out["items"] == [] and ttls[-1] == 15 * 60

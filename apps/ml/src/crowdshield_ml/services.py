@@ -542,5 +542,6 @@ class Gateway:
                     }
                 )
         out = {"items": items[:10], "fetched_at": now_iso(), "cached": False}
-        await self.cache.set(key, out, ttl=6 * 3600)
+        # an empty feed is usually a failed run, not a quiet week: retry soon instead of hiding news for 6 h
+        await self.cache.set(key, out, ttl=6 * 3600 if items else 15 * 60)
         return out

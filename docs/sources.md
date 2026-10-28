@@ -14,4 +14,4 @@ Figures used in the README, the Devpost write-up and the deck. Only figures conf
 
 **What this says for CrowdShield:** money is recovered for only a small share of losses once it has left; the biggest lever is stopping the transfer before it happens (the payee check with the live call signal), and getting victims to 997 within minutes (the bot's call sheet). Calls are the most common scam channel, which is the signal only the crowd sees.
 
-Live news in the app (landing page, "Scams in the Malaysian news") comes from a Tavily news search, filtered by Nemotron 3 Super, with every item linked to its source.
+Live news in the app (landing page, "Scams in the Malaysian news") comes from a Tavily news search, filtered by Nemotron 3 Ultra, with every item linked to its source.

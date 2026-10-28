@@ -43,7 +43,7 @@ DEFAULT_ROUTES = {
     "contact": "ultra",
     "brief": "ultra",
     "label": "ultra",
-    "news": "super",
+    "news": "ultra",  # Super returned an empty list for every news batch (28 Oct); Ultra judged all 20
     "embed": "embed",
 }
 

@@ -304,7 +304,7 @@ Models read, classify, search and draft. Risk scores come from the evidence grap
 | Case brief for the fraud team + NSRC/PDRM referral note, citing evidence | Nemotron 3 Ultra, reasoning on |
 | Label new scam campaigns and draft the public warning | Nemotron 3 Ultra, reasoning on |
 | Judge web search results and link pages; find a supplier's official contact | Nemotron 3 Ultra + Tavily |
-| This week's scam news | Nemotron 3 Super + Tavily |
+| This week's scam news | Nemotron 3 Ultra + Tavily |
 | Script similarity for campaign matching and detection | Qwen3-Embedding-8B → pgvector |
 
 We chose this routing from an evaluation on 41 hand-labelled messages ([docs/model-eval.md](docs/model-eval.md)). Defining all 12 scam types took Super from 68% to 100%. Ultra was both the most accurate and the fastest. Reasoning didn't help classification, so it is on only for the brief and the campaign labels. More detail is in [docs/model-choices.md](docs/model-choices.md).

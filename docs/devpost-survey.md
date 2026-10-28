@@ -9,7 +9,7 @@ Answers for the sponsor questions on the submission form. Figures come from `doc
 - **Nemotron 3 Ultra 550B (reasoning off)** classifies forwarded scam messages, judges web search results and reads link pages. We chose it by measurement: on our 41-message test set (Malay, English, mixed Malay-English, Chinese; 12 scam types plus normal messages) it scored 100% at 1.1 s median, both the most accurate and the fastest of the four we tested.
 - **Nemotron 3 Ultra (reasoning on)** writes the fraud team's case brief and NSRC/PDRM referral note, and labels newly detected scam campaigns. These tasks need multi-step reasoning over timelines and money trails.
 - **Nemotron 3.5 Super VL** reads scam screenshots and invoice PDFs. It's the vision model, and it keeps phone and account digits exact.
-- **Nemotron 3 Super 120B** filters the weekly scam news: a batch job, not latency-sensitive.
+- **Nemotron 3 Super 120B** was our first choice for the weekly scam-news batch. With our final prompt it returned an empty list for every batch, while Ultra judged all 20 results, so the news moved to Ultra. Super stays configured as a fallback.
 - **Nemotron 3.5 Lightning and Nemotron 3 Nano 30B** (93% each) are configured fallbacks if cost becomes the constraint.
 - **Qwen3-Embedding-8B** (1024 dimensions) embeds scam scripts for campaign matching.
 
@@ -114,7 +114,7 @@ Most valuable:
 - **NVIDIA Nemotron on Nebius Token Factory:**
   - Nemotron 3 Ultra classifies messages, judges web results, writes case briefs and labels campaigns.
   - Nemotron 3.5 Super VL reads screenshots and invoices.
-  - Nemotron 3 Super filters the scam news.
+  - Nemotron 3 Ultra also filters the scam news (Nemotron 3 Super is a configured fallback).
   - Lightning and Nano are configured fallbacks.
 - **Qwen3-Embedding-8B** (on Token Factory) for scam-script similarity in pgvector.
 - **Tavily** for live web search, page extraction and news.

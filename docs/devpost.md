@@ -28,7 +28,7 @@ Every model task runs on NVIDIA Nemotron through Nebius Token Factory:
 
 - Nemotron 3 Ultra classifies forwarded messages in Malay, English, mixed Malay-English and Chinese, judges web search results and link pages, and, with reasoning on, writes case briefs and labels new scam campaigns.
 - Nemotron 3.5 Super VL reads scam screenshots and invoice PDFs verbatim, with digits and account numbers exact.
-- Nemotron 3 Super sorts this week's scam news.
+- Nemotron 3 Ultra also sorts this week's scam news. Nemotron 3 Super did this at first, but with our final prompt it returned an empty list every time, so we moved the task to Ultra.
 - Qwen3-Embedding-8B embeds scam scripts into pgvector for campaign matching and detection.
 
 We picked models by testing them. Our gold set has 41 messages in four languages, covering 12 scam types plus normal messages, and we ran Lightning, Nano, Super and Ultra on it with reasoning on and off. Defining every scam type in the prompt took accuracy from 68% to 100%. We kept strict JSON-schema decoding on, because relaxing it broke 40 of 41 outputs. Reasoning didn't improve classification, so we only turn it on where a task needs it. Ultra was both the most accurate and the fastest, so it handles interactive text.
