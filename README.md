@@ -14,6 +14,27 @@ We built it for the Nebius × NVIDIA Global AI Hackathon, using NVIDIA Nemotron 
 
 All data is synthetic: people, companies, apps, numbers and accounts are invented.
 
+## Contents
+
+- [Why](#why)
+- [What it does](#what-it-does)
+- [How it works](#how-it-works)
+  - [The big picture](#the-big-picture)
+  - [One scam, end to end](#one-scam-end-to-end)
+  - [Architecture](#architecture)
+  - [The payee check](#the-payee-check)
+  - [How a risk score is computed](#how-a-risk-score-is-computed)
+  - [New scam campaigns](#new-scam-campaigns)
+  - [The path of an AI request](#the-path-of-an-ai-request)
+  - [Money trail from banks](#money-trail-from-banks)
+  - [Data model (core tables)](#data-model-core-tables)
+  - [Privacy](#privacy)
+  - [Deployment](#deployment)
+- [How AI is used](#how-ai-is-used)
+- [Run it locally](#run-it-locally)
+- [Layout](#layout)
+- [License](#license)
+
 ## Why
 
 From January to November 2025, Malaysian police logged 67,735 online crime cases with losses over RM2.7 billion. Scam calls were the largest category, with 28,698 cases. NSRC 997 saved about RM34.5 million in 2025. Once money has moved, little of it comes back. ([sources](docs/sources.md))
