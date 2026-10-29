@@ -344,3 +344,7 @@ packages/normalise  identifier detection, normalisation, hashing, masking
 packages/i18n       Malay / English copy
 infra/              Docker images, production compose, AWS provisioning
 ```
+
+## License
+
+MIT, see [LICENSE](LICENSE). The web app's layout is adapted from banking-main by JavaScript Mastery (MIT); see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
